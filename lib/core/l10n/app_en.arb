@@ -1,0 +1,197 @@
+{
+  "@@locale": "en",
+  "appTitle": "Dexter",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  "incorrectPassword": "Incorrect password",
+  "setupNewPassword": "Set up a new password",
+  "enterPassword": "Enter password",
+  "password": "Password",
+  "saveAndStart": "Save and Start",
+  "login": "Login",
+  "setupProfileFirst": "Please set up a Profile first to import data.",
+  "manualEntry": "Manual Entry",
+  "duplicateEntryWarning": "Warning: Duplicate entry found!",
+  "saveAnyway": "Save anyway",
+  "recordSavedSuccessfully": "Record saved successfully",
+  "saveRecord": "Save Record",
+  "noDataToExport": "No data to export",
+  "failedToCreateFile": "Failed to create file",
+  "failedToSaveCheckPermissions": "Could not save file. Check permissions.",
+  "exportData": "Export Data",
+  "exportDataDescription": "All data from all profiles will be aggregated and exported into a single Excel file.",
+  "filterExportOptional": "Filter Export (Optional)",
+  "exportAllAsExcel": "Export all data as Excel file",
+  "importHistory": "Import History",
+  "noImportHistory": "No import history",
+  "undoImport": "Undo Import",
+  "confirmUndo": "Confirm Undo",
+  "cancel": "Cancel",
+  "undoImportSuccess": "Import undone successfully",
+  "confirmDelete": "Confirm Delete",
+  "search": "Search",
+  "data": "Data",
+  "settings": "Settings",
+  "importComplete": "Import Complete",
+  "totalRecords": "Total Records:",
+  "importedRecords": "Imported:",
+  "skippedDuplicates": "Skipped (Duplicates):",
+  "recordsWithError": "Records with error:",
+  "finish": "Finish",
+  "importData": "Import Data",
+  "chooseFileOrFolder": "Choose File or Folder",
+  "files": "Files",
+  "noExcelFilesFound": "No Excel files found",
+  "folder": "Folder",
+  "headerRowNumber": "Header Row Number:",
+  "next": "Next",
+  "selectColumns": "Select Columns",
+  "importAllFieldsAuto": "Import all fields automatically",
+  "chooseColumns": "Choose columns:",
+  "none": "None",
+  "previous": "Previous",
+  "dataPreview": "Data Preview",
+  "dataWillBeImportedAsFollows": "Data will be imported as follows based on your selection:",
+  "sampleData": "Sample data...",
+  "looksCorrectStartImport": "Looks correct - Start Import",
+  "importing": "Importing...",
+  "searchResult": "Search Result",
+  "searchTitle": "Search",
+  "searchForRecord": "Search for a record...",
+  "matchType": "Match Type:",
+  "exactMatch": "Exact Search",
+  "containsMatch": "Contains Search",
+  "fuzzyMatch": "Fuzzy Search",
+  "pleaseEnterDataToSearch": "Please enter data to search",
+  "noResults": "No results",
+  "themeSettings": "Theme",
+  "system": "System",
+  "light": "Light",
+  "dark": "Dark",
+  "languageSettings": "Language",
+  "arabic": "Arabic",
+  "autoLockSettings": "Auto-Lock",
+  "immediately": "Immediately",
+  "oneMinute": "1 Minute",
+  "fiveMinutes": "5 Minutes",
+  "never": "Never",
+  "resetPassword": "Reset Password",
+  "changeCurrentAppPassword": "Change current app password.",
+  "lockAppNow": "Lock App Now",
+  "clearAllData": "Clear All Data",
+  "allDataWillBeDeletedForever": "All data and passwords will be permanently deleted.",
+  "currentPassword": "Current Password",
+  "newPassword": "New Password",
+  "passwordChangedSuccessfully": "Password changed successfully",
+  "save": "Save",
+  "warningClearAllData": "Warning: Clear All Data",
+  "confirmClearAllDataText": "Are you sure you want to clear all data from the application? This action cannot be undone and you will be logged out immediately.",
+  "confirmClear": "Confirm Clear",
+  "appearanceAndLanguage": "Appearance & Language",
+  "security": "Security",
+  "dataAndSync": "Data & Sync",
+  "autoUpdateImportedFiles": "Auto-update imported files",
+  "checkForUpdatesOnStartup": "Check for updates on startup",
+  "scanWatchedFolders": "Scan watched folders",
+  "autoSearchNewFilesInFolders": "Automatically search for new files in folders",
+  "addFolderToWatch": "Add a folder to watch",
+  "advancedManagement": "Advanced Management",
+  "currentPasswordIncorrect": "Current password incorrect",
+  "english": "English",
+  "designedBy": "Designed by",
+  "ahmedElKilany": "Captain / Ahmed El-Kilany",
+  "sortNewest": "Newest",
+  "sortOldest": "Oldest",
+  "sortAlphabeticalAsc": "Alphabetical (A-Z)",
+  "sortAlphabeticalDesc": "Alphabetical (Z-A)",
+  "showAllData": "Show all data",
+  "processedRecordsCount": "Processed: {count} records",
+  "@processedRecordsCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "chooseSpecificFiles": "Choose specific files",
+  "chooseEntireFolder": "Choose entire folder",
+  "errorOccurred": "An error occurred: {error}",
+  "@errorOccurred": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "filesSelected": "Selected {count} file(s)",
+  "@filesSelected": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "rowNumber": "Row {number}",
+  "@rowNumber": {
+    "placeholders": {
+      "number": { "type": "int" }
+    }
+  },
+  "stepReferenceRow": "Reference Row",
+  "stepColumnSelection": "Column Selection",
+  "stepReview": "Review",
+  "stepImporting": "Importing...",
+  "autoUpdateSuccess": "Auto-update successful. Added {count} new records.",
+  "@autoUpdateSuccess": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "autoUpdateError": "Error during auto-update: {error}",
+  "@autoUpdateError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "updateData": "Update Data",
+  "updateDataSubtitle": "Scan imported files and watched folders for updates",
+  "exportingWait": "Exporting...",
+  "scanningWait": "Scanning...",
+  "pleaseWaitAndDoNotClose": "Please wait and do not close the app",
+  "chooseTimeRangeForExport": "Choose the time range for the data you want to export.",
+  "allData": "All Data",
+  "last24Hours": "Last 24 Hours",
+  "last7Days": "Last 7 Days",
+  "customPeriod": "Custom Period",
+  "chooseDates": "Choose Dates",
+  "pleaseSelectTimeRangeFirst": "Please select a time range first.",
+  "exportNow": "Export Now",
+  "importDataSubtitle": "Add new data from Excel files",
+  "exportDataSubtitle": "Export all registered data to an Excel file",
+  "recordCountAndDate": "Records: {count}\nDate: {date}",
+  "@recordCountAndDate": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "date": { "type": "String" }
+    }
+  },
+  "confirmDeleteImportBatch": "Are you sure you want to delete all records imported from file \"{fileName}\"?\nThis action cannot be undone.",
+  "@confirmDeleteImportBatch": {
+    "placeholders": {
+      "fileName": { "type": "String" }
+    }
+  },
+  "recordNumber": "Record Number: {id}",
+  "@recordNumber": {
+    "placeholders": {
+      "id": { "type": "int" }
+    }
+  },
+  "allDataExportedSuccess": "All data exported successfully to: {path}",
+  "@allDataExportedSuccess": {
+    "placeholders": {
+      "path": { "type": "String" }
+    }
+  },
+  "dataExportedSuccess": "Data exported successfully to: {path}",
+  "@dataExportedSuccess": {
+    "placeholders": {
+      "path": { "type": "String" }
+    }
+  }
+}

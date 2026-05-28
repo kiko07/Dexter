@@ -1,0 +1,197 @@
+{
+  "@@locale": "ar",
+  "appTitle": "دكستر",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  "incorrectPassword": "كلمة المرور غير صحيحة",
+  "setupNewPassword": "قم بإعداد كلمة مرور جديدة",
+  "enterPassword": "أدخل كلمة المرور",
+  "password": "كلمة المرور",
+  "saveAndStart": "حفظ والبدء",
+  "login": "دخول",
+  "setupProfileFirst": "الرجاء إعداد ملف تعريف (Profile) أولاً لاستيراد البيانات.",
+  "manualEntry": "إدخال يدوي",
+  "duplicateEntryWarning": "تحذير: تم العثور على سجل مكرر!",
+  "saveAnyway": "حفظ على أي حال",
+  "recordSavedSuccessfully": "تم حفظ السجل بنجاح",
+  "saveRecord": "حفظ السجل",
+  "noDataToExport": "لا توجد بيانات للتصدير",
+  "failedToCreateFile": "فشل إنشاء الملف",
+  "failedToSaveCheckPermissions": "تعذر حفظ الملف. تحقق من الصلاحيات.",
+  "exportData": "تصدير البيانات",
+  "exportDataDescription": "سيتم تجميع وتصدير كافة البيانات من جميع ملفات التعريف في ملف إكسل واحد.",
+  "filterExportOptional": "تصفية بالتصدير (اختياري)",
+  "exportAllAsExcel": "تصدير كافة البيانات كملف Excel",
+  "importHistory": "سجل الاستيراد",
+  "noImportHistory": "لا يوجد سجل استيراد",
+  "undoImport": "تراجع عن الاستيراد",
+  "confirmUndo": "تأكيد التراجع",
+  "cancel": "إلغاء",
+  "undoImportSuccess": "تم التراجع عن الاستيراد بنجاح",
+  "confirmDelete": "تأكيد الحذف",
+  "search": "بحث",
+  "data": "البيانات",
+  "settings": "الإعدادات",
+  "importComplete": "اكتمل الاستيراد",
+  "totalRecords": "إجمالي السجلات:",
+  "importedRecords": "تم استيراد:",
+  "skippedDuplicates": "تم تخطي (مكرر):",
+  "recordsWithError": "سجلات بها خطأ:",
+  "finish": "إنهاء",
+  "importData": "استيراد البيانات",
+  "chooseFileOrFolder": "اختر الملف أو المجلد",
+  "files": "ملفات",
+  "noExcelFilesFound": "لم يتم العثور على ملفات إكسيل",
+  "folder": "مجلد",
+  "headerRowNumber": "رقم صف المرجع (العناوين):",
+  "next": "التالي",
+  "selectColumns": "تحديد الأعمدة",
+  "importAllFieldsAuto": "استيراد كل الحقول تلقائياً",
+  "chooseColumns": "اختيار الاعمدة:",
+  "none": "لا يوجد",
+  "previous": "السابق",
+  "dataPreview": "معاينة البيانات",
+  "dataWillBeImportedAsFollows": "سيتم استيراد البيانات بالشكل التالي بناءً على اختيارك:",
+  "sampleData": "بيانات تجريبية...",
+  "looksCorrectStartImport": "يبدو صحيحاً - ابدأ الاستيراد",
+  "importing": "جاري الاستيراد...",
+  "searchResult": "نتيجة البحث",
+  "searchTitle": "البحث",
+  "searchForRecord": "ابحث عن سجل...",
+  "matchType": "نوع المطابقة:",
+  "exactMatch": "بحث دقيق",
+  "containsMatch": "بحث شامل",
+  "fuzzyMatch": "توسيع دائرة البحث",
+  "pleaseEnterDataToSearch": "الرجاء إدخال بيانات للبحث",
+  "noResults": "لا توجد نتائج",
+  "themeSettings": "المظهر (Theme)",
+  "system": "النظام",
+  "light": "فاتح",
+  "dark": "داكن",
+  "languageSettings": "اللغة (Language)",
+  "arabic": "العربية",
+  "autoLockSettings": "القفل التلقائي (Auto-Lock)",
+  "immediately": "فوراً",
+  "oneMinute": "دقيقة واحدة",
+  "fiveMinutes": "5 دقائق",
+  "never": "أبداً",
+  "resetPassword": "إعادة تعيين كلمة المرور",
+  "changeCurrentAppPassword": "قم بتغيير كلمة مرور التطبيق الحالية.",
+  "lockAppNow": "قفل التطبيق الآن",
+  "clearAllData": "مسح جميع البيانات",
+  "allDataWillBeDeletedForever": "سيتم حذف كافة البيانات وكلمات المرور نهائياً.",
+  "currentPassword": "كلمة المرور الحالية",
+  "newPassword": "كلمة المرور الجديدة",
+  "passwordChangedSuccessfully": "تم تغيير كلمة المرور بنجاح",
+  "save": "حفظ",
+  "warningClearAllData": "تحذير: مسح جميع البيانات",
+  "confirmClearAllDataText": "هل أنت متأكد أنك تريد مسح كافة البيانات من التطبيق؟ هذا الإجراء لا يمكن التراجع عنه وسيتم تسجيل خروجك من التطبيق فوراً.",
+  "confirmClear": "تأكيد المسح",
+  "appearanceAndLanguage": "المظهر واللغة",
+  "security": "الأمان والحماية",
+  "dataAndSync": "البيانات والمزامنة",
+  "autoUpdateImportedFiles": "تحديث تلقائي للملفات المستوردة",
+  "checkForUpdatesOnStartup": "فحص التحديثات عند بدء التطبيق",
+  "scanWatchedFolders": "فحص المجلدات المراقبة",
+  "autoSearchNewFilesInFolders": "البحث عن ملفات جديدة في المجلدات تلقائياً",
+  "addFolderToWatch": "إضافة مجلد للمراقبة",
+  "advancedManagement": "إدارة متقدمة",
+  "currentPasswordIncorrect": "كلمة المرور الحالية غير صحيحة",
+  "english": "English",
+  "designedBy": "مُصَمم بمعرفة",
+  "ahmedElKilany": "النقيب / أحمد الكيلاني",
+  "sortNewest": "الأحدث",
+  "sortOldest": "الأقدم",
+  "sortAlphabeticalAsc": "أبجدياً (أ-ي)",
+  "sortAlphabeticalDesc": "أبجدياً (ي-أ)",
+  "showAllData": "عرض جميع البيانات",
+  "processedRecordsCount": "تم معالجة: {count} سجل",
+  "@processedRecordsCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "chooseSpecificFiles": "اختر ملفات محددة",
+  "chooseEntireFolder": "اختر مجلد كامل",
+  "errorOccurred": "حدث خطأ: {error}",
+  "@errorOccurred": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "filesSelected": "تم اختيار {count} ملف(ات)",
+  "@filesSelected": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "rowNumber": "الصف {number}",
+  "@rowNumber": {
+    "placeholders": {
+      "number": { "type": "int" }
+    }
+  },
+  "stepReferenceRow": "الصف المرجعي",
+  "stepColumnSelection": "اختيار الأعمدة",
+  "stepReview": "مراجعة",
+  "stepImporting": "جاري الاستيراد",
+  "autoUpdateSuccess": "تم التحديث التلقائي بنجاح. أُضيف {count} سجل جديد.",
+  "@autoUpdateSuccess": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "autoUpdateError": "حدث خطأ أثناء التحديث التلقائي: {error}",
+  "@autoUpdateError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "updateData": "تحديث البيانات",
+  "updateDataSubtitle": "فحص الملفات المستوردة والمجلدات المراقبة بحثاً عن تحديثات",
+  "exportingWait": "جاري التصدير...",
+  "scanningWait": "جاري الفحص...",
+  "pleaseWaitAndDoNotClose": "يرجى الانتظار ولا تغلق التطبيق",
+  "chooseTimeRangeForExport": "اختر النطاق الزمني للبيانات التي تريد تصديرها.",
+  "allData": "كل البيانات",
+  "last24Hours": "آخر ٢٤ ساعة",
+  "last7Days": "آخر ٧ أيام",
+  "customPeriod": "فترة مخصصة",
+  "chooseDates": "اختر التواريخ",
+  "pleaseSelectTimeRangeFirst": "الرجاء اختيار فترة زمنية أولاً.",
+  "exportNow": "تصدير الآن",
+  "importDataSubtitle": "إضافة بيانات جديدة من ملفات Excel",
+  "exportDataSubtitle": "تصدير كافة البيانات المسجلة إلى ملف Excel",
+  "recordCountAndDate": "عدد السجلات: {count}\nالتاريخ: {date}",
+  "@recordCountAndDate": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "date": { "type": "String" }
+    }
+  },
+  "confirmDeleteImportBatch": "هل أنت متأكد أنك تريد حذف كافة السجلات التي تم استيرادها في ملف \"{fileName}\"؟\nهذا الإجراء لا يمكن التراجع عنه.",
+  "@confirmDeleteImportBatch": {
+    "placeholders": {
+      "fileName": { "type": "String" }
+    }
+  },
+  "recordNumber": "رقم السجل: {id}",
+  "@recordNumber": {
+    "placeholders": {
+      "id": { "type": "int" }
+    }
+  },
+  "allDataExportedSuccess": "تم تصدير كافة البيانات بنجاح إلى: {path}",
+  "@allDataExportedSuccess": {
+    "placeholders": {
+      "path": { "type": "String" }
+    }
+  },
+  "dataExportedSuccess": "تم تصدير البيانات بنجاح إلى: {path}",
+  "@dataExportedSuccess": {
+    "placeholders": {
+      "path": { "type": "String" }
+    }
+  }
+}
