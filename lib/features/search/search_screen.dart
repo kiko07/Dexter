@@ -231,49 +231,29 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
               ),
             ),
             
-            // Filters (Expandable)
+            // Sorting Options
             const SizedBox(height: 12),
-            Theme(
-              data: theme.copyWith(dividerColor: Colors.transparent),
-              child: ExpansionTile(
-                title: Row(
-                  children: [
-                    Icon(Icons.filter_list, size: 20, color: theme.colorScheme.primary),
-                    const SizedBox(width: 8),
-                    Text('Filters & Sorting', style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold)),
-                  ],
-                ),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: Row(
                 children: [
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                    child: Row(
-                      children: [
-                        _buildChip('exact', AppLocalizations.of(context)!.exactMatch, state.matchMode, (val) => notifier.setMatchMode(val), theme),
-                        const SizedBox(width: 8),
-                        _buildChip('contains', AppLocalizations.of(context)!.containsMatch, state.matchMode, (val) => notifier.setMatchMode(val), theme),
-                        const SizedBox(width: 8),
-                        _buildChip('fuzzy', AppLocalizations.of(context)!.fuzzyMatch, state.matchMode, (val) => notifier.setMatchMode(val), theme),
-                        const SizedBox(width: 24),
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: theme.colorScheme.secondary.withValues(alpha: 0.1),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(Icons.sort, size: 20, color: theme.colorScheme.secondary),
-                        ),
-                        const SizedBox(width: 12),
-                        _buildChip('newest', AppLocalizations.of(context)!.sortNewest, state.sortBy, (val) => notifier.setSortBy(val), theme),
-                        const SizedBox(width: 8),
-                        _buildChip('oldest', AppLocalizations.of(context)!.sortOldest, state.sortBy, (val) => notifier.setSortBy(val), theme),
-                        const SizedBox(width: 8),
-                        _buildChip('alphabetical_asc', AppLocalizations.of(context)!.sortAlphabeticalAsc, state.sortBy, (val) => notifier.setSortBy(val), theme),
-                        const SizedBox(width: 8),
-                        _buildChip('alphabetical_desc', AppLocalizations.of(context)!.sortAlphabeticalDesc, state.sortBy, (val) => notifier.setSortBy(val), theme),
-                      ],
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.secondary.withValues(alpha: 0.1),
+                      shape: BoxShape.circle,
                     ),
+                    child: Icon(Icons.sort, size: 20, color: theme.colorScheme.secondary),
                   ),
+                  const SizedBox(width: 12),
+                  _buildChip('newest', AppLocalizations.of(context)!.sortNewest, state.sortBy, (val) => notifier.setSortBy(val), theme),
+                  const SizedBox(width: 8),
+                  _buildChip('oldest', AppLocalizations.of(context)!.sortOldest, state.sortBy, (val) => notifier.setSortBy(val), theme),
+                  const SizedBox(width: 8),
+                  _buildChip('alphabetical_asc', AppLocalizations.of(context)!.sortAlphabeticalAsc, state.sortBy, (val) => notifier.setSortBy(val), theme),
+                  const SizedBox(width: 8),
+                  _buildChip('alphabetical_desc', AppLocalizations.of(context)!.sortAlphabeticalDesc, state.sortBy, (val) => notifier.setSortBy(val), theme),
                 ],
               ),
             ),

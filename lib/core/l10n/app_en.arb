@@ -193,5 +193,6 @@
     "placeholders": {
       "path": { "type": "String" }
     }
-  }
+  },
+  "filtersAndSorting": "Filters & Sorting"
 }

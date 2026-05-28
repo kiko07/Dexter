@@ -444,4 +444,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String dataExportedSuccess(String path) {
     return 'Data exported successfully to: $path';
   }
+
+  @override
+  String get filtersAndSorting => 'Filters & Sorting';
 }

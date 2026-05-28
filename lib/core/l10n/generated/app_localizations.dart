@@ -907,6 +907,12 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'تم تصدير البيانات بنجاح إلى: {path}'**
   String dataExportedSuccess(String path);
+
+  /// No description provided for @filtersAndSorting.
+  ///
+  /// In ar, this message translates to:
+  /// **'التصفية والفرز'**
+  String get filtersAndSorting;
 }
 
 class _AppLocalizationsDelegate
