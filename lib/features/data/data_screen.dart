@@ -1,3 +1,4 @@
+import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dexter/core/l10n/generated/app_localizations.dart';
@@ -73,15 +74,16 @@ class DataScreen extends ConsumerWidget {
                           );
                         },
                       ),
-                      _DataActionCard(
-                        icon: Icons.sync_rounded,
-                        title: AppLocalizations.of(context)!.updateData,
-                        subtitle: AppLocalizations.of(context)!.updateDataSubtitle,
-                        color: Colors.deepPurple,
-                        onTap: () {
-                          ref.read(backgroundScannerProvider.notifier).scanNow(isManual: true);
-                        },
-                      ),
+                      if (!Platform.isAndroid && !Platform.isIOS)
+                        _DataActionCard(
+                          icon: Icons.sync_rounded,
+                          title: AppLocalizations.of(context)!.updateData,
+                          subtitle: AppLocalizations.of(context)!.updateDataSubtitle,
+                          color: Colors.deepPurple,
+                          onTap: () {
+                            ref.read(backgroundScannerProvider.notifier).scanNow(isManual: true);
+                          },
+                        ),
                       _DataActionCard(
                         icon: Icons.history_rounded,
                         title: AppLocalizations.of(context)!.importHistory,
