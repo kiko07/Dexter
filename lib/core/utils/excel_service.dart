@@ -18,7 +18,7 @@ class ExcelService {
 
     if (path.toLowerCase().endsWith('.csv')) {
       final csvString = file.readAsStringSync();
-      final rows = const CsvToListConverter().convert(csvString);
+      final rows = Csv().decode(csvString);
       if (rows.length <= rowIndex) return [];
       return rows[rowIndex].map((cell) => cell?.toString() ?? '').toList();
     }
@@ -60,7 +60,7 @@ class ExcelService {
 
     if (path.toLowerCase().endsWith('.csv')) {
       final csvString = file.readAsStringSync();
-      final rows = const CsvToListConverter().convert(csvString);
+      final rows = Csv().decode(csvString);
       if (rows.length <= rowIndex + 1) return [];
 
       List<Map<String, dynamic>> parsedRows = [];
