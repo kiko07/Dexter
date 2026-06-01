@@ -16,6 +16,8 @@ class ResultCard extends StatelessWidget {
       data = jsonDecode(entry.data) as Map<String, dynamic>;
     } catch (_) {}
 
+    final rowIndex = data.remove('_rowIndex');
+
     final theme = Theme.of(context);
 
     return Container(
@@ -60,19 +62,31 @@ class ResultCard extends StatelessWidget {
                     ),
                   ],
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.surface,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 4, offset: const Offset(0, 2)),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.surface,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 4, offset: const Offset(0, 2)),
+                        ],
+                      ),
+                      child: Text(
+                        '#${entry.id}', 
+                        style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha: 0.7), fontWeight: FontWeight.bold, fontSize: 12),
+                      ),
+                    ),
+                    if (entry.sourceFile != null || rowIndex != null) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        '${entry.sourceFile ?? ''}${rowIndex != null ? ' (Line: $rowIndex)' : ''}',
+                        style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 11, fontWeight: FontWeight.w500),
+                      ),
                     ],
-                  ),
-                  child: Text(
-                    '#${entry.id}', 
-                    style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha: 0.7), fontWeight: FontWeight.bold, fontSize: 12),
-                  ),
+                  ],
                 ),
               ],
             ),

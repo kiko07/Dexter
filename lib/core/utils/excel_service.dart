@@ -89,6 +89,7 @@ class ExcelService {
         });
         
         if (hasData) {
+          rowMap['_rowIndex'] = i + 1;
           parsedRows.add(rowMap);
         }
       }
@@ -134,6 +135,7 @@ class ExcelService {
       });
       
       if (hasData) {
+        rowMap['_rowIndex'] = i + 1;
         parsedRows.add(rowMap);
       }
     }
