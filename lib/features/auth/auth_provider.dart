@@ -50,7 +50,6 @@ class AuthNotifier extends Notifier<AuthState> {
       if (canAuthenticate) {
         final didAuthenticate = await auth.authenticate(
           localizedReason: 'Please authenticate to unlock the app',
-          persistAcrossBackgrounding: true,
           biometricOnly: true,
         );
         if (didAuthenticate) {

@@ -446,4 +446,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get filtersAndSorting => 'التصفية والفرز';
+
+  @override
+  String get hideData => 'إخفاء البيانات';
 }

@@ -1,3 +1,4 @@
+import 'dart:io' show Platform;
 import 'package:dexter/core/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -157,51 +158,53 @@ class SettingsScreen extends ConsumerWidget {
                       },
                     ),
                   ),
-                  _buildDivider(),
-                  _SettingsTile(
-                    icon: Icons.folder_special_rounded,
-                    iconColor: Colors.indigo,
-                    title: AppLocalizations.of(context)!.scanWatchedFolders,
-                    subtitle: AppLocalizations.of(context)!.autoSearchNewFilesInFolders,
-                    trailing: Switch(
-                      value: settingsState.autoScanWatchedFolders,
-                      activeThumbColor: theme.colorScheme.primary,
-                      onChanged: (bool value) {
-                        ref.read(settingsProvider.notifier).setAutoScanWatchedFolders(value);
-                      },
-                    ),
-                  ),
-                  if (settingsState.autoScanWatchedFolders) ...[
+                  if (!Platform.isAndroid && !Platform.isIOS) ...[
                     _buildDivider(),
                     _SettingsTile(
-                      icon: Icons.create_new_folder_rounded,
-                      iconColor: Colors.lightBlue,
-                      title: AppLocalizations.of(context)!.addFolderToWatch,
-                      onTap: () async {
-                        final dir = await file_picker.FilePicker.getDirectoryPath();
-                        if (dir != null) {
-                          ref.read(settingsProvider.notifier).addWatchedFolder(dir);
-                        }
-                      },
-                      showArrow: true,
+                      icon: Icons.folder_special_rounded,
+                      iconColor: Colors.indigo,
+                      title: AppLocalizations.of(context)!.scanWatchedFolders,
+                      subtitle: AppLocalizations.of(context)!.autoSearchNewFilesInFolders,
+                      trailing: Switch(
+                        value: settingsState.autoScanWatchedFolders,
+                        activeThumbColor: theme.colorScheme.primary,
+                        onChanged: (bool value) {
+                          ref.read(settingsProvider.notifier).setAutoScanWatchedFolders(value);
+                        },
+                      ),
                     ),
-                    ...settingsState.watchedFolders.map((folder) => Column(
-                      children: [
-                        _buildDivider(),
-                        _SettingsTile(
-                          icon: Icons.folder_rounded,
-                          iconColor: Colors.blueGrey,
-                          title: folder,
-                          titleDirection: TextDirection.ltr,
-                          trailing: IconButton(
-                            icon: const Icon(Icons.remove_circle, color: Colors.redAccent),
-                            onPressed: () {
-                              ref.read(settingsProvider.notifier).removeWatchedFolder(folder);
-                            },
+                    if (settingsState.autoScanWatchedFolders) ...[
+                      _buildDivider(),
+                      _SettingsTile(
+                        icon: Icons.create_new_folder_rounded,
+                        iconColor: Colors.lightBlue,
+                        title: AppLocalizations.of(context)!.addFolderToWatch,
+                        onTap: () async {
+                          final dir = await file_picker.FilePicker.getDirectoryPath();
+                          if (dir != null) {
+                            ref.read(settingsProvider.notifier).addWatchedFolder(dir);
+                          }
+                        },
+                        showArrow: true,
+                      ),
+                      ...settingsState.watchedFolders.map((folder) => Column(
+                        children: [
+                          _buildDivider(),
+                          _SettingsTile(
+                            icon: Icons.folder_rounded,
+                            iconColor: Colors.blueGrey,
+                            title: folder,
+                            titleDirection: TextDirection.ltr,
+                            trailing: IconButton(
+                              icon: const Icon(Icons.remove_circle, color: Colors.redAccent),
+                              onPressed: () {
+                                ref.read(settingsProvider.notifier).removeWatchedFolder(folder);
+                              },
+                            ),
                           ),
-                        ),
-                      ],
-                    )),
+                        ],
+                      )),
+                    ],
                   ],
                 ],
               ),

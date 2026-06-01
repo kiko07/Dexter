@@ -173,6 +173,22 @@ class SettingsNotifier extends AsyncNotifier<AppSettingsState> {
   }
 
   Future<void> setBiometricsEnabled(bool value) async {
+    if (value) {
+      final auth = LocalAuthentication();
+      try {
+        final canAuthenticate = await auth.canCheckBiometrics || await auth.isDeviceSupported();
+        if (canAuthenticate) {
+          final didAuthenticate = await auth.authenticate(
+            localizedReason: 'Please authenticate to enable biometrics',
+            biometricOnly: true,
+          );
+          if (!didAuthenticate) return; // Cancelled or failed
+        }
+      } catch (e) {
+        return; // Error during auth
+      }
+    }
+
     await SecureStorageService.setBiometricsEnabled(value);
     
     if (state.hasValue) {

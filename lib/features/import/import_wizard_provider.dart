@@ -4,6 +4,7 @@ import '../../core/utils/excel_service.dart';
 import '../../core/utils/hash_service.dart';
 import '../../core/database/app_database.dart';
 import '../search/search_provider.dart'; // For databaseProvider
+import '../home/history_provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:drift/drift.dart' as drift;
 import '../../core/utils/arabic_normalizer.dart';
@@ -305,6 +306,9 @@ class ImportWizardNotifier extends Notifier<ImportWizardState> {
         processedRows: totalAdded,
         skippedRows: totalSkipped,
       );
+      
+      // Refresh history data
+      ref.invalidate(historyProvider);
     } catch (e) {
       state = state.copyWith(
         isProcessing: false,

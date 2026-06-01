@@ -447,4 +447,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get filtersAndSorting => 'Filters & Sorting';
+
+  @override
+  String get hideData => 'Hide data';
 }

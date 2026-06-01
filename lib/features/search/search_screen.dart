@@ -212,13 +212,37 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
               ),
             ),
             
-            // Sorting Options
+            // Display Toggle and Sorting Options
             const SizedBox(height: 12),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  TextButton.icon(
+                    onPressed: () => notifier.setShowAll(!state.showAll),
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      backgroundColor: state.showAll 
+                          ? theme.colorScheme.error.withValues(alpha: 0.1)
+                          : theme.colorScheme.primary.withValues(alpha: 0.1),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                    ),
+                    icon: Icon(
+                      state.showAll ? Icons.visibility_off : Icons.visibility,
+                      size: 18,
+                      color: state.showAll ? theme.colorScheme.error : theme.colorScheme.primary,
+                    ),
+                    label: Text(
+                      state.showAll 
+                          ? AppLocalizations.of(context)!.hideData
+                          : AppLocalizations.of(context)!.showAllData,
+                      style: TextStyle(
+                        color: state.showAll ? theme.colorScheme.error : theme.colorScheme.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
                   PopupMenuButton<String>(
                     onSelected: (String result) {
                       notifier.setSortBy(result);
@@ -286,23 +310,13 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
               ),
             ),
             
-            // Results Count & Show All
+            // Results Count
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text('${AppLocalizations.of(context)!.totalRecords}: ${state.results.length}', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)),
-                  TextButton.icon(
-                    onPressed: () => notifier.setShowAll(true),
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.1),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                    ),
-                    icon: const Icon(Icons.list_alt, size: 18),
-                    label: Text(AppLocalizations.of(context)!.showAllData),
-                  ),
                 ],
               ),
             ),

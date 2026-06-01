@@ -194,5 +194,6 @@
       "path": { "type": "String" }
     }
   },
-  "filtersAndSorting": "Filters & Sorting"
+  "filtersAndSorting": "Filters & Sorting",
+  "hideData": "Hide data"
 }

@@ -194,5 +194,6 @@
       "path": { "type": "String" }
     }
   },
-  "filtersAndSorting": "التصفية والفرز"
+  "filtersAndSorting": "التصفية والفرز",
+  "hideData": "إخفاء البيانات"
 }

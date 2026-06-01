@@ -913,6 +913,12 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'التصفية والفرز'**
   String get filtersAndSorting;
+
+  /// No description provided for @hideData.
+  ///
+  /// In ar, this message translates to:
+  /// **'إخفاء البيانات'**
+  String get hideData;
 }
 
 class _AppLocalizationsDelegate
