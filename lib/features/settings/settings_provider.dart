@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/utils/secure_storage_service.dart';
 import '../search/search_provider.dart'; // for databaseProvider
 
+import 'package:local_auth/local_auth.dart';
+
 class AppSettingsState {
   final ThemeMode themeMode;
   final Locale locale;
@@ -12,6 +14,7 @@ class AppSettingsState {
   final bool autoScanWatchedFolders;
   final List<String> watchedFolders;
   final bool biometricsEnabled;
+  final List<BiometricType> availableBiometrics; 
 
   AppSettingsState({
     this.themeMode = ThemeMode.system,
@@ -21,6 +24,7 @@ class AppSettingsState {
     this.autoScanWatchedFolders = false,
     this.watchedFolders = const [],
     this.biometricsEnabled = false,
+    this.availableBiometrics = const [],
   });
 
   AppSettingsState copyWith({
@@ -31,6 +35,7 @@ class AppSettingsState {
     bool? autoScanWatchedFolders,
     List<String>? watchedFolders,
     bool? biometricsEnabled,
+    List<BiometricType>? availableBiometrics,
   }) {
     return AppSettingsState(
       themeMode: themeMode ?? this.themeMode,
@@ -40,6 +45,7 @@ class AppSettingsState {
       autoScanWatchedFolders: autoScanWatchedFolders ?? this.autoScanWatchedFolders,
       watchedFolders: watchedFolders ?? this.watchedFolders,
       biometricsEnabled: biometricsEnabled ?? this.biometricsEnabled,
+      availableBiometrics: availableBiometrics ?? this.availableBiometrics,
     );
   }
 }
@@ -93,6 +99,17 @@ class SettingsNotifier extends AsyncNotifier<AppSettingsState> {
     }
 
     final biometricsEnabled = await SecureStorageService.isBiometricsEnabled();
+    
+    List<BiometricType> availableBiometrics = [];
+    try {
+      final auth = LocalAuthentication();
+      final canAuthenticateWithBiometrics = await auth.canCheckBiometrics;
+      if (canAuthenticateWithBiometrics) {
+        availableBiometrics = await auth.getAvailableBiometrics();
+      }
+    } catch (e) {
+      // Ignore
+    }
 
     return AppSettingsState(
       themeMode: themeMode,
@@ -102,6 +119,7 @@ class SettingsNotifier extends AsyncNotifier<AppSettingsState> {
       autoScanWatchedFolders: autoScanWatchedFolders,
       watchedFolders: watchedFolders,
       biometricsEnabled: biometricsEnabled,
+      availableBiometrics: availableBiometrics,
     );
   }
 

@@ -20,9 +20,11 @@ class Step3Preview extends ConsumerWidget {
         Text(AppLocalizations.of(context)!.dataWillBeImportedAsFollows, style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha: 0.7))),
         const SizedBox(height: 16),
         // Simulated Preview Card
-        Container(
-          decoration: BoxDecoration(
-            color: theme.colorScheme.surface,
+        Expanded(
+          child: SingleChildScrollView(
+            child: Container(
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surface,
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
@@ -110,9 +112,11 @@ class Step3Preview extends ConsumerWidget {
               ),
             ],
           ),
+            ),
+          ),
         ),
         
-        const Spacer(),
+        const SizedBox(height: 16),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [

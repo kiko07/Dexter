@@ -4,6 +4,7 @@ import 'package:dexter/core/l10n/generated/app_localizations.dart';
 
 import '../import/import_wizard/import_wizard_screen.dart';
 import '../import/background_scanner_service.dart';
+import '../home/history_screen.dart';
 
 class DataScreen extends ConsumerWidget {
   const DataScreen({super.key});
@@ -79,6 +80,18 @@ class DataScreen extends ConsumerWidget {
                         color: Colors.deepPurple,
                         onTap: () {
                           ref.read(backgroundScannerProvider.notifier).scanNow(isManual: true);
+                        },
+                      ),
+                      _DataActionCard(
+                        icon: Icons.history_rounded,
+                        title: AppLocalizations.of(context)!.importHistory,
+                        subtitle: AppLocalizations.of(context)!.showAllData,
+                        color: Colors.teal,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const HistoryScreen()),
+                          );
                         },
                       ),
                       const SizedBox(height: 120), // Space for floating nav bar

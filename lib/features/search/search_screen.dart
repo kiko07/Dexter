@@ -75,26 +75,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     );
   }
 
-  Widget _buildChip(String value, String label, String groupValue, Function(String) onSelected, ThemeData theme) {
-    final isSelected = value == groupValue;
-    return ChoiceChip(
-      label: Text(label),
-      selected: isSelected,
-      onSelected: (_) => onSelected(value),
-      selectedColor: theme.colorScheme.primary.withValues(alpha: 0.15),
-      backgroundColor: theme.colorScheme.surface,
-      labelStyle: TextStyle(
-        color: isSelected ? theme.colorScheme.primary : theme.colorScheme.onSurface,
-        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-      ),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-        side: BorderSide(
-          color: isSelected ? theme.colorScheme.primary : theme.colorScheme.onSurface.withValues(alpha: 0.1),
-        ),
-      ),
-    );
-  }
+
 
   Widget _buildBody(SearchState state, ThemeData theme) {
     if (state.isSearching) {
@@ -233,27 +214,74 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             
             // Sorting Options
             const SizedBox(height: 12),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.secondary.withValues(alpha: 0.1),
-                      shape: BoxShape.circle,
+                  PopupMenuButton<String>(
+                    onSelected: (String result) {
+                      notifier.setSortBy(result);
+                    },
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                      PopupMenuItem<String>(
+                        value: 'newest',
+                        child: Row(
+                          children: [
+                            Icon(Icons.check, color: state.sortBy == 'newest' ? theme.colorScheme.primary : Colors.transparent),
+                            const SizedBox(width: 8),
+                            Text(AppLocalizations.of(context)!.sortNewest, style: TextStyle(fontWeight: state.sortBy == 'newest' ? FontWeight.bold : FontWeight.normal)),
+                          ],
+                        ),
+                      ),
+                      PopupMenuItem<String>(
+                        value: 'oldest',
+                        child: Row(
+                          children: [
+                            Icon(Icons.check, color: state.sortBy == 'oldest' ? theme.colorScheme.primary : Colors.transparent),
+                            const SizedBox(width: 8),
+                            Text(AppLocalizations.of(context)!.sortOldest, style: TextStyle(fontWeight: state.sortBy == 'oldest' ? FontWeight.bold : FontWeight.normal)),
+                          ],
+                        ),
+                      ),
+                      PopupMenuItem<String>(
+                        value: 'alphabetical_asc',
+                        child: Row(
+                          children: [
+                            Icon(Icons.check, color: state.sortBy == 'alphabetical_asc' ? theme.colorScheme.primary : Colors.transparent),
+                            const SizedBox(width: 8),
+                            Text(AppLocalizations.of(context)!.sortAlphabeticalAsc, style: TextStyle(fontWeight: state.sortBy == 'alphabetical_asc' ? FontWeight.bold : FontWeight.normal)),
+                          ],
+                        ),
+                      ),
+                      PopupMenuItem<String>(
+                        value: 'alphabetical_desc',
+                        child: Row(
+                          children: [
+                            Icon(Icons.check, color: state.sortBy == 'alphabetical_desc' ? theme.colorScheme.primary : Colors.transparent),
+                            const SizedBox(width: 8),
+                            Text(AppLocalizations.of(context)!.sortAlphabeticalDesc, style: TextStyle(fontWeight: state.sortBy == 'alphabetical_desc' ? FontWeight.bold : FontWeight.normal)),
+                          ],
+                        ),
+                      ),
+                    ],
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.secondary.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.sort, size: 20, color: theme.colorScheme.secondary),
+                          const SizedBox(width: 8),
+                          Text(AppLocalizations.of(context)!.filtersAndSorting, style: TextStyle(color: theme.colorScheme.secondary, fontWeight: FontWeight.bold)),
+                        ],
+                      ),
                     ),
-                    child: Icon(Icons.sort, size: 20, color: theme.colorScheme.secondary),
                   ),
-                  const SizedBox(width: 12),
-                  _buildChip('newest', AppLocalizations.of(context)!.sortNewest, state.sortBy, (val) => notifier.setSortBy(val), theme),
-                  const SizedBox(width: 8),
-                  _buildChip('oldest', AppLocalizations.of(context)!.sortOldest, state.sortBy, (val) => notifier.setSortBy(val), theme),
-                  const SizedBox(width: 8),
-                  _buildChip('alphabetical_asc', AppLocalizations.of(context)!.sortAlphabeticalAsc, state.sortBy, (val) => notifier.setSortBy(val), theme),
-                  const SizedBox(width: 8),
-                  _buildChip('alphabetical_desc', AppLocalizations.of(context)!.sortAlphabeticalDesc, state.sortBy, (val) => notifier.setSortBy(val), theme),
                 ],
               ),
             ),

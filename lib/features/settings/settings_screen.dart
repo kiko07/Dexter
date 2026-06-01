@@ -5,6 +5,7 @@ import '../auth/auth_provider.dart';
 import '../../core/utils/secure_storage_service.dart';
 import '../search/search_provider.dart'; // for databaseProvider
 import 'package:file_picker/file_picker.dart' as file_picker;
+import 'package:local_auth/local_auth.dart';
 import 'settings_provider.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -98,20 +99,28 @@ class SettingsScreen extends ConsumerWidget {
                       ),
                     ),
                   ),
-                  _buildDivider(),
-                  _SettingsTile(
-                    icon: Icons.fingerprint_rounded,
-                    iconColor: Colors.green,
-                    title: 'Biometric Authentication',
-                    subtitle: 'Use Fingerprint or FaceID to unlock',
-                    trailing: Switch(
-                      value: settingsState.biometricsEnabled,
-                      activeThumbColor: theme.colorScheme.primary,
-                      onChanged: (bool value) {
-                        ref.read(settingsProvider.notifier).setBiometricsEnabled(value);
-                      },
+                  if (settingsState.availableBiometrics.isNotEmpty) ...[
+                    _buildDivider(),
+                    _SettingsTile(
+                      icon: settingsState.availableBiometrics.contains(BiometricType.face) 
+                          ? Icons.face_rounded 
+                          : Icons.fingerprint_rounded,
+                      iconColor: Colors.green,
+                      title: settingsState.availableBiometrics.contains(BiometricType.face) 
+                          ? 'Face ID' 
+                          : 'Fingerprint',
+                      subtitle: settingsState.availableBiometrics.contains(BiometricType.face) 
+                          ? 'Use Face ID to unlock' 
+                          : 'Use Fingerprint to unlock',
+                      trailing: Switch(
+                        value: settingsState.biometricsEnabled,
+                        activeThumbColor: theme.colorScheme.primary,
+                        onChanged: (bool value) {
+                          ref.read(settingsProvider.notifier).setBiometricsEnabled(value);
+                        },
+                      ),
                     ),
-                  ),
+                  ],
                   _buildDivider(),
                   _SettingsTile(
                     icon: Icons.lock_reset_rounded,
