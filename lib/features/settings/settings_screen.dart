@@ -142,23 +142,23 @@ class SettingsScreen extends ConsumerWidget {
                 ],
               ),
 
-              _SettingsSection(
-                title: AppLocalizations.of(context)!.dataAndSync, // Data & Sync
-                children: [
-                  _SettingsTile(
-                    icon: Icons.sync_rounded,
-                    iconColor: Colors.teal,
-                    title: AppLocalizations.of(context)!.autoUpdateImportedFiles,
-                    subtitle: AppLocalizations.of(context)!.checkForUpdatesOnStartup,
-                    trailing: Switch(
-                      value: settingsState.autoScanImportedFiles,
-                      activeThumbColor: theme.colorScheme.primary,
-                      onChanged: (bool value) {
-                        ref.read(settingsProvider.notifier).setAutoScanImportedFiles(value);
-                      },
+              if (!Platform.isAndroid && !Platform.isIOS)
+                _SettingsSection(
+                  title: AppLocalizations.of(context)!.dataAndSync, // Data & Sync
+                  children: [
+                    _SettingsTile(
+                      icon: Icons.sync_rounded,
+                      iconColor: Colors.teal,
+                      title: AppLocalizations.of(context)!.autoUpdateImportedFiles,
+                      subtitle: AppLocalizations.of(context)!.checkForUpdatesOnStartup,
+                      trailing: Switch(
+                        value: settingsState.autoScanImportedFiles,
+                        activeThumbColor: theme.colorScheme.primary,
+                        onChanged: (bool value) {
+                          ref.read(settingsProvider.notifier).setAutoScanImportedFiles(value);
+                        },
+                      ),
                     ),
-                  ),
-                  if (!Platform.isAndroid && !Platform.isIOS) ...[
                     _buildDivider(),
                     _SettingsTile(
                       icon: Icons.folder_special_rounded,
@@ -206,8 +206,7 @@ class SettingsScreen extends ConsumerWidget {
                       )),
                     ],
                   ],
-                ],
-              ),
+                ),
 
               _SettingsSection(
                 title: AppLocalizations.of(context)!.advancedManagement, // Advanced
