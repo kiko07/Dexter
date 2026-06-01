@@ -31,7 +31,7 @@ class Step1ReferenceRow extends ConsumerWidget {
                   try {
                     final result = await FilePicker.pickFiles(
                       type: FileType.custom,
-                      allowedExtensions: ['xlsx', 'xls'],
+                      allowedExtensions: ['xlsx', 'xls', 'csv'],
                       allowMultiple: true,
                     );
                     if (result != null && result.files.isNotEmpty) {
@@ -62,7 +62,7 @@ class Step1ReferenceRow extends ConsumerWidget {
                       if (result != null) {
                         final dir = Directory(result);
                         final files = dir.listSync()
-                            .where((e) => e is File && (e.path.endsWith('.xlsx') || e.path.endsWith('.xls')))
+                            .where((e) => e is File && (e.path.endsWith('.xlsx') || e.path.endsWith('.xls') || e.path.endsWith('.csv')))
                             .map((e) => e.path)
                             .toList();
                         if (files.isNotEmpty) {
@@ -70,7 +70,7 @@ class Step1ReferenceRow extends ConsumerWidget {
                         } else {
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(AppLocalizations.of(context)!.noExcelFilesFound)),
+                              SnackBar(content: Text(AppLocalizations.of(context)!.noExcelFilesFound)), // Ideally could rename to noFilesFound
                             );
                           }
                         }

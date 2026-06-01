@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:excel/excel.dart';
 import 'package:flutter/foundation.dart';
+import 'package:csv/csv.dart';
 
 class ExcelService {
   /// Reads the headers of an excel file from a given reference row index (0-based)
@@ -14,6 +15,13 @@ class ExcelService {
     
     var file = File(path);
     if (!file.existsSync()) return [];
+
+    if (path.toLowerCase().endsWith('.csv')) {
+      final csvString = file.readAsStringSync();
+      final rows = const CsvToListConverter().convert(csvString);
+      if (rows.length <= rowIndex) return [];
+      return rows[rowIndex].map((cell) => cell?.toString() ?? '').toList();
+    }
     
     var bytes = file.readAsBytesSync();
     var excel = Excel.decodeBytes(bytes);
@@ -49,6 +57,43 @@ class ExcelService {
     
     var file = File(path);
     if (!file.existsSync()) return [];
+
+    if (path.toLowerCase().endsWith('.csv')) {
+      final csvString = file.readAsStringSync();
+      final rows = const CsvToListConverter().convert(csvString);
+      if (rows.length <= rowIndex + 1) return [];
+
+      List<Map<String, dynamic>> parsedRows = [];
+      for (int i = rowIndex + 1; i < rows.length; i++) {
+        var row = rows[i];
+        Map<String, dynamic> rowMap = {};
+        bool hasData = false;
+        
+        columnMap.forEach((colKey, headerName) {
+          int colIndex;
+          final parsed = int.tryParse(colKey);
+          if (parsed != null) {
+            colIndex = parsed;
+          } else if (colKey.length == 1 && colKey.codeUnitAt(0) >= 65 && colKey.codeUnitAt(0) <= 90) {
+            colIndex = colKey.codeUnitAt(0) - 65;
+          } else {
+            return;
+          }
+          if (colIndex >= 0 && colIndex < row.length) {
+            var cellValue = row[colIndex]?.toString();
+            if (cellValue != null && cellValue.trim().isNotEmpty) {
+              rowMap[headerName] = cellValue.trim();
+              hasData = true;
+            }
+          }
+        });
+        
+        if (hasData) {
+          parsedRows.add(rowMap);
+        }
+      }
+      return parsedRows;
+    }
     
     var bytes = file.readAsBytesSync();
     var excel = Excel.decodeBytes(bytes);
