@@ -36,7 +36,7 @@ class Step1ReferenceRow extends ConsumerWidget {
                     );
                     if (result != null && result.files.isNotEmpty) {
                       final paths = result.files.map((f) => f.path!).toList();
-                      notifier.setFilePaths(paths);
+                      notifier.setFilePaths({...state.filePaths, ...paths}.toList());
                     }
                   } catch (e) {
                     if (context.mounted) {
@@ -66,7 +66,7 @@ class Step1ReferenceRow extends ConsumerWidget {
                             .map((e) => e.path)
                             .toList();
                         if (files.isNotEmpty) {
-                          notifier.setFilePaths(files);
+                          notifier.setFilePaths({...state.filePaths, ...files}.toList());
                         } else {
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -106,6 +106,10 @@ class Step1ReferenceRow extends ConsumerWidget {
                     AppLocalizations.of(context)!.filesSelected(state.filePaths.length),
                     style: TextStyle(fontWeight: FontWeight.bold, color: theme.colorScheme.primary),
                   ),
+                ),
+                IconButton(
+                  icon: Icon(Icons.clear, color: theme.colorScheme.error),
+                  onPressed: () => notifier.setFilePaths([]),
                 ),
               ],
             ),
