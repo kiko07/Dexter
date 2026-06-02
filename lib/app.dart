@@ -18,9 +18,16 @@ class DexterApp extends ConsumerStatefulWidget {
   ConsumerState<DexterApp> createState() => _DexterAppState();
 }
 
-class _DexterAppState extends ConsumerState<DexterApp> {
+class _DexterAppState extends ConsumerState<DexterApp> with WidgetsBindingObserver {
   Timer? _inactivityTimer;
   int _currentAutoLockMinutes = 5;
+  DateTime? _backgroundTime;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
 
   void _resetInactivityTimer([int? minutes]) {
     if (minutes != null) {
@@ -45,8 +52,34 @@ class _DexterAppState extends ConsumerState<DexterApp> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _inactivityTimer?.cancel();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.hidden || state == AppLifecycleState.paused) {
+      _backgroundTime = DateTime.now();
+      if (_currentAutoLockMinutes == 0) {
+        final authState = ref.read(authProvider);
+        if (authState.status == AuthStatus.authenticated) {
+          ref.read(authProvider.notifier).lock();
+        }
+      }
+    } else if (state == AppLifecycleState.resumed) {
+      if (_backgroundTime != null && _currentAutoLockMinutes > 0) {
+        final backgroundDuration = DateTime.now().difference(_backgroundTime!);
+        if (backgroundDuration.inMinutes >= _currentAutoLockMinutes) {
+          final authState = ref.read(authProvider);
+          if (authState.status == AuthStatus.authenticated) {
+            ref.read(authProvider.notifier).lock();
+          }
+        }
+      }
+      _backgroundTime = null;
+      _resetInactivityTimer();
+    }
   }
 
   @override

@@ -2,7 +2,9 @@ import 'dart:ui';
 import 'package:dexter/core/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:local_auth/local_auth.dart';
 import 'auth_provider.dart';
+import '../settings/settings_provider.dart';
 
 class LockScreen extends ConsumerStatefulWidget {
   const LockScreen({super.key});
@@ -63,6 +65,11 @@ class _LockScreenState extends ConsumerState<LockScreen> with SingleTickerProvid
     final state = ref.watch(authProvider);
     final isSetup = state.status == AuthStatus.noPasswordSet;
     final theme = Theme.of(context);
+    final settingsAsync = ref.watch(settingsProvider);
+    final settings = settingsAsync.value;
+    
+    final biometricsEnabled = settings?.biometricsEnabled ?? false;
+    final hasFaceId = settings?.availableBiometrics.contains(BiometricType.face) ?? false;
 
     return Scaffold(
       body: Stack(
@@ -137,16 +144,25 @@ class _LockScreenState extends ConsumerState<LockScreen> with SingleTickerProvid
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Container(
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.primary.withValues(alpha: 0.1),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              isSetup ? Icons.lock_outline : Icons.lock,
-                              size: 48,
-                              color: theme.colorScheme.primary,
+                          GestureDetector(
+                            onTap: (!isSetup && biometricsEnabled)
+                                ? () => ref.read(authProvider.notifier).tryBiometricLogin()
+                                : null,
+                            child: Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                isSetup 
+                                    ? Icons.lock_outline 
+                                    : (biometricsEnabled 
+                                        ? (hasFaceId ? Icons.face_rounded : Icons.fingerprint_rounded) 
+                                        : Icons.lock),
+                                size: 48,
+                                color: theme.colorScheme.primary,
+                              ),
                             ),
                           ),
                           const SizedBox(height: 24),

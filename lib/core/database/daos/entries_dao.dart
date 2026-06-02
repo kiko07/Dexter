@@ -139,4 +139,47 @@ class EntriesDao extends DatabaseAccessor<AppDatabase> with _$EntriesDaoMixin {
     s.orderBy([(t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc)]);
     return s.get();
   }
+
+  Future<int> countSearchEntries({
+    required String query,
+    required String matchMode, // 'exact', 'contains', 'startsWith', 'fuzzy'
+    int? profileId,
+  }) async {
+    if (query.isEmpty) {
+      final s = select(entries);
+      if (profileId != null) {
+        s.where((t) => t.profileId.equals(profileId));
+      }
+      final result = await s.get();
+      return result.length;
+    }
+
+    if (matchMode == 'exact') {
+      final s = select(entries)..where((t) => t.searchPayload.like('%$query%'));
+      if (profileId != null) {
+        s.where((t) => t.profileId.equals(profileId));
+      }
+      final result = await s.get();
+      return result.length;
+    } else {
+      String ftsQuery = '''
+        SELECT COUNT(*) as c FROM entries e
+        INNER JOIN entries_fts fts ON fts.rowid = e.id
+        WHERE entries_fts MATCH ?
+      ''';
+      
+      List<Variable> vars = [];
+      final sanitizedQuery = query.replaceAll('"', '""');
+      final matchTerm = matchMode == 'startsWith' ? '"$sanitizedQuery"*' : '"$sanitizedQuery"*';
+      vars.add(Variable.withString(matchTerm));
+      
+      if (profileId != null) {
+         ftsQuery += ' AND e.profile_id = ?';
+         vars.add(Variable.withInt(profileId));
+      }
+
+      final result = await customSelect(ftsQuery, variables: vars).getSingle();
+      return result.read<int>('c');
+    }
+  }
 }

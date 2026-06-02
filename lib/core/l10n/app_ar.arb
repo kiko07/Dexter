@@ -21,7 +21,7 @@
   "failedToSaveCheckPermissions": "تعذر حفظ الملف. تحقق من الصلاحيات.",
   "exportData": "تصدير البيانات",
   "exportDataDescription": "سيتم تجميع وتصدير كافة البيانات من جميع ملفات التعريف في ملف إكسل واحد.",
-  "filterExportOptional": "تصفية بالتصدير (اختياري)",
+  "filterExportOptional": "تصفية التصدير (اختياري)",
   "exportAllAsExcel": "تصدير كافة البيانات كملف Excel",
   "importHistory": "سجل الاستيراد",
   "noImportHistory": "لا يوجد سجل استيراد",
@@ -48,12 +48,12 @@
   "next": "التالي",
   "selectColumns": "تحديد الأعمدة",
   "importAllFieldsAuto": "استيراد كل الحقول تلقائياً",
-  "chooseColumns": "اختيار الاعمدة:",
+  "chooseColumns": "اختيار الأعمدة:",
   "none": "لا يوجد",
   "previous": "السابق",
   "dataPreview": "معاينة البيانات",
   "dataWillBeImportedAsFollows": "سيتم استيراد البيانات بالشكل التالي بناءً على اختيارك:",
-  "sampleData": "بيانات تجريبية...",
+  "sampleData": "نموذج من البيانات...",
   "looksCorrectStartImport": "يبدو صحيحاً - ابدأ الاستيراد",
   "importing": "جاري الاستيراد...",
   "searchResult": "نتيجة البحث",
@@ -62,16 +62,16 @@
   "matchType": "نوع المطابقة:",
   "exactMatch": "بحث دقيق",
   "containsMatch": "بحث شامل",
-  "fuzzyMatch": "توسيع دائرة البحث",
+  "fuzzyMatch": "بحث تقريبي",
   "pleaseEnterDataToSearch": "الرجاء إدخال بيانات للبحث",
   "noResults": "لا توجد نتائج",
-  "themeSettings": "المظهر (Theme)",
+  "themeSettings": "المظهر",
   "system": "النظام",
   "light": "فاتح",
   "dark": "داكن",
-  "languageSettings": "اللغة (Language)",
+  "languageSettings": "اللغة",
   "arabic": "العربية",
-  "autoLockSettings": "القفل التلقائي (Auto-Lock)",
+  "autoLockSettings": "القفل التلقائي",
   "immediately": "فوراً",
   "oneMinute": "دقيقة واحدة",
   "fiveMinutes": "5 دقائق",
@@ -99,7 +99,7 @@
   "advancedManagement": "إدارة متقدمة",
   "currentPasswordIncorrect": "كلمة المرور الحالية غير صحيحة",
   "english": "English",
-  "designedBy": "مُصَمم بمعرفة",
+  "designedBy": "تم التصميم بواسطة",
   "ahmedElKilany": "النقيب / أحمد الكيلاني",
   "sortNewest": "الأحدث",
   "sortOldest": "الأقدم",
@@ -113,7 +113,7 @@
     }
   },
   "chooseSpecificFiles": "اختر ملفات محددة",
-  "chooseEntireFolder": "اختر مجلد كامل",
+  "chooseEntireFolder": "اختر مجلداً كاملاً",
   "errorOccurred": "حدث خطأ: {error}",
   "@errorOccurred": {
     "placeholders": {
@@ -135,7 +135,7 @@
   "stepReferenceRow": "الصف المرجعي",
   "stepColumnSelection": "اختيار الأعمدة",
   "stepReview": "مراجعة",
-  "stepImporting": "جاري الاستيراد",
+  "stepImporting": "جاري الاستيراد...",
   "autoUpdateSuccess": "تم التحديث التلقائي بنجاح. أُضيف {count} سجل جديد.",
   "@autoUpdateSuccess": {
     "placeholders": {
@@ -152,11 +152,11 @@
   "updateDataSubtitle": "فحص الملفات المستوردة والمجلدات المراقبة بحثاً عن تحديثات",
   "exportingWait": "جاري التصدير...",
   "scanningWait": "جاري الفحص...",
-  "pleaseWaitAndDoNotClose": "يرجى الانتظار ولا تغلق التطبيق",
+  "pleaseWaitAndDoNotClose": "يرجى الانتظار وعدم إغلاق التطبيق",
   "chooseTimeRangeForExport": "اختر النطاق الزمني للبيانات التي تريد تصديرها.",
   "allData": "كل البيانات",
-  "last24Hours": "آخر ٢٤ ساعة",
-  "last7Days": "آخر ٧ أيام",
+  "last24Hours": "آخر 24 ساعة",
+  "last7Days": "آخر 7 أيام",
   "customPeriod": "فترة مخصصة",
   "chooseDates": "اختر التواريخ",
   "pleaseSelectTimeRangeFirst": "الرجاء اختيار فترة زمنية أولاً.",
@@ -170,7 +170,7 @@
       "date": { "type": "String" }
     }
   },
-  "confirmDeleteImportBatch": "هل أنت متأكد أنك تريد حذف كافة السجلات التي تم استيرادها في ملف \"{fileName}\"؟\nهذا الإجراء لا يمكن التراجع عنه.",
+  "confirmDeleteImportBatch": "هل أنت متأكد أنك تريد حذف كافة السجلات المستوردة من الملف \"{fileName}\"؟\nهذا الإجراء لا يمكن التراجع عنه.",
   "@confirmDeleteImportBatch": {
     "placeholders": {
       "fileName": { "type": "String" }
@@ -195,5 +195,14 @@
     }
   },
   "filtersAndSorting": "التصفية والفرز",
-  "hideData": "إخفاء البيانات"
+  "hideData": "إخفاء البيانات",
+  "manageIndexedFiles": "إدارة الملفات المفهرسة",
+  "noIndexedFilesFound": "لم يتم العثور على ملفات مفهرسة",
+  "delete": "حذف",
+  "deletedSuccessfully": "تم حذف {fileName} بنجاح",
+  "@deletedSuccessfully": {
+    "placeholders": {
+      "fileName": { "type": "String" }
+    }
+  }
 }

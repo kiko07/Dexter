@@ -78,7 +78,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
 
   Widget _buildBody(SearchState state, ThemeData theme) {
-    if (state.isSearching) {
+    if (state.isSearching && state.results.isEmpty) {
       return const Center(child: CircularProgressIndicator());
     }
     
@@ -316,7 +316,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('${AppLocalizations.of(context)!.totalRecords}: ${state.results.length}', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)),
+                  Text('${AppLocalizations.of(context)!.totalRecords}: ${state.results.length} / ${state.totalCount}', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)),
                 ],
               ),
             ),

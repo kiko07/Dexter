@@ -18,6 +18,7 @@ class SearchState {
   final List<Entry> results;
   final int offset;
   final bool hasMore;
+  final int totalCount;
 
   SearchState({
     this.query = '',
@@ -28,6 +29,7 @@ class SearchState {
     this.results = const [],
     this.offset = 0,
     this.hasMore = true,
+    this.totalCount = 0,
   });
 
   SearchState copyWith({
@@ -39,6 +41,7 @@ class SearchState {
     List<Entry>? results,
     int? offset,
     bool? hasMore,
+    int? totalCount,
   }) {
     return SearchState(
       query: query ?? this.query,
@@ -49,6 +52,7 @@ class SearchState {
       results: results ?? this.results,
       offset: offset ?? this.offset,
       hasMore: hasMore ?? this.hasMore,
+      totalCount: totalCount ?? this.totalCount,
     );
   }
 }
@@ -111,6 +115,14 @@ class SearchNotifier extends Notifier<SearchState> {
     final normalizedQuery = arabicNormalize(searchQuery);
 
     try {
+      int newTotalCount = state.totalCount;
+      if (state.offset == 0) {
+        newTotalCount = await db.entriesDao.countSearchEntries(
+          query: normalizedQuery,
+          matchMode: state.matchMode,
+        );
+      }
+
       var newResults = await db.entriesDao.searchEntries(
         query: normalizedQuery,
         matchMode: state.matchMode,
@@ -140,6 +152,7 @@ class SearchNotifier extends Notifier<SearchState> {
         // Use raw count for pagination: if DB returned a full page, there may be more
         hasMore: rawResultCount == _pageSize,
         offset: state.offset + _pageSize,
+        totalCount: newTotalCount,
       );
     } catch (e) {
       // Only update if query hasn't changed

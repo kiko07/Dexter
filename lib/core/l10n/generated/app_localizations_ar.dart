@@ -66,7 +66,7 @@ class AppLocalizationsAr extends AppLocalizations {
       'سيتم تجميع وتصدير كافة البيانات من جميع ملفات التعريف في ملف إكسل واحد.';
 
   @override
-  String get filterExportOptional => 'تصفية بالتصدير (اختياري)';
+  String get filterExportOptional => 'تصفية التصدير (اختياري)';
 
   @override
   String get exportAllAsExcel => 'تصدير كافة البيانات كملف Excel';
@@ -147,7 +147,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get importAllFieldsAuto => 'استيراد كل الحقول تلقائياً';
 
   @override
-  String get chooseColumns => 'اختيار الاعمدة:';
+  String get chooseColumns => 'اختيار الأعمدة:';
 
   @override
   String get none => 'لا يوجد';
@@ -163,7 +163,7 @@ class AppLocalizationsAr extends AppLocalizations {
       'سيتم استيراد البيانات بالشكل التالي بناءً على اختيارك:';
 
   @override
-  String get sampleData => 'بيانات تجريبية...';
+  String get sampleData => 'نموذج من البيانات...';
 
   @override
   String get looksCorrectStartImport => 'يبدو صحيحاً - ابدأ الاستيراد';
@@ -190,7 +190,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get containsMatch => 'بحث شامل';
 
   @override
-  String get fuzzyMatch => 'توسيع دائرة البحث';
+  String get fuzzyMatch => 'بحث تقريبي';
 
   @override
   String get pleaseEnterDataToSearch => 'الرجاء إدخال بيانات للبحث';
@@ -199,7 +199,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get noResults => 'لا توجد نتائج';
 
   @override
-  String get themeSettings => 'المظهر (Theme)';
+  String get themeSettings => 'المظهر';
 
   @override
   String get system => 'النظام';
@@ -211,13 +211,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get dark => 'داكن';
 
   @override
-  String get languageSettings => 'اللغة (Language)';
+  String get languageSettings => 'اللغة';
 
   @override
   String get arabic => 'العربية';
 
   @override
-  String get autoLockSettings => 'القفل التلقائي (Auto-Lock)';
+  String get autoLockSettings => 'القفل التلقائي';
 
   @override
   String get immediately => 'فوراً';
@@ -304,7 +304,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get english => 'English';
 
   @override
-  String get designedBy => 'مُصَمم بمعرفة';
+  String get designedBy => 'تم التصميم بواسطة';
 
   @override
   String get ahmedElKilany => 'النقيب / أحمد الكيلاني';
@@ -333,7 +333,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get chooseSpecificFiles => 'اختر ملفات محددة';
 
   @override
-  String get chooseEntireFolder => 'اختر مجلد كامل';
+  String get chooseEntireFolder => 'اختر مجلداً كاملاً';
 
   @override
   String errorOccurred(String error) {
@@ -360,7 +360,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get stepReview => 'مراجعة';
 
   @override
-  String get stepImporting => 'جاري الاستيراد';
+  String get stepImporting => 'جاري الاستيراد...';
 
   @override
   String autoUpdateSuccess(int count) {
@@ -386,7 +386,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get scanningWait => 'جاري الفحص...';
 
   @override
-  String get pleaseWaitAndDoNotClose => 'يرجى الانتظار ولا تغلق التطبيق';
+  String get pleaseWaitAndDoNotClose => 'يرجى الانتظار وعدم إغلاق التطبيق';
 
   @override
   String get chooseTimeRangeForExport =>
@@ -396,10 +396,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get allData => 'كل البيانات';
 
   @override
-  String get last24Hours => 'آخر ٢٤ ساعة';
+  String get last24Hours => 'آخر 24 ساعة';
 
   @override
-  String get last7Days => 'آخر ٧ أيام';
+  String get last7Days => 'آخر 7 أيام';
 
   @override
   String get customPeriod => 'فترة مخصصة';
@@ -426,7 +426,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String confirmDeleteImportBatch(String fileName) {
-    return 'هل أنت متأكد أنك تريد حذف كافة السجلات التي تم استيرادها في ملف \"$fileName\"؟\nهذا الإجراء لا يمكن التراجع عنه.';
+    return 'هل أنت متأكد أنك تريد حذف كافة السجلات المستوردة من الملف \"$fileName\"؟\nهذا الإجراء لا يمكن التراجع عنه.';
   }
 
   @override
@@ -449,4 +449,18 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get hideData => 'إخفاء البيانات';
+
+  @override
+  String get manageIndexedFiles => 'إدارة الملفات المفهرسة';
+
+  @override
+  String get noIndexedFilesFound => 'لم يتم العثور على ملفات مفهرسة';
+
+  @override
+  String get delete => 'حذف';
+
+  @override
+  String deletedSuccessfully(String fileName) {
+    return 'تم حذف $fileName بنجاح';
+  }
 }

@@ -28,7 +28,7 @@ class AuthNotifier extends Notifier<AuthState> {
       final hasPassword = await SecureStorageService.hasPassword();
       if (hasPassword) {
         state = AuthState(status: AuthStatus.unauthenticated);
-        _tryBiometricLogin();
+        tryBiometricLogin();
       } else {
         state = AuthState(status: AuthStatus.noPasswordSet);
       }
@@ -38,7 +38,7 @@ class AuthNotifier extends Notifier<AuthState> {
     }
   }
 
-  Future<void> _tryBiometricLogin() async {
+  Future<void> tryBiometricLogin() async {
     final enabled = await SecureStorageService.isBiometricsEnabled();
     if (!enabled) return;
 

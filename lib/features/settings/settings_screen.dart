@@ -8,6 +8,7 @@ import '../search/search_provider.dart'; // for databaseProvider
 import 'package:file_picker/file_picker.dart' as file_picker;
 import 'package:local_auth/local_auth.dart';
 import 'settings_provider.dart';
+import 'manage_files_screen.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -15,6 +16,8 @@ class SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settingsState = ref.watch(settingsProvider).value;
+    final authState = ref.watch(authProvider);
+    final hasPassword = authState.status != AuthStatus.noPasswordSet;
     final theme = Theme.of(context);
 
     return Scaffold(
@@ -123,22 +126,32 @@ class SettingsScreen extends ConsumerWidget {
                     ),
                   ],
                   _buildDivider(),
-                  _SettingsTile(
-                    icon: Icons.lock_reset_rounded,
-                    iconColor: Colors.amber,
-                    title: AppLocalizations.of(context)!.resetPassword,
-                    subtitle: AppLocalizations.of(context)!.changeCurrentAppPassword,
-                    onTap: () => _showChangePasswordDialog(context, ref),
-                    showArrow: true,
-                  ),
-                  _buildDivider(),
-                  _SettingsTile(
-                    icon: Icons.exit_to_app_rounded,
-                    iconColor: Colors.grey.shade700,
-                    title: AppLocalizations.of(context)!.lockAppNow,
-                    onTap: () => ref.read(authProvider.notifier).lock(),
-                    showArrow: true,
-                  ),
+                  if (!hasPassword)
+                    _SettingsTile(
+                      icon: Icons.password,
+                      iconColor: Colors.blue,
+                      title: AppLocalizations.of(context)!.setupNewPassword,
+                      onTap: () => _showCreatePasswordDialog(context, ref),
+                      showArrow: true,
+                    )
+                  else ...[
+                    _SettingsTile(
+                      icon: Icons.lock_reset_rounded,
+                      iconColor: Colors.amber,
+                      title: AppLocalizations.of(context)!.resetPassword,
+                      subtitle: AppLocalizations.of(context)!.changeCurrentAppPassword,
+                      onTap: () => _showChangePasswordDialog(context, ref),
+                      showArrow: true,
+                    ),
+                    _buildDivider(),
+                    _SettingsTile(
+                      icon: Icons.exit_to_app_rounded,
+                      iconColor: Colors.grey.shade700,
+                      title: AppLocalizations.of(context)!.lockAppNow,
+                      onTap: () => ref.read(authProvider.notifier).lock(),
+                      showArrow: true,
+                    ),
+                  ],
                 ],
               ),
 
@@ -212,6 +225,15 @@ class SettingsScreen extends ConsumerWidget {
                 title: AppLocalizations.of(context)!.advancedManagement, // Advanced
                 children: [
                   _SettingsTile(
+                    icon: Icons.source_rounded,
+                    iconColor: Colors.deepPurple,
+                    title: AppLocalizations.of(context)!.manageIndexedFiles,
+                    subtitle: 'View and delete specific file records',
+                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ManageFilesScreen())),
+                    showArrow: true,
+                  ),
+                  _buildDivider(),
+                  _SettingsTile(
                     icon: Icons.delete_forever_rounded,
                     iconColor: Colors.red,
                     title: AppLocalizations.of(context)!.clearAllData,
@@ -229,6 +251,51 @@ class SettingsScreen extends ConsumerWidget {
 
   Widget _buildDivider() {
     return const Divider(height: 1, indent: 64, endIndent: 16);
+  }
+
+  void _showCreatePasswordDialog(BuildContext context, WidgetRef ref) {
+    final newController = TextEditingController();
+    
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: Text(AppLocalizations.of(context)!.setupNewPassword),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: newController,
+                obscureText: true,
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)!.newPassword,
+                  prefixIcon: const Icon(Icons.key),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(AppLocalizations.of(context)!.cancel),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                if (newController.text.isEmpty) return;
+                await ref.read(authProvider.notifier).setPassword(newController.text);
+                if (context.mounted) {
+                  Navigator.pop(context);
+                }
+              },
+              child: Text(AppLocalizations.of(context)!.save),
+            ),
+          ],
+        );
+      },
+    ).whenComplete(() {
+      newController.dispose();
+    });
   }
 
   void _showChangePasswordDialog(BuildContext context, WidgetRef ref) {

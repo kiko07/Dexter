@@ -450,4 +450,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hideData => 'Hide data';
+
+  @override
+  String get manageIndexedFiles => 'Manage Indexed Files';
+
+  @override
+  String get noIndexedFilesFound => 'No indexed files found';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String deletedSuccessfully(String fileName) {
+    return '$fileName deleted successfully';
+  }
 }

@@ -209,7 +209,7 @@ abstract class AppLocalizations {
   /// No description provided for @filterExportOptional.
   ///
   /// In ar, this message translates to:
-  /// **'تصفية بالتصدير (اختياري)'**
+  /// **'تصفية التصدير (اختياري)'**
   String get filterExportOptional;
 
   /// No description provided for @exportAllAsExcel.
@@ -371,7 +371,7 @@ abstract class AppLocalizations {
   /// No description provided for @chooseColumns.
   ///
   /// In ar, this message translates to:
-  /// **'اختيار الاعمدة:'**
+  /// **'اختيار الأعمدة:'**
   String get chooseColumns;
 
   /// No description provided for @none.
@@ -401,7 +401,7 @@ abstract class AppLocalizations {
   /// No description provided for @sampleData.
   ///
   /// In ar, this message translates to:
-  /// **'بيانات تجريبية...'**
+  /// **'نموذج من البيانات...'**
   String get sampleData;
 
   /// No description provided for @looksCorrectStartImport.
@@ -455,7 +455,7 @@ abstract class AppLocalizations {
   /// No description provided for @fuzzyMatch.
   ///
   /// In ar, this message translates to:
-  /// **'توسيع دائرة البحث'**
+  /// **'بحث تقريبي'**
   String get fuzzyMatch;
 
   /// No description provided for @pleaseEnterDataToSearch.
@@ -473,7 +473,7 @@ abstract class AppLocalizations {
   /// No description provided for @themeSettings.
   ///
   /// In ar, this message translates to:
-  /// **'المظهر (Theme)'**
+  /// **'المظهر'**
   String get themeSettings;
 
   /// No description provided for @system.
@@ -497,7 +497,7 @@ abstract class AppLocalizations {
   /// No description provided for @languageSettings.
   ///
   /// In ar, this message translates to:
-  /// **'اللغة (Language)'**
+  /// **'اللغة'**
   String get languageSettings;
 
   /// No description provided for @arabic.
@@ -509,7 +509,7 @@ abstract class AppLocalizations {
   /// No description provided for @autoLockSettings.
   ///
   /// In ar, this message translates to:
-  /// **'القفل التلقائي (Auto-Lock)'**
+  /// **'القفل التلقائي'**
   String get autoLockSettings;
 
   /// No description provided for @immediately.
@@ -677,7 +677,7 @@ abstract class AppLocalizations {
   /// No description provided for @designedBy.
   ///
   /// In ar, this message translates to:
-  /// **'مُصَمم بمعرفة'**
+  /// **'تم التصميم بواسطة'**
   String get designedBy;
 
   /// No description provided for @ahmedElKilany.
@@ -731,7 +731,7 @@ abstract class AppLocalizations {
   /// No description provided for @chooseEntireFolder.
   ///
   /// In ar, this message translates to:
-  /// **'اختر مجلد كامل'**
+  /// **'اختر مجلداً كاملاً'**
   String get chooseEntireFolder;
 
   /// No description provided for @errorOccurred.
@@ -773,7 +773,7 @@ abstract class AppLocalizations {
   /// No description provided for @stepImporting.
   ///
   /// In ar, this message translates to:
-  /// **'جاري الاستيراد'**
+  /// **'جاري الاستيراد...'**
   String get stepImporting;
 
   /// No description provided for @autoUpdateSuccess.
@@ -815,7 +815,7 @@ abstract class AppLocalizations {
   /// No description provided for @pleaseWaitAndDoNotClose.
   ///
   /// In ar, this message translates to:
-  /// **'يرجى الانتظار ولا تغلق التطبيق'**
+  /// **'يرجى الانتظار وعدم إغلاق التطبيق'**
   String get pleaseWaitAndDoNotClose;
 
   /// No description provided for @chooseTimeRangeForExport.
@@ -833,13 +833,13 @@ abstract class AppLocalizations {
   /// No description provided for @last24Hours.
   ///
   /// In ar, this message translates to:
-  /// **'آخر ٢٤ ساعة'**
+  /// **'آخر 24 ساعة'**
   String get last24Hours;
 
   /// No description provided for @last7Days.
   ///
   /// In ar, this message translates to:
-  /// **'آخر ٧ أيام'**
+  /// **'آخر 7 أيام'**
   String get last7Days;
 
   /// No description provided for @customPeriod.
@@ -887,7 +887,7 @@ abstract class AppLocalizations {
   /// No description provided for @confirmDeleteImportBatch.
   ///
   /// In ar, this message translates to:
-  /// **'هل أنت متأكد أنك تريد حذف كافة السجلات التي تم استيرادها في ملف \"{fileName}\"؟\nهذا الإجراء لا يمكن التراجع عنه.'**
+  /// **'هل أنت متأكد أنك تريد حذف كافة السجلات المستوردة من الملف \"{fileName}\"؟\nهذا الإجراء لا يمكن التراجع عنه.'**
   String confirmDeleteImportBatch(String fileName);
 
   /// No description provided for @recordNumber.
@@ -919,6 +919,30 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'إخفاء البيانات'**
   String get hideData;
+
+  /// No description provided for @manageIndexedFiles.
+  ///
+  /// In ar, this message translates to:
+  /// **'إدارة الملفات المفهرسة'**
+  String get manageIndexedFiles;
+
+  /// No description provided for @noIndexedFilesFound.
+  ///
+  /// In ar, this message translates to:
+  /// **'لم يتم العثور على ملفات مفهرسة'**
+  String get noIndexedFilesFound;
+
+  /// No description provided for @delete.
+  ///
+  /// In ar, this message translates to:
+  /// **'حذف'**
+  String get delete;
+
+  /// No description provided for @deletedSuccessfully.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم حذف {fileName} بنجاح'**
+  String deletedSuccessfully(String fileName);
 }
 
 class _AppLocalizationsDelegate

@@ -195,5 +195,14 @@
     }
   },
   "filtersAndSorting": "Filters & Sorting",
-  "hideData": "Hide data"
+  "hideData": "Hide data",
+  "manageIndexedFiles": "Manage Indexed Files",
+  "noIndexedFilesFound": "No indexed files found",
+  "delete": "Delete",
+  "deletedSuccessfully": "{fileName} deleted successfully",
+  "@deletedSuccessfully": {
+    "placeholders": {
+      "fileName": { "type": "String" }
+    }
+  }
 }
