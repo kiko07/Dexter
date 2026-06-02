@@ -464,4 +464,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String deletedSuccessfully(String fileName) {
     return '$fileName deleted successfully';
   }
+
+  @override
+  String get removePassword => 'Remove Password';
+
+  @override
+  String get removePasswordSubtitle => 'Remove the app password completely.';
+
+  @override
+  String get confirmRemovePassword =>
+      'Are you sure you want to remove the password?';
+
+  @override
+  String get passwordRemovedSuccessfully => 'Password removed successfully';
+
+  @override
+  String get remove => 'Remove';
 }

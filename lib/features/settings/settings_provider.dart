@@ -9,7 +9,6 @@ import 'package:local_auth/local_auth.dart';
 class AppSettingsState {
   final ThemeMode themeMode;
   final Locale locale;
-  final int autoLockMinutes; // 0 for immediate, -1 for never
   final bool autoScanImportedFiles;
   final bool autoScanWatchedFolders;
   final List<String> watchedFolders;
@@ -19,7 +18,6 @@ class AppSettingsState {
   AppSettingsState({
     this.themeMode = ThemeMode.system,
     this.locale = const Locale('ar'),
-    this.autoLockMinutes = 5,
     this.autoScanImportedFiles = true,
     this.autoScanWatchedFolders = false,
     this.watchedFolders = const [],
@@ -30,7 +28,6 @@ class AppSettingsState {
   AppSettingsState copyWith({
     ThemeMode? themeMode,
     Locale? locale,
-    int? autoLockMinutes,
     bool? autoScanImportedFiles,
     bool? autoScanWatchedFolders,
     List<String>? watchedFolders,
@@ -40,7 +37,6 @@ class AppSettingsState {
     return AppSettingsState(
       themeMode: themeMode ?? this.themeMode,
       locale: locale ?? this.locale,
-      autoLockMinutes: autoLockMinutes ?? this.autoLockMinutes,
       autoScanImportedFiles: autoScanImportedFiles ?? this.autoScanImportedFiles,
       autoScanWatchedFolders: autoScanWatchedFolders ?? this.autoScanWatchedFolders,
       watchedFolders: watchedFolders ?? this.watchedFolders,
@@ -57,7 +53,6 @@ class SettingsNotifier extends AsyncNotifier<AppSettingsState> {
     
     final themeStr = await db.settingsDao.getSetting('theme_mode');
     final localeStr = await db.settingsDao.getSetting('locale');
-    final autoLockStr = await db.settingsDao.getSetting('auto_lock_minutes');
     final autoScanImportedFilesStr = await db.settingsDao.getSetting('auto_scan_imported_files');
     final autoScanWatchedFoldersStr = await db.settingsDao.getSetting('auto_scan_watched_folders');
     final watchedFoldersStr = await db.settingsDao.getSetting('watched_folders');
@@ -71,11 +66,6 @@ class SettingsNotifier extends AsyncNotifier<AppSettingsState> {
     Locale locale = const Locale('ar');
     if (localeStr != null && localeStr.value == 'en') {
       locale = const Locale('en');
-    }
-
-    int autoLockMinutes = 5; // Default 5 minutes
-    if (autoLockStr != null) {
-      autoLockMinutes = int.tryParse(autoLockStr.value) ?? 5;
     }
     
     bool autoScanImportedFiles = true;
@@ -114,7 +104,6 @@ class SettingsNotifier extends AsyncNotifier<AppSettingsState> {
     return AppSettingsState(
       themeMode: themeMode,
       locale: locale,
-      autoLockMinutes: autoLockMinutes,
       autoScanImportedFiles: autoScanImportedFiles,
       autoScanWatchedFolders: autoScanWatchedFolders,
       watchedFolders: watchedFolders,
@@ -142,15 +131,6 @@ class SettingsNotifier extends AsyncNotifier<AppSettingsState> {
     
     if (state.hasValue) {
       state = AsyncData(state.value!.copyWith(locale: locale));
-    }
-  }
-
-  Future<void> setAutoLockMinutes(int minutes) async {
-    final db = ref.read(databaseProvider);
-    await db.settingsDao.setSetting('auto_lock_minutes', minutes.toString());
-    
-    if (state.hasValue) {
-      state = AsyncData(state.value!.copyWith(autoLockMinutes: minutes));
     }
   }
 

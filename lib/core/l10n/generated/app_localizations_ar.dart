@@ -463,4 +463,20 @@ class AppLocalizationsAr extends AppLocalizations {
   String deletedSuccessfully(String fileName) {
     return 'تم حذف $fileName بنجاح';
   }
+
+  @override
+  String get removePassword => 'إزالة كلمة المرور';
+
+  @override
+  String get removePasswordSubtitle => 'إزالة كلمة المرور من التطبيق بالكامل.';
+
+  @override
+  String get confirmRemovePassword =>
+      'هل أنت متأكد أنك تريد إزالة كلمة المرور؟';
+
+  @override
+  String get passwordRemovedSuccessfully => 'تم إزالة كلمة المرور بنجاح';
+
+  @override
+  String get remove => 'إزالة';
 }

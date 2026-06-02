@@ -81,30 +81,8 @@ class SettingsScreen extends ConsumerWidget {
               _SettingsSection(
                 title: AppLocalizations.of(context)!.security, // Security
                 children: [
-                  _SettingsTile(
-                    icon: Icons.timer_rounded,
-                    iconColor: Colors.orange,
-                    title: AppLocalizations.of(context)!.autoLockSettings,
-                    trailing: DropdownButtonHideUnderline(
-                      child: DropdownButton<int>(
-                        value: settingsState.autoLockMinutes,
-                        icon: const Icon(Icons.arrow_drop_down, color: Colors.grey),
-                        onChanged: (int? newValue) {
-                          if (newValue != null) {
-                            ref.read(settingsProvider.notifier).setAutoLockMinutes(newValue);
-                          }
-                        },
-                        items: [
-                          DropdownMenuItem(value: 0, child: Text(AppLocalizations.of(context)!.immediately)),
-                          DropdownMenuItem(value: 1, child: Text(AppLocalizations.of(context)!.oneMinute)),
-                          DropdownMenuItem(value: 5, child: Text(AppLocalizations.of(context)!.fiveMinutes)),
-                          DropdownMenuItem(value: -1, child: Text(AppLocalizations.of(context)!.never)),
-                        ],
-                      ),
-                    ),
-                  ),
+
                   if (settingsState.availableBiometrics.isNotEmpty) ...[
-                    _buildDivider(),
                     _SettingsTile(
                       icon: settingsState.availableBiometrics.contains(BiometricType.face) 
                           ? Icons.face_rounded 
@@ -141,6 +119,15 @@ class SettingsScreen extends ConsumerWidget {
                       title: AppLocalizations.of(context)!.resetPassword,
                       subtitle: AppLocalizations.of(context)!.changeCurrentAppPassword,
                       onTap: () => _showChangePasswordDialog(context, ref),
+                      showArrow: true,
+                    ),
+                    _buildDivider(),
+                    _SettingsTile(
+                      icon: Icons.no_encryption_rounded,
+                      iconColor: Colors.redAccent,
+                      title: AppLocalizations.of(context)!.removePassword,
+                      subtitle: AppLocalizations.of(context)!.removePasswordSubtitle,
+                      onTap: () => _showRemovePasswordDialog(context, ref),
                       showArrow: true,
                     ),
                     _buildDivider(),
@@ -373,6 +360,76 @@ class SettingsScreen extends ConsumerWidget {
     ).whenComplete(() {
       currentController.dispose();
       newController.dispose();
+    });
+  }
+
+  void _showRemovePasswordDialog(BuildContext context, WidgetRef ref) {
+    final currentController = TextEditingController();
+    String? errorText;
+    
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              title: Text(AppLocalizations.of(context)!.removePassword),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(AppLocalizations.of(context)!.confirmRemovePassword),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: currentController,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      labelText: AppLocalizations.of(context)!.currentPassword,
+                      errorText: errorText,
+                      prefixIcon: const Icon(Icons.password),
+                    ),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(AppLocalizations.of(context)!.cancel),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                  onPressed: () async {
+                    if (currentController.text.isEmpty) return;
+                    
+                    final isValid = await SecureStorageService.verifyPassword(currentController.text);
+                    if (!isValid) {
+                      setDialogState(() {
+                        errorText = AppLocalizations.of(context)!.currentPasswordIncorrect;
+                      });
+                      return;
+                    }
+                    
+                    await ref.read(authProvider.notifier).resetApp();
+                    if (context.mounted) {
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(AppLocalizations.of(context)!.passwordRemovedSuccessfully),
+                          behavior: SnackBarBehavior.floating,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        ),
+                      );
+                    }
+                  },
+                  child: Text(AppLocalizations.of(context)!.remove, style: const TextStyle(color: Colors.white)),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    ).whenComplete(() {
+      currentController.dispose();
     });
   }
 

@@ -204,5 +204,10 @@
     "placeholders": {
       "fileName": { "type": "String" }
     }
-  }
+  },
+  "removePassword": "إزالة كلمة المرور",
+  "removePasswordSubtitle": "إزالة كلمة المرور من التطبيق بالكامل.",
+  "confirmRemovePassword": "هل أنت متأكد أنك تريد إزالة كلمة المرور؟",
+  "passwordRemovedSuccessfully": "تم إزالة كلمة المرور بنجاح",
+  "remove": "إزالة"
 }

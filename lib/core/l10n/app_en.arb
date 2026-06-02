@@ -204,5 +204,10 @@
     "placeholders": {
       "fileName": { "type": "String" }
     }
-  }
+  },
+  "removePassword": "Remove Password",
+  "removePasswordSubtitle": "Remove the app password completely.",
+  "confirmRemovePassword": "Are you sure you want to remove the password?",
+  "passwordRemovedSuccessfully": "Password removed successfully",
+  "remove": "Remove"
 }

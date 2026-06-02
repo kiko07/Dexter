@@ -943,6 +943,36 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'تم حذف {fileName} بنجاح'**
   String deletedSuccessfully(String fileName);
+
+  /// No description provided for @removePassword.
+  ///
+  /// In ar, this message translates to:
+  /// **'إزالة كلمة المرور'**
+  String get removePassword;
+
+  /// No description provided for @removePasswordSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'إزالة كلمة المرور من التطبيق بالكامل.'**
+  String get removePasswordSubtitle;
+
+  /// No description provided for @confirmRemovePassword.
+  ///
+  /// In ar, this message translates to:
+  /// **'هل أنت متأكد أنك تريد إزالة كلمة المرور؟'**
+  String get confirmRemovePassword;
+
+  /// No description provided for @passwordRemovedSuccessfully.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم إزالة كلمة المرور بنجاح'**
+  String get passwordRemovedSuccessfully;
+
+  /// No description provided for @remove.
+  ///
+  /// In ar, this message translates to:
+  /// **'إزالة'**
+  String get remove;
 }
 
 class _AppLocalizationsDelegate

@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,9 +18,8 @@ class DexterApp extends ConsumerStatefulWidget {
 }
 
 class _DexterAppState extends ConsumerState<DexterApp> with WidgetsBindingObserver {
-  Timer? _inactivityTimer;
-  int _currentAutoLockMinutes = 5;
   DateTime? _backgroundTime;
+  final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   void initState() {
@@ -29,31 +27,9 @@ class _DexterAppState extends ConsumerState<DexterApp> with WidgetsBindingObserv
     WidgetsBinding.instance.addObserver(this);
   }
 
-  void _resetInactivityTimer([int? minutes]) {
-    if (minutes != null) {
-      _currentAutoLockMinutes = minutes;
-    }
-    
-    _inactivityTimer?.cancel();
-    
-    if (_currentAutoLockMinutes > 0) {
-      _inactivityTimer = Timer(Duration(minutes: _currentAutoLockMinutes), () {
-        final authState = ref.read(authProvider);
-        if (authState.status == AuthStatus.authenticated) {
-          ref.read(authProvider.notifier).lock();
-        }
-      });
-    }
-  }
-
-  void _handleUserInteraction([_]) {
-    _resetInactivityTimer();
-  }
-
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    _inactivityTimer?.cancel();
     super.dispose();
   }
 
@@ -61,16 +37,10 @@ class _DexterAppState extends ConsumerState<DexterApp> with WidgetsBindingObserv
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.hidden || state == AppLifecycleState.paused) {
       _backgroundTime = DateTime.now();
-      if (_currentAutoLockMinutes == 0) {
-        final authState = ref.read(authProvider);
-        if (authState.status == AuthStatus.authenticated) {
-          ref.read(authProvider.notifier).lock();
-        }
-      }
     } else if (state == AppLifecycleState.resumed) {
-      if (_backgroundTime != null && _currentAutoLockMinutes > 0) {
+      if (_backgroundTime != null) {
         final backgroundDuration = DateTime.now().difference(_backgroundTime!);
-        if (backgroundDuration.inMinutes >= _currentAutoLockMinutes) {
+        if (backgroundDuration.inMinutes >= 1) {
           final authState = ref.read(authProvider);
           if (authState.status == AuthStatus.authenticated) {
             ref.read(authProvider.notifier).lock();
@@ -78,12 +48,17 @@ class _DexterAppState extends ConsumerState<DexterApp> with WidgetsBindingObserv
         }
       }
       _backgroundTime = null;
-      _resetInactivityTimer();
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<AuthState>(authProvider, (previous, next) {
+      if (previous?.status == AuthStatus.authenticated && next.status == AuthStatus.unauthenticated) {
+        _navigatorKey.currentState?.popUntil((route) => route.isFirst);
+      }
+    });
+
     final authState = ref.watch(authProvider);
     final settingsAsync = ref.watch(settingsProvider);
 
@@ -91,48 +66,37 @@ class _DexterAppState extends ConsumerState<DexterApp> with WidgetsBindingObserv
       loading: () => const MaterialApp(home: Scaffold(body: Center(child: CircularProgressIndicator()))),
       error: (err, stack) => MaterialApp(home: Scaffold(body: Center(child: Text('Error loading settings: $err')))),
       data: (settings) {
-        // Update timer if settings changed (e.g. from 5 to 1 min)
-        if (settings.autoLockMinutes != _currentAutoLockMinutes) {
-          // Microtask to avoid state modification during build
-          Future.microtask(() => _resetInactivityTimer(settings.autoLockMinutes));
-        }
-
-        return Listener(
-          behavior: HitTestBehavior.translucent,
-          onPointerDown: _handleUserInteraction,
-          onPointerMove: _handleUserInteraction,
-          onPointerUp: _handleUserInteraction,
-          child: MaterialApp(
-            title: 'Dexter',
-            locale: settings.locale,
-            supportedLocales: AppLocalizations.supportedLocales,
-            localizationsDelegates: const [
-              AppLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-            theme: AppTheme.lightTheme.copyWith(
-              pageTransitionsTheme: const PageTransitionsTheme(
-                builders: {
-                  TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
-                  TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-                  TargetPlatform.windows: ZoomPageTransitionsBuilder(),
-                },
-              ),
+        return MaterialApp(
+          navigatorKey: _navigatorKey,
+          title: 'Dexter',
+          locale: settings.locale,
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          theme: AppTheme.lightTheme.copyWith(
+            pageTransitionsTheme: const PageTransitionsTheme(
+              builders: {
+                TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+                TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+                TargetPlatform.windows: ZoomPageTransitionsBuilder(),
+              },
             ),
-            darkTheme: AppTheme.darkTheme.copyWith(
-              pageTransitionsTheme: const PageTransitionsTheme(
-                builders: {
-                  TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
-                  TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-                  TargetPlatform.windows: ZoomPageTransitionsBuilder(),
-                },
-              ),
-            ),
-            themeMode: settings.themeMode,
-            home: _buildHomeBasedOnAuth(authState.status),
           ),
+          darkTheme: AppTheme.darkTheme.copyWith(
+            pageTransitionsTheme: const PageTransitionsTheme(
+              builders: {
+                TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+                TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+                TargetPlatform.windows: ZoomPageTransitionsBuilder(),
+              },
+            ),
+          ),
+          themeMode: settings.themeMode,
+          home: _buildHomeBasedOnAuth(authState.status),
         );
       },
     );
