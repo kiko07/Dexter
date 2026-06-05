@@ -13,7 +13,7 @@ class AppSettingsState {
   final bool autoScanWatchedFolders;
   final List<String> watchedFolders;
   final bool biometricsEnabled;
-  final List<BiometricType> availableBiometrics; 
+  final List<BiometricType> availableBiometrics;
 
   AppSettingsState({
     this.themeMode = ThemeMode.system,
@@ -37,8 +37,10 @@ class AppSettingsState {
     return AppSettingsState(
       themeMode: themeMode ?? this.themeMode,
       locale: locale ?? this.locale,
-      autoScanImportedFiles: autoScanImportedFiles ?? this.autoScanImportedFiles,
-      autoScanWatchedFolders: autoScanWatchedFolders ?? this.autoScanWatchedFolders,
+      autoScanImportedFiles:
+          autoScanImportedFiles ?? this.autoScanImportedFiles,
+      autoScanWatchedFolders:
+          autoScanWatchedFolders ?? this.autoScanWatchedFolders,
       watchedFolders: watchedFolders ?? this.watchedFolders,
       biometricsEnabled: biometricsEnabled ?? this.biometricsEnabled,
       availableBiometrics: availableBiometrics ?? this.availableBiometrics,
@@ -50,12 +52,18 @@ class SettingsNotifier extends AsyncNotifier<AppSettingsState> {
   @override
   Future<AppSettingsState> build() async {
     final db = ref.read(databaseProvider);
-    
+
     final themeStr = await db.settingsDao.getSetting('theme_mode');
     final localeStr = await db.settingsDao.getSetting('locale');
-    final autoScanImportedFilesStr = await db.settingsDao.getSetting('auto_scan_imported_files');
-    final autoScanWatchedFoldersStr = await db.settingsDao.getSetting('auto_scan_watched_folders');
-    final watchedFoldersStr = await db.settingsDao.getSetting('watched_folders');
+    final autoScanImportedFilesStr = await db.settingsDao.getSetting(
+      'auto_scan_imported_files',
+    );
+    final autoScanWatchedFoldersStr = await db.settingsDao.getSetting(
+      'auto_scan_watched_folders',
+    );
+    final watchedFoldersStr = await db.settingsDao.getSetting(
+      'watched_folders',
+    );
 
     ThemeMode themeMode = ThemeMode.system;
     if (themeStr != null) {
@@ -67,17 +75,17 @@ class SettingsNotifier extends AsyncNotifier<AppSettingsState> {
     if (localeStr != null && localeStr.value == 'en') {
       locale = const Locale('en');
     }
-    
+
     bool autoScanImportedFiles = true;
     if (autoScanImportedFilesStr != null) {
       autoScanImportedFiles = autoScanImportedFilesStr.value == 'true';
     }
-    
+
     bool autoScanWatchedFolders = false;
     if (autoScanWatchedFoldersStr != null) {
       autoScanWatchedFolders = autoScanWatchedFoldersStr.value == 'true';
     }
-    
+
     List<String> watchedFolders = [];
     if (watchedFoldersStr != null && watchedFoldersStr.value.isNotEmpty) {
       try {
@@ -89,7 +97,7 @@ class SettingsNotifier extends AsyncNotifier<AppSettingsState> {
     }
 
     final biometricsEnabled = await SecureStorageService.isBiometricsEnabled();
-    
+
     List<BiometricType> availableBiometrics = [];
     try {
       final auth = LocalAuthentication();
@@ -117,9 +125,9 @@ class SettingsNotifier extends AsyncNotifier<AppSettingsState> {
     String modeStr = 'system';
     if (mode == ThemeMode.light) modeStr = 'light';
     if (mode == ThemeMode.dark) modeStr = 'dark';
-    
+
     await db.settingsDao.setSetting('theme_mode', modeStr);
-    
+
     if (state.hasValue) {
       state = AsyncData(state.value!.copyWith(themeMode: mode));
     }
@@ -128,7 +136,7 @@ class SettingsNotifier extends AsyncNotifier<AppSettingsState> {
   Future<void> setLocale(Locale locale) async {
     final db = ref.read(databaseProvider);
     await db.settingsDao.setSetting('locale', locale.languageCode);
-    
+
     if (state.hasValue) {
       state = AsyncData(state.value!.copyWith(locale: locale));
     }
@@ -136,8 +144,11 @@ class SettingsNotifier extends AsyncNotifier<AppSettingsState> {
 
   Future<void> setAutoScanImportedFiles(bool value) async {
     final db = ref.read(databaseProvider);
-    await db.settingsDao.setSetting('auto_scan_imported_files', value.toString());
-    
+    await db.settingsDao.setSetting(
+      'auto_scan_imported_files',
+      value.toString(),
+    );
+
     if (state.hasValue) {
       state = AsyncData(state.value!.copyWith(autoScanImportedFiles: value));
     }
@@ -145,8 +156,11 @@ class SettingsNotifier extends AsyncNotifier<AppSettingsState> {
 
   Future<void> setAutoScanWatchedFolders(bool value) async {
     final db = ref.read(databaseProvider);
-    await db.settingsDao.setSetting('auto_scan_watched_folders', value.toString());
-    
+    await db.settingsDao.setSetting(
+      'auto_scan_watched_folders',
+      value.toString(),
+    );
+
     if (state.hasValue) {
       state = AsyncData(state.value!.copyWith(autoScanWatchedFolders: value));
     }
@@ -156,7 +170,8 @@ class SettingsNotifier extends AsyncNotifier<AppSettingsState> {
     if (value) {
       final auth = LocalAuthentication();
       try {
-        final canAuthenticate = await auth.canCheckBiometrics || await auth.isDeviceSupported();
+        final canAuthenticate =
+            await auth.canCheckBiometrics || await auth.isDeviceSupported();
         if (canAuthenticate) {
           final didAuthenticate = await auth.authenticate(
             localizedReason: 'Please authenticate to enable biometrics',
@@ -170,7 +185,7 @@ class SettingsNotifier extends AsyncNotifier<AppSettingsState> {
     }
 
     await SecureStorageService.setBiometricsEnabled(value);
-    
+
     if (state.hasValue) {
       state = AsyncData(state.value!.copyWith(biometricsEnabled: value));
     }
@@ -178,33 +193,40 @@ class SettingsNotifier extends AsyncNotifier<AppSettingsState> {
 
   Future<void> addWatchedFolder(String path) async {
     if (!state.hasValue) return;
-    
+
     final currentFolders = List<String>.from(state.value!.watchedFolders);
     if (!currentFolders.contains(path)) {
       currentFolders.add(path);
-      
+
       final db = ref.read(databaseProvider);
-      await db.settingsDao.setSetting('watched_folders', jsonEncode(currentFolders));
-      
+      await db.settingsDao.setSetting(
+        'watched_folders',
+        jsonEncode(currentFolders),
+      );
+
       state = AsyncData(state.value!.copyWith(watchedFolders: currentFolders));
     }
   }
 
   Future<void> removeWatchedFolder(String path) async {
     if (!state.hasValue) return;
-    
+
     final currentFolders = List<String>.from(state.value!.watchedFolders);
     if (currentFolders.contains(path)) {
       currentFolders.remove(path);
-      
+
       final db = ref.read(databaseProvider);
-      await db.settingsDao.setSetting('watched_folders', jsonEncode(currentFolders));
-      
+      await db.settingsDao.setSetting(
+        'watched_folders',
+        jsonEncode(currentFolders),
+      );
+
       state = AsyncData(state.value!.copyWith(watchedFolders: currentFolders));
     }
   }
 }
 
-final settingsProvider = AsyncNotifierProvider<SettingsNotifier, AppSettingsState>(() {
-  return SettingsNotifier();
-});
+final settingsProvider =
+    AsyncNotifierProvider<SettingsNotifier, AppSettingsState>(() {
+      return SettingsNotifier();
+    });

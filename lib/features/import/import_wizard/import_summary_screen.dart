@@ -28,13 +28,22 @@ class ImportSummaryScreen extends ConsumerWidget {
                   color: Colors.green.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.check_circle_rounded, color: Colors.green, size: 80),
+                child: const Icon(
+                  Icons.check_circle_rounded,
+                  color: Colors.green,
+                  size: 80,
+                ),
               ),
             );
           },
         ),
         const SizedBox(height: 32),
-        Text(AppLocalizations.of(context)!.importComplete, style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
+        Text(
+          AppLocalizations.of(context)!.importComplete,
+          style: theme.textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         const SizedBox(height: 32),
         Container(
           padding: const EdgeInsets.all(24),
@@ -42,19 +51,58 @@ class ImportSummaryScreen extends ConsumerWidget {
             color: theme.colorScheme.surface,
             borderRadius: BorderRadius.circular(24),
             boxShadow: [
-              BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 20, offset: const Offset(0, 10)),
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
+              ),
             ],
-            border: Border.all(color: theme.colorScheme.onSurface.withValues(alpha: 0.05)),
+            border: Border.all(
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.05),
+            ),
           ),
           child: Column(
             children: [
-              _buildStatRow(AppLocalizations.of(context)!.totalRecords, '${state.totalRows}', Icons.list_alt, theme.colorScheme.primary, theme),
-              const Padding(padding: EdgeInsets.symmetric(vertical: 8), child: Divider(height: 1)),
-              _buildStatRow(AppLocalizations.of(context)!.importedRecords, '${state.processedRows}', Icons.check_circle_outline, Colors.green, theme),
-              const Padding(padding: EdgeInsets.symmetric(vertical: 8), child: Divider(height: 1)),
-              _buildStatRow(AppLocalizations.of(context)!.skippedDuplicates, '${state.skippedRows}', Icons.skip_next_rounded, Colors.orange, theme),
-              const Padding(padding: EdgeInsets.symmetric(vertical: 8), child: Divider(height: 1)),
-              _buildStatRow(AppLocalizations.of(context)!.recordsWithError, '${state.errorRows}', Icons.error_outline_rounded, Colors.red, theme),
+              _buildStatRow(
+                AppLocalizations.of(context)!.totalRecords,
+                '${state.totalRows}',
+                Icons.list_alt,
+                theme.colorScheme.primary,
+                theme,
+              ),
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: Divider(height: 1),
+              ),
+              _buildStatRow(
+                AppLocalizations.of(context)!.importedRecords,
+                '${state.processedRows}',
+                Icons.check_circle_outline,
+                Colors.green,
+                theme,
+              ),
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: Divider(height: 1),
+              ),
+              _buildStatRow(
+                AppLocalizations.of(context)!.skippedDuplicates,
+                '${state.skippedRows}',
+                Icons.skip_next_rounded,
+                Colors.orange,
+                theme,
+              ),
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: Divider(height: 1),
+              ),
+              _buildStatRow(
+                AppLocalizations.of(context)!.recordsWithError,
+                '${state.errorRows}',
+                Icons.error_outline_rounded,
+                Colors.red,
+                theme,
+              ),
             ],
           ),
         ),
@@ -64,21 +112,32 @@ class ImportSummaryScreen extends ConsumerWidget {
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
               backgroundColor: theme.colorScheme.primary,
               foregroundColor: theme.colorScheme.onPrimary,
             ),
             onPressed: () {
               notifier.reset(); // Back to start
             },
-            child: Text(AppLocalizations.of(context)!.finish, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            child: Text(
+              AppLocalizations.of(context)!.finish,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildStatRow(String label, String value, IconData icon, Color color, ThemeData theme) {
+  Widget _buildStatRow(
+    String label,
+    String value,
+    IconData icon,
+    Color color,
+    ThemeData theme,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
@@ -92,14 +151,26 @@ class ImportSummaryScreen extends ConsumerWidget {
             child: Icon(icon, color: color, size: 20),
           ),
           const SizedBox(width: 16),
-          Expanded(child: Text(label, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600))),
+          Expanded(
+            child: Text(
+              label,
+              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+            ),
+          ),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Text(value, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: color)),
+            child: Text(
+              value,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
+            ),
           ),
         ],
       ),

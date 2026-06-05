@@ -1,6 +1,8 @@
+import 'dart:io';
 import 'dart:convert';
 import 'dart:math';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:path_provider/path_provider.dart';
 import 'hash_service.dart';
 
 class SecureStorageService {
@@ -9,6 +11,21 @@ class SecureStorageService {
   static const _keyAppPasswordHash = 'app_password_hash';
   static const _keyDbEncryption = 'db_encryption_key';
   static const _keyBiometricsEnabled = 'biometrics_enabled';
+
+  /// Clears secure storage on the very first run after installation to prevent 
+  /// using data (like passwords/FaceID) that persisted in the OS Keychain from a previous install.
+  static Future<void> initializeOnFirstRun() async {
+    try {
+      final docsDir = await getApplicationDocumentsDirectory();
+      final firstRunFile = File('${docsDir.path}/.first_run_done');
+      if (!await firstRunFile.exists()) {
+        await _storage.deleteAll();
+        await firstRunFile.writeAsString('done');
+      }
+    } catch (e) {
+      // Ignore errors for this setup
+    }
+  }
 
   /// Sets whether biometrics are enabled
   static Future<void> setBiometricsEnabled(bool enabled) async {

@@ -15,7 +15,7 @@ class HashService {
   static Future<String> hashFile(String filePath) async {
     final file = File(filePath);
     if (!await file.exists()) return '';
-    
+
     final bytes = await file.readAsBytes();
     final digest = sha256.convert(bytes);
     return digest.toString();

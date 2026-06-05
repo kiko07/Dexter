@@ -13,7 +13,8 @@ class LockScreen extends ConsumerStatefulWidget {
   ConsumerState<LockScreen> createState() => _LockScreenState();
 }
 
-class _LockScreenState extends ConsumerState<LockScreen> with SingleTickerProviderStateMixin {
+class _LockScreenState extends ConsumerState<LockScreen>
+    with SingleTickerProviderStateMixin {
   final _passwordController = TextEditingController();
   bool _isSubmitting = false;
   late AnimationController _animController;
@@ -23,15 +24,23 @@ class _LockScreenState extends ConsumerState<LockScreen> with SingleTickerProvid
   @override
   void initState() {
     super.initState();
-    _animController = AnimationController(vsync: this, duration: const Duration(milliseconds: 800));
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-      parent: _animController,
-      curve: const Interval(0.2, 1.0, curve: Curves.easeOut),
-    ));
-    _slideAnimation = Tween<Offset>(begin: const Offset(0, 0.2), end: Offset.zero).animate(CurvedAnimation(
-      parent: _animController,
-      curve: const Interval(0.2, 1.0, curve: Curves.easeOutCubic),
-    ));
+    _animController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animController,
+        curve: const Interval(0.2, 1.0, curve: Curves.easeOut),
+      ),
+    );
+    _slideAnimation =
+        Tween<Offset>(begin: const Offset(0, 0.2), end: Offset.zero).animate(
+          CurvedAnimation(
+            parent: _animController,
+            curve: const Interval(0.2, 1.0, curve: Curves.easeOutCubic),
+          ),
+        );
     _animController.forward();
   }
 
@@ -48,7 +57,7 @@ class _LockScreenState extends ConsumerState<LockScreen> with SingleTickerProvid
       setState(() => _isSubmitting = true);
       final authState = ref.read(authProvider);
       final notifier = ref.read(authProvider.notifier);
-      
+
       if (authState.status == AuthStatus.noPasswordSet) {
         await notifier.setPassword(password);
       } else {
@@ -67,9 +76,10 @@ class _LockScreenState extends ConsumerState<LockScreen> with SingleTickerProvid
     final theme = Theme.of(context);
     final settingsAsync = ref.watch(settingsProvider);
     final settings = settingsAsync.value;
-    
+
     final biometricsEnabled = settings?.biometricsEnabled ?? false;
-    final hasFaceId = settings?.availableBiometrics.contains(BiometricType.face) ?? false;
+    final hasFaceId =
+        settings?.availableBiometrics.contains(BiometricType.face) ?? false;
 
     return Scaffold(
       body: Stack(
@@ -90,7 +100,7 @@ class _LockScreenState extends ConsumerState<LockScreen> with SingleTickerProvid
               ),
             ),
           ),
-          
+
           // Decorative shapes
           Positioned(
             top: -100,
@@ -132,7 +142,10 @@ class _LockScreenState extends ConsumerState<LockScreen> with SingleTickerProvid
                       decoration: BoxDecoration(
                         color: theme.colorScheme.surface.withValues(alpha: 0.7),
                         borderRadius: BorderRadius.circular(24),
-                        border: Border.all(color: Colors.white.withValues(alpha: 0.2), width: 1),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.2),
+                          width: 1,
+                        ),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withValues(alpha: 0.05),
@@ -146,20 +159,26 @@ class _LockScreenState extends ConsumerState<LockScreen> with SingleTickerProvid
                         children: [
                           GestureDetector(
                             onTap: (!isSetup && biometricsEnabled)
-                                ? () => ref.read(authProvider.notifier).tryBiometricLogin()
+                                ? () => ref
+                                      .read(authProvider.notifier)
+                                      .tryBiometricLogin()
                                 : null,
                             child: Container(
                               padding: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
-                                color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                                color: theme.colorScheme.primary.withValues(
+                                  alpha: 0.1,
+                                ),
                                 shape: BoxShape.circle,
                               ),
                               child: Icon(
-                                isSetup 
-                                    ? Icons.lock_outline 
-                                    : (biometricsEnabled 
-                                        ? (hasFaceId ? Icons.face_rounded : Icons.fingerprint_rounded) 
-                                        : Icons.lock),
+                                isSetup
+                                    ? Icons.lock_outline
+                                    : (biometricsEnabled
+                                          ? (hasFaceId
+                                                ? Icons.face_rounded
+                                                : Icons.fingerprint_rounded)
+                                          : Icons.lock),
                                 size: 48,
                                 color: theme.colorScheme.primary,
                               ),
@@ -167,8 +186,12 @@ class _LockScreenState extends ConsumerState<LockScreen> with SingleTickerProvid
                           ),
                           const SizedBox(height: 24),
                           Text(
-                            isSetup ? AppLocalizations.of(context)!.setupNewPassword : AppLocalizations.of(context)!.enterPassword,
-                            style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                            isSetup
+                                ? AppLocalizations.of(context)!.setupNewPassword
+                                : AppLocalizations.of(context)!.enterPassword,
+                            style: theme.textTheme.headlineSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
                             textAlign: TextAlign.center,
                           ),
                           const SizedBox(height: 32),
@@ -176,7 +199,10 @@ class _LockScreenState extends ConsumerState<LockScreen> with SingleTickerProvid
                             controller: _passwordController,
                             obscureText: true,
                             textAlign: TextAlign.center,
-                            style: const TextStyle(letterSpacing: 4, fontSize: 18),
+                            style: const TextStyle(
+                              letterSpacing: 4,
+                              fontSize: 18,
+                            ),
                             decoration: InputDecoration(
                               hintText: '••••••••',
                               hintStyle: const TextStyle(letterSpacing: 4),
@@ -192,20 +218,52 @@ class _LockScreenState extends ConsumerState<LockScreen> with SingleTickerProvid
                             child: ElevatedButton(
                               onPressed: _isSubmitting ? null : _submit,
                               style: ElevatedButton.styleFrom(
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
                               ),
                               child: _isSubmitting
                                   ? const SizedBox(
                                       width: 24,
                                       height: 24,
-                                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: Colors.white,
+                                      ),
                                     )
                                   : Text(
-                                      isSetup ? AppLocalizations.of(context)!.saveAndStart : AppLocalizations.of(context)!.login,
+                                      isSetup
+                                          ? AppLocalizations.of(
+                                              context,
+                                            )!.saveAndStart
+                                          : AppLocalizations.of(context)!.login,
                                       style: const TextStyle(fontSize: 16),
                                     ),
                             ),
                           ),
+                          if (!isSetup && biometricsEnabled) ...[
+                            const SizedBox(height: 16),
+                            TextButton.icon(
+                              onPressed: () => ref
+                                  .read(authProvider.notifier)
+                                  .tryBiometricLogin(),
+                              icon: Icon(
+                                hasFaceId
+                                    ? Icons.face_rounded
+                                    : Icons.fingerprint_rounded,
+                              ),
+                              label: Text(
+                                hasFaceId ? 'Use Face ID' : 'Use Fingerprint',
+                              ),
+                              style: TextButton.styleFrom(
+                                foregroundColor: theme.colorScheme.primary,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 12,
+                                  horizontal: 24,
+                                ),
+                              ),
+                            ),
+                          ],
                         ],
                       ),
                     ),

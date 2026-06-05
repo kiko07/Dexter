@@ -14,35 +14,49 @@ class HistoryScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.importHistory), // Import History
+        title: Text(
+          AppLocalizations.of(context)!.importHistory,
+        ), // Import History
       ),
       body: state.isLoading
           ? const Center(child: CircularProgressIndicator())
           : state.batches.isEmpty
-              ? Center(child: Text(AppLocalizations.of(context)!.noImportHistory))
-              : ListView.builder(
-                  itemCount: state.batches.length,
-                  itemBuilder: (context, index) {
-                    final batch = state.batches[index];
-                    return Card(
-                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      child: ListTile(
-                        leading: const Icon(Icons.history),
-                        title: Text(batch.originalFileName),
-                        subtitle: Text(AppLocalizations.of(context)!.recordCountAndDate(batch.rowCount, batch.importedAt.toString().split(".")[0])),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.undo, color: Colors.red),
-                          onPressed: () => _confirmUndo(context, notifier, batch),
-                          tooltip: AppLocalizations.of(context)!.undoImport,
-                        ),
+          ? Center(child: Text(AppLocalizations.of(context)!.noImportHistory))
+          : ListView.builder(
+              itemCount: state.batches.length,
+              itemBuilder: (context, index) {
+                final batch = state.batches[index];
+                return Card(
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  child: ListTile(
+                    leading: const Icon(Icons.history),
+                    title: Text(batch.originalFileName),
+                    subtitle: Text(
+                      AppLocalizations.of(context)!.recordCountAndDate(
+                        batch.rowCount,
+                        batch.importedAt.toString().split(".")[0],
                       ),
-                    );
-                  },
-                ),
+                    ),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.undo, color: Colors.red),
+                      onPressed: () => _confirmUndo(context, notifier, batch),
+                      tooltip: AppLocalizations.of(context)!.undoImport,
+                    ),
+                  ),
+                );
+              },
+            ),
     );
   }
 
-  void _confirmUndo(BuildContext context, HistoryNotifier notifier, ImportBatch batch) {
+  void _confirmUndo(
+    BuildContext context,
+    HistoryNotifier notifier,
+    ImportBatch batch,
+  ) {
     // Capture the ScaffoldMessenger before showing the dialog to avoid
     // using the dialog's context after it's popped
     final messenger = ScaffoldMessenger.of(context);
@@ -51,7 +65,11 @@ class HistoryScreen extends ConsumerWidget {
       builder: (dialogContext) {
         return AlertDialog(
           title: Text(AppLocalizations.of(context)!.confirmUndo),
-          content: Text(AppLocalizations.of(context)!.confirmDeleteImportBatch(batch.originalFileName)),
+          content: Text(
+            AppLocalizations.of(
+              context,
+            )!.confirmDeleteImportBatch(batch.originalFileName),
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
@@ -62,11 +80,18 @@ class HistoryScreen extends ConsumerWidget {
                 notifier.undoBatch(batch);
                 Navigator.pop(dialogContext);
                 messenger.showSnackBar(
-                  SnackBar(content: Text(AppLocalizations.of(context)!.undoImportSuccess)),
+                  SnackBar(
+                    content: Text(
+                      AppLocalizations.of(context)!.undoImportSuccess,
+                    ),
+                  ),
                 );
               },
               style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-              child: Text(AppLocalizations.of(context)!.confirmDelete, style: TextStyle(color: Colors.white)),
+              child: Text(
+                AppLocalizations.of(context)!.confirmDelete,
+                style: TextStyle(color: Colors.white),
+              ),
             ),
           ],
         );

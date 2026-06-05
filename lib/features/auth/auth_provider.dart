@@ -5,8 +5,8 @@ import '../../core/utils/secure_storage_service.dart';
 enum AuthStatus {
   loading,
   unauthenticated, // Needs password
-  authenticated,   // Logged in
-  noPasswordSet    // First time setup
+  authenticated, // Logged in
+  noPasswordSet, // First time setup
 }
 
 class AuthState {
@@ -45,8 +45,9 @@ class AuthNotifier extends Notifier<AuthState> {
     final LocalAuthentication auth = LocalAuthentication();
     try {
       final canAuthenticateWithBiometrics = await auth.canCheckBiometrics;
-      final canAuthenticate = canAuthenticateWithBiometrics || await auth.isDeviceSupported();
-      
+      final canAuthenticate =
+          canAuthenticateWithBiometrics || await auth.isDeviceSupported();
+
       if (canAuthenticate) {
         final didAuthenticate = await auth.authenticate(
           localizedReason: 'Please authenticate to unlock the app',
@@ -66,7 +67,10 @@ class AuthNotifier extends Notifier<AuthState> {
     if (isValid) {
       state = AuthState(status: AuthStatus.authenticated);
     } else {
-      state = AuthState(status: AuthStatus.unauthenticated, error: 'incorrectPassword'); // Incorrect password
+      state = AuthState(
+        status: AuthStatus.unauthenticated,
+        error: 'incorrectPassword',
+      ); // Incorrect password
     }
   }
 

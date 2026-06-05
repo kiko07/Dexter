@@ -5,14 +5,20 @@ import 'package:csv/csv.dart';
 
 class ExcelService {
   /// Reads the headers of an excel file from a given reference row index (0-based)
-  static Future<List<String>> readHeaders(String filePath, int referenceRowIndex) async {
-    return await compute(_readHeadersIsolate, {'path': filePath, 'rowIndex': referenceRowIndex});
+  static Future<List<String>> readHeaders(
+    String filePath,
+    int referenceRowIndex,
+  ) async {
+    return await compute(_readHeadersIsolate, {
+      'path': filePath,
+      'rowIndex': referenceRowIndex,
+    });
   }
 
   static List<String> _readHeadersIsolate(Map<String, dynamic> args) {
     final String path = args['path'];
     final int rowIndex = args['rowIndex'];
-    
+
     var file = File(path);
     if (!file.existsSync()) return [];
 
@@ -22,16 +28,16 @@ class ExcelService {
       if (rows.length <= rowIndex) return [];
       return rows[rowIndex].map((cell) => cell?.toString() ?? '').toList();
     }
-    
+
     var bytes = file.readAsBytesSync();
     var excel = Excel.decodeBytes(bytes);
-    
+
     // Use the first sheet or default sheet
     var sheet = excel.tables.keys.first;
     var table = excel.tables[sheet];
-    
+
     if (table == null || table.rows.length <= rowIndex) return [];
-    
+
     var headerRow = table.rows[rowIndex];
     return headerRow.map((cell) => cell?.value?.toString() ?? '').toList();
   }
@@ -50,11 +56,14 @@ class ExcelService {
     });
   }
 
-  static List<Map<String, dynamic>> _parseDataIsolate(Map<String, dynamic> args) {
+  static List<Map<String, dynamic>> _parseDataIsolate(
+    Map<String, dynamic> args,
+  ) {
     final String path = args['path'];
-    final Map<String, String> columnMap = (args['columnMap'] as Map).cast<String, String>();
+    final Map<String, String> columnMap = (args['columnMap'] as Map)
+        .cast<String, String>();
     final int rowIndex = args['rowIndex'];
-    
+
     var file = File(path);
     if (!file.existsSync()) return [];
 
@@ -68,13 +77,15 @@ class ExcelService {
         var row = rows[i];
         Map<String, dynamic> rowMap = {};
         bool hasData = false;
-        
+
         columnMap.forEach((colKey, headerName) {
           int colIndex;
           final parsed = int.tryParse(colKey);
           if (parsed != null) {
             colIndex = parsed;
-          } else if (colKey.length == 1 && colKey.codeUnitAt(0) >= 65 && colKey.codeUnitAt(0) <= 90) {
+          } else if (colKey.length == 1 &&
+              colKey.codeUnitAt(0) >= 65 &&
+              colKey.codeUnitAt(0) <= 90) {
             colIndex = colKey.codeUnitAt(0) - 65;
           } else {
             return;
@@ -87,7 +98,7 @@ class ExcelService {
             }
           }
         });
-        
+
         if (hasData) {
           rowMap['_rowIndex'] = i + 1;
           parsedRows.add(rowMap);
@@ -95,24 +106,24 @@ class ExcelService {
       }
       return parsedRows;
     }
-    
+
     var bytes = file.readAsBytesSync();
     var excel = Excel.decodeBytes(bytes);
-    
+
     var sheet = excel.tables.keys.first;
     var table = excel.tables[sheet];
-    
+
     if (table == null || table.rows.length <= rowIndex + 1) return [];
 
     List<Map<String, dynamic>> parsedRows = [];
-    
+
     // Process rows after the header row
     for (int i = rowIndex + 1; i < table.rows.length; i++) {
       var row = table.rows[i];
       Map<String, dynamic> rowMap = {};
-      
+
       bool hasData = false;
-      
+
       columnMap.forEach((colKey, headerName) {
         // Column key is an integer string index ("0", "1", "2", ...)
         // Fall back to letter-based for backwards compatibility (A=0, B=1, ...)
@@ -120,7 +131,9 @@ class ExcelService {
         final parsed = int.tryParse(colKey);
         if (parsed != null) {
           colIndex = parsed;
-        } else if (colKey.length == 1 && colKey.codeUnitAt(0) >= 65 && colKey.codeUnitAt(0) <= 90) {
+        } else if (colKey.length == 1 &&
+            colKey.codeUnitAt(0) >= 65 &&
+            colKey.codeUnitAt(0) <= 90) {
           colIndex = colKey.codeUnitAt(0) - 65;
         } else {
           return; // skip invalid key
@@ -133,13 +146,13 @@ class ExcelService {
           }
         }
       });
-      
+
       if (hasData) {
         rowMap['_rowIndex'] = i + 1;
         parsedRows.add(rowMap);
       }
     }
-    
+
     return parsedRows;
   }
 }

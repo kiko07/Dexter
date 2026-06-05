@@ -14,7 +14,7 @@ enum ImportWizardStep {
   columnSelector,
   preview,
   progress,
-  summary
+  summary,
 }
 
 class ImportWizardState {
@@ -27,7 +27,7 @@ class ImportWizardState {
   final bool importAllFields;
   final bool isProcessing;
   final String? error;
-  
+
   // Progress state
   final int totalRows;
   final int processedRows;
@@ -72,7 +72,9 @@ class ImportWizardState {
       referenceRowIndex: referenceRowIndex ?? this.referenceRowIndex,
       availableHeaders: availableHeaders ?? this.availableHeaders,
       selectedColumns: selectedColumns ?? this.selectedColumns,
-      dedupKeyField: clearDedupKeyField ? null : (dedupKeyField ?? this.dedupKeyField),
+      dedupKeyField: clearDedupKeyField
+          ? null
+          : (dedupKeyField ?? this.dedupKeyField),
       importAllFields: importAllFields ?? this.importAllFields,
       isProcessing: isProcessing ?? this.isProcessing,
       error: error,
@@ -91,7 +93,10 @@ class ImportWizardNotifier extends Notifier<ImportWizardState> {
   }
 
   void setFilePaths(List<String> paths) {
-    state = state.copyWith(filePaths: paths, currentStep: ImportWizardStep.referenceRow);
+    state = state.copyWith(
+      filePaths: paths,
+      currentStep: ImportWizardStep.referenceRow,
+    );
   }
 
   void setReferenceRow(int index) {
@@ -100,11 +105,14 @@ class ImportWizardNotifier extends Notifier<ImportWizardState> {
 
   Future<void> loadHeaders() async {
     if (state.filePaths.isEmpty) return;
-    
+
     state = state.copyWith(isProcessing: true, error: null);
     try {
-      final headers = await ExcelService.readHeaders(state.filePaths.first, state.referenceRowIndex);
-      
+      final headers = await ExcelService.readHeaders(
+        state.filePaths.first,
+        state.referenceRowIndex,
+      );
+
       // Auto-map all columns if importAllFields is true
       Map<String, String> columnMap = {};
       for (int i = 0; i < headers.length; i++) {
@@ -125,14 +133,16 @@ class ImportWizardNotifier extends Notifier<ImportWizardState> {
       state = state.copyWith(isProcessing: false, error: e.toString());
     }
   }
-  
+
   void setImportAllFields(bool value) {
     state = state.copyWith(importAllFields: value);
   }
 
   void toggleColumn(String excelLetter, String headerName) {
-    if (state.importAllFields) return; // Cannot manually toggle if 'import all' is true
-    
+    if (state.importAllFields) {
+      return; // Cannot manually toggle if 'import all' is true
+    }
+
     final currentMap = Map<String, String>.from(state.selectedColumns);
     if (currentMap.containsKey(excelLetter)) {
       currentMap.remove(excelLetter);
@@ -161,7 +171,7 @@ class ImportWizardNotifier extends Notifier<ImportWizardState> {
 
   Future<void> startImport() async {
     if (state.filePaths.isEmpty) return;
-    
+
     state = state.copyWith(
       currentStep: ImportWizardStep.progress,
       isProcessing: true,
@@ -174,15 +184,17 @@ class ImportWizardNotifier extends Notifier<ImportWizardState> {
       final db = ref.read(databaseProvider);
       int totalAdded = 0;
       int totalSkipped = 0;
-      
+
       for (final filePath in state.filePaths) {
         // Find existing profile or create new
         final profileName = p.basenameWithoutExtension(filePath);
         final existingProfiles = await db.profilesDao.getAllProfiles();
         int profileId;
         String? actualDedupKey = state.dedupKeyField;
-        final matchingProfiles = existingProfiles.where((p) => p.name == profileName).toList();
-        
+        final matchingProfiles = existingProfiles
+            .where((p) => p.name == profileName)
+            .toList();
+
         if (matchingProfiles.isNotEmpty) {
           profileId = matchingProfiles.first.id;
           actualDedupKey ??= matchingProfiles.first.dedupKeyField;
@@ -193,19 +205,21 @@ class ImportWizardNotifier extends Notifier<ImportWizardState> {
               columnMap: jsonEncode(state.selectedColumns),
               referenceRowIndex: drift.Value(state.referenceRowIndex),
               dedupKeyField: drift.Value(state.dedupKeyField),
-            )
+            ),
           );
         }
 
         // Fetch existing keys to deduplicate efficiently without loading full entries or decoding JSON
         final Set<String> existingKeys = {};
-        
+
         if (actualDedupKey != null) {
           // Use SQLite json_extract to get just the dedup values directly
-          final rows = await db.customSelect(
-            "SELECT json_extract(data, '\$.\"$actualDedupKey\"') as val FROM entries WHERE json_extract(data, '\$.\"$actualDedupKey\"') IS NOT NULL"
-          ).get();
-          
+          final rows = await db
+              .customSelect(
+                "SELECT json_extract(data, '\$.\"$actualDedupKey\"') as val FROM entries WHERE json_extract(data, '\$.\"$actualDedupKey\"') IS NOT NULL",
+              )
+              .get();
+
           for (final row in rows) {
             final val = row.read<String?>('val')?.trim();
             if (val != null && val.isNotEmpty) {
@@ -214,10 +228,12 @@ class ImportWizardNotifier extends Notifier<ImportWizardState> {
           }
         } else {
           // Fallback: fetch only the search_payload column
-          final rows = await db.customSelect(
-            "SELECT search_payload as val FROM entries WHERE search_payload IS NOT NULL"
-          ).get();
-          
+          final rows = await db
+              .customSelect(
+                "SELECT search_payload as val FROM entries WHERE search_payload IS NOT NULL",
+              )
+              .get();
+
           for (final row in rows) {
             final val = row.read<String?>('val')?.trim();
             if (val != null && val.isNotEmpty) {
@@ -234,7 +250,7 @@ class ImportWizardNotifier extends Notifier<ImportWizardState> {
             originalFileName: p.basename(filePath),
             localFilePath: filePath,
             fileHash: fileHash,
-          )
+          ),
         );
 
         // Parse Data
@@ -249,8 +265,10 @@ class ImportWizardNotifier extends Notifier<ImportWizardState> {
         int skippedInBatch = 0;
 
         for (final map in parsedData) {
-          final payload = map.values.map((v) => arabicNormalize(v?.toString() ?? '')).join(' ');
-          
+          final payload = map.values
+              .map((v) => arabicNormalize(v?.toString() ?? ''))
+              .join(' ');
+
           String dedupVal = '';
           if (actualDedupKey != null) {
             final val = map[actualDedupKey]?.toString().trim();
@@ -269,22 +287,25 @@ class ImportWizardNotifier extends Notifier<ImportWizardState> {
             }
             existingKeys.add(dedupVal); // prevent duplicate in the same file
           }
-          
-          entriesList.add(EntriesCompanion.insert(
-            profileId: profileId,
-            importBatchId: drift.Value(batchId),
-            data: jsonEncode(map),
-            searchPayload: payload,
-            sourceFile: drift.Value(p.basename(filePath)),
-          ));
+
+          entriesList.add(
+            EntriesCompanion.insert(
+              profileId: profileId,
+              importBatchId: drift.Value(batchId),
+              data: jsonEncode(map),
+              searchPayload: payload,
+              sourceFile: drift.Value(p.basename(filePath)),
+            ),
+          );
         }
 
         // Insert Audit Log
         await db.auditDao.insertLog(
           AuditLogCompanion.insert(
             action: 'IMPORT',
-            description: 'Imported batch $batchId with ${entriesList.length} entries (Skipped $skippedInBatch duplicates) from ${p.basename(filePath)}',
-          )
+            description:
+                'Imported batch $batchId with ${entriesList.length} entries (Skipped $skippedInBatch duplicates) from ${p.basename(filePath)}',
+          ),
         );
 
         // Bulk Insert
@@ -294,8 +315,10 @@ class ImportWizardNotifier extends Notifier<ImportWizardState> {
 
         // Update Batch Row Count
         final batch = await db.batchesDao.getBatch(batchId);
-        await db.batchesDao.updateBatch(batch.copyWith(rowCount: entriesList.length));
-        
+        await db.batchesDao.updateBatch(
+          batch.copyWith(rowCount: entriesList.length),
+        );
+
         totalAdded += entriesList.length;
       }
 
@@ -306,14 +329,11 @@ class ImportWizardNotifier extends Notifier<ImportWizardState> {
         processedRows: totalAdded,
         skippedRows: totalSkipped,
       );
-      
+
       // Refresh history data
       ref.invalidate(historyProvider);
     } catch (e) {
-      state = state.copyWith(
-        isProcessing: false,
-        error: e.toString(),
-      );
+      state = state.copyWith(isProcessing: false, error: e.toString());
     }
   }
 
@@ -322,6 +342,7 @@ class ImportWizardNotifier extends Notifier<ImportWizardState> {
   }
 }
 
-final importWizardProvider = NotifierProvider<ImportWizardNotifier, ImportWizardState>(() {
-  return ImportWizardNotifier();
-});
+final importWizardProvider =
+    NotifierProvider<ImportWizardNotifier, ImportWizardState>(() {
+      return ImportWizardNotifier();
+    });

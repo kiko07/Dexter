@@ -9,6 +9,7 @@ import 'features/search/search_provider.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
+  await SecureStorageService.initializeOnFirstRun();
   final encryptionKey = await SecureStorageService.getDatabaseEncryptionKey();
   final database = AppDatabase(encryptionKey: encryptionKey);
   
