@@ -60,31 +60,28 @@ class HistoryScreen extends ConsumerWidget {
     // Capture the ScaffoldMessenger before showing the dialog to avoid
     // using the dialog's context after it's popped
     final messenger = ScaffoldMessenger.of(context);
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
-          title: Text(AppLocalizations.of(context)!.confirmUndo),
+          title: Text(AppLocalizations.of(dialogContext)!.confirmUndo),
           content: Text(
             AppLocalizations.of(
-              context,
+              dialogContext,
             )!.confirmDeleteImportBatch(batch.originalFileName),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
-              child: Text(AppLocalizations.of(context)!.cancel),
+              child: Text(AppLocalizations.of(dialogContext)!.cancel),
             ),
             ElevatedButton(
               onPressed: () {
                 notifier.undoBatch(batch);
                 Navigator.pop(dialogContext);
                 messenger.showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      AppLocalizations.of(context)!.undoImportSuccess,
-                    ),
-                  ),
+                  SnackBar(content: Text(l10n.undoImportSuccess)),
                 );
               },
               style: ElevatedButton.styleFrom(backgroundColor: Colors.red),

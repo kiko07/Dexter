@@ -119,7 +119,8 @@ class ImportSummaryScreen extends ConsumerWidget {
               foregroundColor: theme.colorScheme.onPrimary,
             ),
             onPressed: () {
-              notifier.reset(); // Back to start
+              notifier.reset();
+              Navigator.pop(context);
             },
             child: Text(
               AppLocalizations.of(context)!.finish,

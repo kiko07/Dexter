@@ -10,8 +10,10 @@ import '../../core/utils/excel_service.dart';
 import '../../core/utils/folder_scanner.dart';
 import '../../core/utils/hash_service.dart';
 import '../../core/utils/arabic_normalizer.dart';
+import '../../core/utils/dedup_helper.dart';
 import '../search/search_provider.dart';
 import '../settings/settings_provider.dart';
+import '../statistics/statistics_provider.dart';
 
 class BackgroundScannerState {
   final bool isScanning;
@@ -28,12 +30,14 @@ class BackgroundScannerNotifier extends Notifier<BackgroundScannerState> {
 
   Future<void> scanNow({bool isManual = false}) async {
     if (state.isScanning) return;
-    
+
     final settings = ref.read(settingsProvider).value;
     if (settings == null) return;
-    
+
     // If not manual, and both settings are false, just return
-    if (!isManual && !settings.autoScanImportedFiles && !settings.autoScanWatchedFolders) {
+    if (!isManual &&
+        !settings.autoScanImportedFiles &&
+        !settings.autoScanWatchedFolders) {
       return;
     }
 
@@ -42,16 +46,6 @@ class BackgroundScannerNotifier extends Notifier<BackgroundScannerState> {
     int totalNewRows = 0;
 
     try {
-      // 1. Fetch existing keys globally once to deduplicate across all files
-      final Set<String> existingKeys = {};
-      final allEntries = await db.entriesDao.getAllEntries();
-
-      // We pre-populate existingKeys with searchPayload as a fallback.
-      // For specific dedupKeys, we will extract them inside the loop.
-      for (final entry in allEntries) {
-        existingKeys.add(entry.searchPayload);
-      }
-
       // 2. Scan existing imported files for updates
       if (isManual || settings.autoScanImportedFiles) {
         final batches = await db.batchesDao.getAllBatches();
@@ -63,78 +57,91 @@ class BackgroundScannerNotifier extends Notifier<BackgroundScannerState> {
           if (newHash != batch.fileHash) {
             // File changed! Re-import
             final profile = await db.profilesDao.getProfile(batch.profileId);
-            final columnMap = (jsonDecode(profile.columnMap) as Map).cast<String, String>();
-            
-            // Re-populate existingKeys with this profile's specific dedup key if it exists
-            if (profile.dedupKeyField != null) {
-              for (final entry in allEntries) {
-                try {
-                  final map = jsonDecode(entry.data) as Map<String, dynamic>;
-                  final val = map[profile.dedupKeyField]?.toString().trim();
-                  if (val != null && val.isNotEmpty) {
-                    existingKeys.add(arabicNormalize(val));
-                  }
-                } catch (_) {}
-              }
-            }
+            final columnMap = (jsonDecode(profile.columnMap) as Map)
+                .cast<String, String>();
 
-            final parsedData = await ExcelService.parseData(
+            final existingKeys = await DedupHelper.buildDedupSet(
+              db,
+              profile.id,
+              profile.dedupKeyField,
+            );
+
+            final allSheetsData = await ExcelService.parseAllSheets(
               filePath: batch.localFilePath,
               columnMap: columnMap,
               referenceRowIndex: profile.referenceRowIndex,
             );
 
             final entriesList = <EntriesCompanion>[];
-            for (final map in parsedData) {
-              final payload = map.values.map((v) => arabicNormalize(v?.toString() ?? '')).join(' ');
-              String dedupVal = '';
-              if (profile.dedupKeyField != null) {
-                final val = map[profile.dedupKeyField]?.toString().trim();
-                if (val != null && val.isNotEmpty) {
-                  dedupVal = arabicNormalize(val);
-                }
-              } else {
-                dedupVal = payload;
-              }
+            for (final entry in allSheetsData.entries) {
+              final sheetName = entry.key;
+              for (final map in entry.value) {
+                final cleanMap = Map<String, dynamic>.from(map);
+                cleanMap['_sheetName'] = sheetName;
 
-              if (dedupVal.isNotEmpty) {
-                if (existingKeys.contains(dedupVal)) continue; // Skip duplicate
-                existingKeys.add(dedupVal);
+                final payloadMap = DedupHelper.stripMetadataForDedup(cleanMap);
+                final payload = payloadMap.values
+                    .map((v) => arabicNormalize(v?.toString() ?? ''))
+                    .join(' ');
+
+                String dedupVal = '';
+                if (profile.dedupKeyField != null) {
+                  final val = cleanMap[profile.dedupKeyField]?.toString();
+                  if (val != null && val.trim().isNotEmpty) {
+                    dedupVal = DedupHelper.normalizeForDedup(val);
+                  }
+                } else {
+                  dedupVal = DedupHelper.normalizePayloadForDedup(cleanMap);
+                }
+
+                if (dedupVal.isNotEmpty) {
+                  if (existingKeys.contains(dedupVal)) {
+                    continue; // Skip duplicate
+                  }
+                  existingKeys.add(dedupVal);
+                }
+
+                entriesList.add(
+                  EntriesCompanion.insert(
+                    profileId: profile.id,
+                    importBatchId: drift.Value(batch.id),
+                    data: jsonEncode(cleanMap),
+                    searchPayload: payload,
+                    sourceFile: drift.Value(p.basename(batch.localFilePath)),
+                  ),
+                );
               }
-              
-              entriesList.add(EntriesCompanion.insert(
-                profileId: profile.id,
-                importBatchId: drift.Value(batch.id),
-                data: jsonEncode(map),
-                searchPayload: payload,
-                sourceFile: drift.Value(p.basename(batch.localFilePath)),
-              ));
             }
 
             if (entriesList.isNotEmpty) {
               await db.entriesDao.insertEntriesBulk(entriesList);
               totalNewRows += entriesList.length;
-              
-              await db.batchesDao.updateBatch(
-                batch.copyWith(
-                  fileHash: newHash,
-                  rowCount: batch.rowCount + entriesList.length,
-                )
-              );
 
-              await db.auditDao.insertLog(AuditLogCompanion.insert(
-                action: 'AUTO_SCAN',
-                description: 'Auto-updated ${entriesList.length} new rows from ${batch.originalFileName}',
-              ));
+              await db.auditDao.insertLog(
+                AuditLogCompanion.insert(
+                  action: 'AUTO_SCAN',
+                  description:
+                      'Auto-updated ${entriesList.length} new rows from ${batch.originalFileName}',
+                ),
+              );
             }
+
+            await db.batchesDao.updateBatch(
+              batch.copyWith(
+                fileHash: newHash,
+                rowCount: batch.rowCount + entriesList.length,
+              ),
+            );
           }
         }
       }
 
       // 3. Scan Watched Folders for NEW files
       if (isManual || settings.autoScanWatchedFolders) {
-        final existingBatchPaths = (await db.batchesDao.getAllBatches()).map((b) => b.localFilePath).toSet();
-        
+        final existingBatchPaths = (await db.batchesDao.getAllBatches())
+            .map((b) => b.localFilePath)
+            .toSet();
+
         for (final folderPath in settings.watchedFolders) {
           final dir = Directory(folderPath);
           if (!await dir.exists()) continue;
@@ -143,32 +150,35 @@ class BackgroundScannerNotifier extends Notifier<BackgroundScannerState> {
           for (final file in files) {
             if (!existingBatchPaths.contains(file.path)) {
               // This is a new file!
-              final headers = await ExcelService.readHeaders(file.path, 0); // Assume row 0
-              if (headers.isEmpty) continue;
-              
-              Map<String, String> columnMap = {};
-              for (int i = 0; i < headers.length; i++) {
-                if (headers[i].isNotEmpty) {
-                  columnMap[i.toString()] = headers[i];
-                }
-              }
-
-              // Create profile
               final profileName = p.basenameWithoutExtension(file.path);
               int profileId;
-              
+              late Map<String, String> columnMap;
+              var referenceRowIndex = 0;
+              String? dedupKeyField;
+
               final existingProfiles = await db.profilesDao.getAllProfiles();
-              final matchingProfiles = existingProfiles.where((p) => p.name == profileName).toList();
+              final matchingProfiles = existingProfiles
+                  .where((p) => p.name == profileName)
+                  .toList();
               if (matchingProfiles.isNotEmpty) {
-                profileId = matchingProfiles.first.id;
+                final profile = matchingProfiles.first;
+                profileId = profile.id;
+                columnMap = (jsonDecode(profile.columnMap) as Map)
+                    .cast<String, String>();
+                referenceRowIndex = profile.referenceRowIndex;
+                dedupKeyField = profile.dedupKeyField;
               } else {
+                final headers = await ExcelService.readHeaders(file.path, 0);
+                if (headers.isEmpty) continue;
+                columnMap = ExcelService.buildColumnMap(headers);
+
                 profileId = await db.profilesDao.insertProfile(
                   ImportProfilesCompanion.insert(
                     name: profileName,
                     columnMap: jsonEncode(columnMap),
                     referenceRowIndex: const drift.Value(0),
                     dedupKeyField: const drift.Value(null),
-                  )
+                  ),
                 );
               }
 
@@ -180,59 +190,104 @@ class BackgroundScannerNotifier extends Notifier<BackgroundScannerState> {
                   originalFileName: p.basename(file.path),
                   localFilePath: file.path,
                   fileHash: fileHash,
-                )
+                ),
+              );
+              existingBatchPaths.add(file.path);
+
+              final existingKeys = await DedupHelper.buildDedupSet(
+                db,
+                profileId,
+                dedupKeyField,
               );
 
-              // Parse data
-              final parsedData = await ExcelService.parseData(
+              // Parse data from all sheets
+              final allSheetsData = await ExcelService.parseAllSheets(
                 filePath: file.path,
                 columnMap: columnMap,
-                referenceRowIndex: 0,
+                referenceRowIndex: referenceRowIndex,
               );
 
               final entriesList = <EntriesCompanion>[];
-              for (final map in parsedData) {
-                final payload = map.values.map((v) => arabicNormalize(v?.toString() ?? '')).join(' ');
-                
-                if (payload.isNotEmpty) {
-                  if (existingKeys.contains(payload)) continue; // Exact duplicate
-                  existingKeys.add(payload);
+              for (final entry in allSheetsData.entries) {
+                final sheetName = entry.key;
+                for (final map in entry.value) {
+                  final cleanMap = Map<String, dynamic>.from(map);
+                  cleanMap['_sheetName'] = sheetName;
+
+                  final payloadMap = DedupHelper.stripMetadataForDedup(
+                    cleanMap,
+                  );
+                  final payload = payloadMap.values
+                      .map((v) => arabicNormalize(v?.toString() ?? ''))
+                      .join(' ');
+
+                  final String dedupVal;
+                  if (dedupKeyField != null) {
+                    final value = cleanMap[dedupKeyField]?.toString();
+                    dedupVal = value == null || value.trim().isEmpty
+                        ? ''
+                        : DedupHelper.normalizeForDedup(value);
+                  } else {
+                    dedupVal = DedupHelper.normalizePayloadForDedup(cleanMap);
+                  }
+
+                  if (dedupVal.isNotEmpty) {
+                    if (existingKeys.contains(dedupVal)) {
+                      continue; // Exact duplicate
+                    }
+                    existingKeys.add(dedupVal);
+                  }
+
+                  entriesList.add(
+                    EntriesCompanion.insert(
+                      profileId: profileId,
+                      importBatchId: drift.Value(batchId),
+                      data: jsonEncode(cleanMap),
+                      searchPayload: payload,
+                      sourceFile: drift.Value(p.basename(file.path)),
+                    ),
+                  );
                 }
-                
-                entriesList.add(EntriesCompanion.insert(
-                  profileId: profileId,
-                  importBatchId: drift.Value(batchId),
-                  data: jsonEncode(map),
-                  searchPayload: payload,
-                  sourceFile: drift.Value(p.basename(file.path)),
-                ));
               }
 
               if (entriesList.isNotEmpty) {
                 await db.entriesDao.insertEntriesBulk(entriesList);
                 totalNewRows += entriesList.length;
-                
-                final batch = await db.batchesDao.getBatch(batchId);
-                await db.batchesDao.updateBatch(batch.copyWith(rowCount: entriesList.length));
 
-                await db.auditDao.insertLog(AuditLogCompanion.insert(
-                  action: 'AUTO_SCAN_NEW',
-                  description: 'Auto-indexed new file ${p.basename(file.path)} with ${entriesList.length} rows',
-                ));
+                final batch = await db.batchesDao.getBatch(batchId);
+                await db.batchesDao.updateBatch(
+                  batch.copyWith(rowCount: entriesList.length),
+                );
+
+                await db.auditDao.insertLog(
+                  AuditLogCompanion.insert(
+                    action: 'AUTO_SCAN_NEW',
+                    description:
+                        'Auto-indexed new file ${p.basename(file.path)} with ${entriesList.length} rows',
+                  ),
+                );
               }
             }
           }
         }
       }
 
-      state = BackgroundScannerState(isScanning: false, lastMessage: 'autoUpdateSuccess:$totalNewRows');
+      state = BackgroundScannerState(
+        isScanning: false,
+        lastMessage: 'autoUpdateSuccess:$totalNewRows',
+      );
+      if (totalNewRows > 0) ref.invalidate(statisticsProvider);
     } catch (e) {
       debugPrint('Auto Scan Error: $e');
-      state = BackgroundScannerState(isScanning: false, lastMessage: 'autoUpdateError:$e');
+      state = BackgroundScannerState(
+        isScanning: false,
+        lastMessage: 'autoUpdateError:$e',
+      );
     }
   }
 }
 
-final backgroundScannerProvider = NotifierProvider<BackgroundScannerNotifier, BackgroundScannerState>(() {
-  return BackgroundScannerNotifier();
-});
+final backgroundScannerProvider =
+    NotifierProvider<BackgroundScannerNotifier, BackgroundScannerState>(() {
+      return BackgroundScannerNotifier();
+    });

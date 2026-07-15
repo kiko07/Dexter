@@ -42,7 +42,7 @@
   "importData": "استيراد البيانات",
   "chooseFileOrFolder": "اختر الملف أو المجلد",
   "files": "ملفات",
-  "noExcelFilesFound": "لم يتم العثور على ملفات إكسيل",
+  "noExcelFilesFound": "لم يتم العثور على ملفات إكسل أو CSV مدعومة",
   "folder": "مجلد",
   "headerRowNumber": "رقم صف المرجع (العناوين):",
   "next": "التالي",
@@ -98,7 +98,7 @@
   "addFolderToWatch": "إضافة مجلد للمراقبة",
   "advancedManagement": "إدارة متقدمة",
   "currentPasswordIncorrect": "كلمة المرور الحالية غير صحيحة",
-  "english": "English",
+  "english": "الإنجليزية",
   "designedBy": "تم التصميم بواسطة",
   "ahmedElKilany": "النقيب / أحمد الكيلاني",
   "sortNewest": "الأحدث",
@@ -161,7 +161,7 @@
   "chooseDates": "اختر التواريخ",
   "pleaseSelectTimeRangeFirst": "الرجاء اختيار فترة زمنية أولاً.",
   "exportNow": "تصدير الآن",
-  "importDataSubtitle": "إضافة بيانات جديدة من ملفات Excel",
+  "importDataSubtitle": "إضافة بيانات جديدة من ملفات إكسل أو CSV",
   "exportDataSubtitle": "تصدير كافة البيانات المسجلة إلى ملف Excel",
   "recordCountAndDate": "عدد السجلات: {count}\nالتاريخ: {date}",
   "@recordCountAndDate": {
@@ -209,5 +209,174 @@
   "removePasswordSubtitle": "إزالة كلمة المرور من التطبيق بالكامل.",
   "confirmRemovePassword": "هل أنت متأكد أنك تريد إزالة كلمة المرور؟",
   "passwordRemovedSuccessfully": "تم إزالة كلمة المرور بنجاح",
-  "remove": "إزالة"
+  "remove": "إزالة",
+  "useFaceId": "استخدام Face ID",
+  "useFingerprint": "استخدام البصمة",
+  "faceId": "Face ID",
+  "fingerprint": "البصمة",
+  "useFaceIdToUnlock": "استخدام Face ID للفتح",
+  "useFingerprintToUnlock": "استخدام البصمة للفتح",
+  "viewAndDeleteSpecificFileRecords": "عرض وحذف سجلات ملفات محددة",
+  "selectSheets": "اختر الأوراق للاستيراد",
+  "scanForDuplicates": "فحص التكرارات",
+  "findAndRemoveDuplicates": "البحث وحذف السجلات المكررة",
+  "noDuplicatesFound": "لا توجد سجلات مكررة!",
+  "duplicatesFound": "تم العثور على {count} مجموعة تكرار",
+  "@duplicatesFound": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "keepFirst": "الاحتفاظ بالأول",
+  "totalRedundantEntries": "إجمالي السجلات الزائدة: {count}",
+  "@totalRedundantEntries": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "copiesCount": "{count} نسخ",
+  "@copiesCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "keepBadge": "احتفاظ",
+  "duplicateBadge": "مكرر",
+  "payload": "بيانات السجل",
+  "confirmDeleteDuplicateCopy": "هل أنت متأكد أنك تريد حذف هذه النسخة المكررة؟ لا يمكن التراجع عن هذا الإجراء.",
+  "advancedFilters": "فلاتر متقدمة",
+  "allFiles": "جميع الملفات",
+  "selectedFiles": "{count} ملف(ات) محددة",
+  "@selectedFiles": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "fileScope": "نطاق الملف",
+  "addFilter": "إضافة فلتر",
+  "field": "الحقل",
+  "operator": "العملية",
+  "contains": "يحتوي على",
+  "doesNotContain": "لا يحتوي على",
+  "equalTo": "يساوي",
+  "notEqualTo": "لا يساوي",
+  "greaterThan": "أكبر من",
+  "lessThan": "أصغر من",
+  "betweenLabel": "بين",
+  "copied": "تم النسخ",
+  "copy": "نسخ",
+  "selectAll": "تحديد الكل",
+  "clear": "مسح",
+  "manualEntriesOnly": "الإدخالات اليدوية فقط",
+  "fieldRequired": "هذا الحقل مطلوب",
+  "invalidFilterValue": "أدخل قيمة صالحة لهذا الفلتر",
+  "discardChangesTitle": "تجاهل التغييرات؟",
+  "discardChangesMessage": "لديك بيانات غير محفوظة. هل تريد المغادرة دون حفظها؟",
+  "discard": "تجاهل",
+  "secureStorageErrorTitle": "التخزين الآمن غير متاح",
+  "secureStorageErrorMessage": "تعذر على دكستر قراءة وحدة التخزين الآمنة. أعد تشغيل التطبيق أو تحقق من إعدادات أمان الجهاز قبل المتابعة.",
+  "authenticateToUnlock": "استخدم المصادقة لفتح دكستر",
+  "authenticateToEnableBiometrics": "استخدم المصادقة لتفعيل المصادقة الحيوية",
+  "passwordTooShort": "يجب ألا تقل كلمة المرور عن 4 أحرف",
+  "showPassword": "إظهار كلمة المرور",
+  "hidePassword": "إخفاء كلمة المرور",
+  "lockedOutSeconds": "محاولات فاشلة كثيرة. حاول مرة أخرى بعد {seconds} ثانية.",
+  "@lockedOutSeconds": {
+    "placeholders": {
+      "seconds": { "type": "int" }
+    }
+  },
+  "exportReady": "التصدير جاهز",
+  "matchContains": "يحتوي على",
+  "matchExact": "مطابقة تامة",
+  "matchStartsWith": "يبدأ بـ",
+  "matchFuzzy": "مطابقة تقريبية",
+  "anyField": "أي حقل",
+  "recordId": "معرّف السجل",
+  "profileId": "معرّف الملف التعريفي",
+  "sourceFile": "الملف المصدر",
+  "importBatch": "دفعة الاستيراد",
+  "createdAt": "تاريخ الإنشاء",
+  "updatedAt": "تاريخ التحديث",
+  "startsWith": "يبدأ بـ",
+  "doesNotStartWith": "لا يبدأ بـ",
+  "endsWith": "ينتهي بـ",
+  "doesNotEndWith": "لا ينتهي بـ",
+  "containsAllWords": "يحتوي على كل الكلمات",
+  "containsAnyWord": "يحتوي على أي كلمة",
+  "containsNoWords": "لا يحتوي على أي من الكلمات",
+  "containsCaseSensitive": "يحتوي على (مع مراعاة حالة الأحرف)",
+  "equalCaseSensitive": "يساوي (مع مراعاة حالة الأحرف)",
+  "notEqualCaseSensitive": "لا يساوي (مع مراعاة حالة الأحرف)",
+  "inList": "موجود في القائمة",
+  "notInList": "غير موجود في القائمة",
+  "greaterThanOrEqual": "أكبر من أو يساوي",
+  "lessThanOrEqual": "أصغر من أو يساوي",
+  "notBetween": "ليس بين",
+  "isNumeric": "قيمة رقمية",
+  "isNotNumeric": "قيمة غير رقمية",
+  "dateBefore": "التاريخ قبل",
+  "dateAfter": "التاريخ بعد",
+  "dateIs": "التاريخ يوافق",
+  "dateIsNot": "التاريخ لا يوافق",
+  "dateBetween": "التاريخ بين",
+  "dateToday": "التاريخ هو اليوم",
+  "dateInLastDays": "التاريخ ضمن الأيام الأخيرة",
+  "lengthEqual": "الطول يساوي",
+  "lengthGreaterThan": "الطول أكبر من",
+  "lengthLessThan": "الطول أصغر من",
+  "lengthBetween": "الطول بين",
+  "fieldExists": "الحقل موجود",
+  "fieldMissing": "الحقل غير موجود",
+  "isEmpty": "فارغ",
+  "isNotEmpty": "غير فارغ",
+  "valueLabel": "القيمة",
+  "minValue": "القيمة الصغرى",
+  "maxValue": "القيمة الكبرى",
+  "dateLabel": "التاريخ",
+  "startDate": "تاريخ البداية",
+  "endDate": "تاريخ النهاية",
+  "characters": "عدد الأحرف",
+  "minCharacters": "الحد الأدنى للأحرف",
+  "maxCharacters": "الحد الأقصى للأحرف",
+  "days": "الأيام",
+  "separateWordsWithSpaces": "افصل الكلمات بمسافات",
+  "listValueHint": "افصل العناصر بفواصل أو فاصلة منقوطة أو أسطر جديدة",
+  "dateFormatHint": "سنة-شهر-يوم",
+  "pickDate": "اختر التاريخ",
+  "statistics": "الإحصائيات",
+  "statisticsSubtitle": "استكشف اتجاهات البيانات المفهرسة وتوزيعها",
+  "last30Days": "آخر 30 يوماً",
+  "allTime": "كل الوقت",
+  "manualRecords": "السجلات اليدوية",
+  "indexedFiles": "الملفات المفهرسة",
+  "profiles": "الملفات التعريفية",
+  "recordsOverTime": "السجلات عبر الزمن",
+  "breakdown": "التوزيع",
+  "bySourceFile": "حسب الملف المصدر",
+  "byProfile": "حسب الملف التعريفي",
+  "noStatisticsData": "لا توجد بيانات متاحة لهذه الفترة",
+  "manualSource": "إدخالات يدوية",
+  "recordsCount": "{count} سجل",
+  "@recordsCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "refresh": "تحديث",
+  "timeRange": "النطاق الزمني",
+  "noIndexedSourceFilesFound": "لا توجد ملفات مصدر مفهرسة",
+  "scanningDuplicateEntries": "جارٍ فحص السجلات المكررة...",
+  "settingsLoadError": "تعذر تحميل الإعدادات: {error}",
+  "@settingsLoadError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "importCount": "{count} عملية استيراد",
+  "@importCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  }
 }

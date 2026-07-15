@@ -29,28 +29,59 @@ int levenshteinDistance(String a, String b) {
   return v1[b.length];
 }
 
-/// Applies fuzzy search over a list of items based on a specific string payload.
-/// Items with distance higher than maxDistance are dropped.
+/// Applies tokenized fuzzy search over a list of items.
+/// A row matches when every query token is close to at least one payload token.
 /// Items are sorted ascending by distance (0 first).
 List<T> fuzzyFilterAndSort<T>(
   List<T> items,
   String query,
   String Function(T) getPayload, {
-  int maxDistance = 5,
+  int? maxDistance,
 }) {
   if (query.isEmpty) return items;
 
+  final queryTokens = _tokens(query);
+  if (queryTokens.isEmpty) return items;
+
   final scoredItems = <_ScoredItem<T>>[];
   for (var item in items) {
-    final payload = getPayload(item);
-    final distance = levenshteinDistance(query, payload);
-    if (distance <= maxDistance) {
-      scoredItems.add(_ScoredItem(item, distance));
+    final payloadTokens = _tokens(getPayload(item));
+    if (payloadTokens.isEmpty) continue;
+
+    var totalScore = 0;
+    var matchedAllTokens = true;
+    for (final queryToken in queryTokens) {
+      final threshold = maxDistance ?? max(3, queryToken.length ~/ 2);
+      var bestDistance = 1 << 30;
+      for (final payloadToken in payloadTokens) {
+        final distance = levenshteinDistance(queryToken, payloadToken);
+        if (distance < bestDistance) {
+          bestDistance = distance;
+        }
+      }
+      if (bestDistance > threshold) {
+        matchedAllTokens = false;
+        break;
+      }
+      totalScore += bestDistance;
+    }
+
+    if (matchedAllTokens) {
+      scoredItems.add(_ScoredItem(item, totalScore));
     }
   }
 
   scoredItems.sort((a, b) => a.score.compareTo(b.score));
   return scoredItems.map((e) => e.item).toList();
+}
+
+List<String> _tokens(String value) {
+  return value
+      .toLowerCase()
+      .split(RegExp(r'\s+'))
+      .map((token) => token.trim())
+      .where((token) => token.isNotEmpty)
+      .toList();
 }
 
 class _ScoredItem<T> {

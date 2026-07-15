@@ -11,17 +11,20 @@ class FolderScanner {
       if (!await dir.exists()) return [];
 
       final files = <File>[];
-      
+
       // Shallow list, no recursion
-      await for (final entity in dir.list(recursive: false, followLinks: false)) {
+      await for (final entity in dir.list(
+        recursive: false,
+        followLinks: false,
+      )) {
         if (entity is File) {
           final ext = p.extension(entity.path).toLowerCase();
-          if (ext == '.xlsx') {
+          if (ext == '.xlsx' || ext == '.csv') {
             files.add(entity);
           }
         }
       }
-      
+
       return files;
     } catch (e) {
       debugPrint('Folder Scan Error: $e');
@@ -34,7 +37,7 @@ class FolderScanner {
     try {
       final dir = Directory(directoryPath);
       if (!dir.existsSync()) return null;
-      
+
       return dir.watch(events: FileSystemEvent.create);
     } catch (e) {
       debugPrint('Folder Watch Error: $e');

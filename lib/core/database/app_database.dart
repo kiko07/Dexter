@@ -26,15 +26,22 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e) : encryptionKey = null;
 
   Future<void> clearAllData() async {
-    await customStatement('PRAGMA foreign_keys = OFF;');
-    await delete(entries).go();
-    await delete(importBatches).go();
-    await delete(importProfiles).go();
-    await delete(auditLog).go();
-    await delete(appSettings).go();
-    // Also clear the FTS5 virtual table to keep it in sync
-    await customStatement("DELETE FROM entries_fts;");
-    await customStatement('PRAGMA foreign_keys = ON;');
+    await transaction(() async {
+      await customStatement('PRAGMA foreign_keys = OFF;');
+      try {
+        await delete(entries).go();
+        await delete(importBatches).go();
+        await delete(importProfiles).go();
+        await delete(auditLog).go();
+        await delete(appSettings).go();
+        await customStatement('DELETE FROM entries_fts;');
+        await customStatement(
+          "DELETE FROM sqlite_sequence WHERE name IN ('entries','import_batches','import_profiles','audit_log');",
+        );
+      } finally {
+        await customStatement('PRAGMA foreign_keys = ON;');
+      }
+    });
   }
 
   @override
@@ -45,7 +52,7 @@ class AppDatabase extends _$AppDatabase {
     return MigrationStrategy(
       onCreate: (Migrator m) async {
         await m.createAll();
-        
+
         // Create FTS5 Virtual Table
         await customStatement('''
           CREATE VIRTUAL TABLE entries_fts USING fts5(
@@ -71,8 +78,12 @@ class AppDatabase extends _$AppDatabase {
         ''');
 
         // Create indexes for performance on common query patterns
-        await customStatement('CREATE INDEX idx_entries_profile ON entries(profile_id);');
-        await customStatement('CREATE INDEX idx_entries_batch ON entries(import_batch_id);');
+        await customStatement(
+          'CREATE INDEX idx_entries_profile ON entries(profile_id);',
+        );
+        await customStatement(
+          'CREATE INDEX idx_entries_batch ON entries(import_batch_id);',
+        );
 
         await customStatement('''
           CREATE TRIGGER after_entry_delete AFTER DELETE ON entries BEGIN
@@ -94,21 +105,82 @@ class AppDatabase extends _$AppDatabase {
 
 LazyDatabase _openConnection(String? encryptionKey) {
   return LazyDatabase(() async {
-    String dbFolder;
-    if (Platform.isAndroid || Platform.isIOS) {
-      dbFolder = (await getApplicationDocumentsDirectory()).path;
-    } else {
-      dbFolder = File(Platform.resolvedExecutable).parent.path;
-    }
-    final file = File(p.join(dbFolder, 'dexter_app.db'));
+    final file = await _databaseFile();
+    await _moveLegacyDesktopDatabase(file);
+    final effectiveEncryptionKey = await _effectiveEncryptionKeyForDatabase(
+      file,
+      encryptionKey,
+    );
 
     final cachebase = (await getTemporaryDirectory()).path;
     sqlite3.tempDirectory = cachebase;
 
-    return NativeDatabase.createInBackground(file, setup: (db) {
-      if (encryptionKey != null && encryptionKey.isNotEmpty) {
-        db.execute("PRAGMA key = '$encryptionKey';");
-      }
-    });
+    return NativeDatabase.createInBackground(
+      file,
+      setup: (db) {
+        if (effectiveEncryptionKey != null &&
+            effectiveEncryptionKey.isNotEmpty) {
+          final escaped = effectiveEncryptionKey.replaceAll("'", "''");
+          db.execute("PRAGMA key = '$escaped';");
+          final cipherVersion = db.select('PRAGMA cipher_version;');
+          if (cipherVersion.isEmpty) {
+            throw StateError('SQLite cipher support is not available.');
+          }
+          db.select('SELECT count(*) FROM sqlite_master;');
+        }
+      },
+    );
   });
+}
+
+Future<File> _databaseFile() async {
+  final String dbFolder;
+  if (Platform.isAndroid || Platform.isIOS) {
+    dbFolder = (await getApplicationDocumentsDirectory()).path;
+  } else {
+    final supportDir = await getApplicationSupportDirectory();
+    await supportDir.create(recursive: true);
+    dbFolder = supportDir.path;
+  }
+  return File(p.join(dbFolder, 'dexter_app.db'));
+}
+
+Future<String?> _effectiveEncryptionKeyForDatabase(
+  File file,
+  String? encryptionKey,
+) async {
+  if (encryptionKey == null || encryptionKey.isEmpty) return null;
+  if (await file.exists() && await _hasPlainSqliteHeader(file)) {
+    return null;
+  }
+  return encryptionKey;
+}
+
+Future<bool> _hasPlainSqliteHeader(File file) async {
+  const sqliteHeader = 'SQLite format 3\u0000';
+  RandomAccessFile? handle;
+  try {
+    handle = await file.open();
+    if (await handle.length() < sqliteHeader.length) return false;
+    final bytes = await handle.read(sqliteHeader.length);
+    return String.fromCharCodes(bytes) == sqliteHeader;
+  } catch (_) {
+    return false;
+  } finally {
+    await handle?.close();
+  }
+}
+
+Future<void> _moveLegacyDesktopDatabase(File target) async {
+  if (Platform.isAndroid || Platform.isIOS) return;
+  if (await target.exists()) return;
+
+  final legacy = File(
+    p.join(File(Platform.resolvedExecutable).parent.path, 'dexter_app.db'),
+  );
+  if (!await legacy.exists()) return;
+
+  await target.parent.create(recursive: true);
+  await legacy.copy(target.path);
+  await legacy.rename('${legacy.path}.migrated.bak');
 }

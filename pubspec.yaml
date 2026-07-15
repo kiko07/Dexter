@@ -36,7 +36,6 @@ dependencies:
   cupertino_icons: ^1.0.8
   flutter_riverpod: ^3.3.1
   drift: ^2.33.0
-  sqlcipher_flutter_libs: ^0.7.0+eol
   flutter_secure_storage: ^10.3.1
   intl: ^0.20.2
   google_fonts: ^8.1.0
@@ -50,6 +49,7 @@ dependencies:
   sqlite3: ^3.3.2
   local_auth: ^3.0.1
   csv: ^8.0.0
+  share_plus: ^11.1.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -75,6 +75,11 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
+hooks:
+  user_defines:
+    sqlite3:
+      source: sqlite3mc
 
   # To add assets to your application, add an assets section, like this:
   # assets:

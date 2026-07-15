@@ -6,6 +6,10 @@ import '../search/search_provider.dart'; // for databaseProvider
 
 import 'package:local_auth/local_auth.dart';
 
+const _authProbeTimeout = Duration(seconds: 3);
+const _authPromptTimeout = Duration(seconds: 30);
+const _unsetSetting = Object();
+
 class AppSettingsState {
   final ThemeMode themeMode;
   final Locale locale;
@@ -14,6 +18,7 @@ class AppSettingsState {
   final List<String> watchedFolders;
   final bool biometricsEnabled;
   final List<BiometricType> availableBiometrics;
+  final int? autoLockMinutes;
 
   AppSettingsState({
     this.themeMode = ThemeMode.system,
@@ -23,6 +28,7 @@ class AppSettingsState {
     this.watchedFolders = const [],
     this.biometricsEnabled = false,
     this.availableBiometrics = const [],
+    this.autoLockMinutes = 1,
   });
 
   AppSettingsState copyWith({
@@ -33,6 +39,7 @@ class AppSettingsState {
     List<String>? watchedFolders,
     bool? biometricsEnabled,
     List<BiometricType>? availableBiometrics,
+    Object? autoLockMinutes = _unsetSetting,
   }) {
     return AppSettingsState(
       themeMode: themeMode ?? this.themeMode,
@@ -44,6 +51,9 @@ class AppSettingsState {
       watchedFolders: watchedFolders ?? this.watchedFolders,
       biometricsEnabled: biometricsEnabled ?? this.biometricsEnabled,
       availableBiometrics: availableBiometrics ?? this.availableBiometrics,
+      autoLockMinutes: identical(autoLockMinutes, _unsetSetting)
+          ? this.autoLockMinutes
+          : autoLockMinutes as int?,
     );
   }
 }
@@ -64,6 +74,7 @@ class SettingsNotifier extends AsyncNotifier<AppSettingsState> {
     final watchedFoldersStr = await db.settingsDao.getSetting(
       'watched_folders',
     );
+    final autoLockStr = await db.settingsDao.getSetting('auto_lock_minutes');
 
     ThemeMode themeMode = ThemeMode.system;
     if (themeStr != null) {
@@ -96,14 +107,28 @@ class SettingsNotifier extends AsyncNotifier<AppSettingsState> {
       }
     }
 
+    int? autoLockMinutes = 1;
+    if (autoLockStr?.value == 'never') {
+      autoLockMinutes = null;
+    } else if (autoLockStr != null) {
+      final parsed = int.tryParse(autoLockStr.value);
+      if (parsed == 0 || parsed == 1 || parsed == 5) {
+        autoLockMinutes = parsed;
+      }
+    }
+
     final biometricsEnabled = await SecureStorageService.isBiometricsEnabled();
 
     List<BiometricType> availableBiometrics = [];
     try {
       final auth = LocalAuthentication();
-      final canAuthenticateWithBiometrics = await auth.canCheckBiometrics;
+      final canAuthenticateWithBiometrics = await auth.canCheckBiometrics
+          .timeout(_authProbeTimeout, onTimeout: () => false);
       if (canAuthenticateWithBiometrics) {
-        availableBiometrics = await auth.getAvailableBiometrics();
+        availableBiometrics = await auth.getAvailableBiometrics().timeout(
+          _authProbeTimeout,
+          onTimeout: () => const <BiometricType>[],
+        );
       }
     } catch (e) {
       // Ignore
@@ -117,6 +142,7 @@ class SettingsNotifier extends AsyncNotifier<AppSettingsState> {
       watchedFolders: watchedFolders,
       biometricsEnabled: biometricsEnabled,
       availableBiometrics: availableBiometrics,
+      autoLockMinutes: autoLockMinutes,
     );
   }
 
@@ -166,17 +192,29 @@ class SettingsNotifier extends AsyncNotifier<AppSettingsState> {
     }
   }
 
-  Future<void> setBiometricsEnabled(bool value) async {
+  Future<void> setBiometricsEnabled(
+    bool value, {
+    required String localizedReason,
+  }) async {
     if (value) {
       final auth = LocalAuthentication();
       try {
         final canAuthenticate =
-            await auth.canCheckBiometrics || await auth.isDeviceSupported();
+            await auth.canCheckBiometrics.timeout(
+              _authProbeTimeout,
+              onTimeout: () => false,
+            ) ||
+            await auth.isDeviceSupported().timeout(
+              _authProbeTimeout,
+              onTimeout: () => false,
+            );
         if (canAuthenticate) {
-          final didAuthenticate = await auth.authenticate(
-            localizedReason: 'Please authenticate to enable biometrics',
-            biometricOnly: true,
-          );
+          final didAuthenticate = await auth
+              .authenticate(
+                localizedReason: localizedReason,
+                biometricOnly: true,
+              )
+              .timeout(_authPromptTimeout, onTimeout: () => false);
           if (!didAuthenticate) return; // Cancelled or failed
         }
       } catch (e) {
@@ -188,6 +226,20 @@ class SettingsNotifier extends AsyncNotifier<AppSettingsState> {
 
     if (state.hasValue) {
       state = AsyncData(state.value!.copyWith(biometricsEnabled: value));
+    }
+  }
+
+  Future<void> setAutoLockMinutes(int? minutes) async {
+    if (minutes != null && minutes != 0 && minutes != 1 && minutes != 5) {
+      throw ArgumentError.value(minutes, 'minutes', 'Unsupported duration.');
+    }
+    final db = ref.read(databaseProvider);
+    await db.settingsDao.setSetting(
+      'auto_lock_minutes',
+      minutes?.toString() ?? 'never',
+    );
+    if (state.hasValue) {
+      state = AsyncData(state.value!.copyWith(autoLockMinutes: minutes));
     }
   }
 

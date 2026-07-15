@@ -41,7 +41,12 @@ class Step4Progress extends ConsumerWidget {
           },
         ),
         const SizedBox(height: 48),
-        Text(AppLocalizations.of(context)!.importing, style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
+        Text(
+          AppLocalizations.of(context)!.importing,
+          style: theme.textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         const SizedBox(height: 16),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
@@ -49,12 +54,20 @@ class Step4Progress extends ConsumerWidget {
             color: theme.colorScheme.surface,
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
-              BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)),
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
             ],
-            border: Border.all(color: theme.colorScheme.onSurface.withValues(alpha: 0.05)),
+            border: Border.all(
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.05),
+            ),
           ),
           child: Text(
-            AppLocalizations.of(context)!.processedRecordsCount(state.processedRows),
+            AppLocalizations.of(
+              context,
+            )!.processedRecordsCount(state.processedRows),
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,

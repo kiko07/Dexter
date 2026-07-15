@@ -11,13 +11,12 @@ class HashService {
     return digest.toString();
   }
 
-  /// Hashes an entire file using SHA-256.
+  /// Hashes an entire file using SHA-256 via streaming to avoid OOM on large files.
   static Future<String> hashFile(String filePath) async {
     final file = File(filePath);
     if (!await file.exists()) return '';
 
-    final bytes = await file.readAsBytes();
-    final digest = sha256.convert(bytes);
+    final digest = await sha256.bind(file.openRead()).first;
     return digest.toString();
   }
 }

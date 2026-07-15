@@ -17,7 +17,8 @@ class Entries extends Table {
   TextColumn get data => text()(); // JSON string
   TextColumn get searchPayload => text()(); // concatenated string for FTS5
   TextColumn get sourceFile => text().nullable()();
-  IntColumn get importBatchId => integer().nullable().references(ImportBatches, #id)();
+  IntColumn get importBatchId =>
+      integer().nullable().references(ImportBatches, #id)();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
 }
@@ -39,7 +40,8 @@ class AuditLog extends Table {
   TextColumn get action => text()(); // INSERT/UPDATE/DELETE/IMPORT/EXPORT
   IntColumn get entryId => integer().nullable()();
   TextColumn get description => text()();
-  DateTimeColumn get performedAt => dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get performedAt =>
+      dateTime().withDefault(currentDateAndTime)();
 }
 
 class AppSettings extends Table {

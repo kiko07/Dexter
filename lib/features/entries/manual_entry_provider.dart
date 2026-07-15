@@ -4,7 +4,11 @@ import 'package:drift/drift.dart' as drift;
 import '../../core/database/app_database.dart';
 
 import '../../core/utils/arabic_normalizer.dart';
+import '../../core/utils/dedup_helper.dart';
 import '../search/search_provider.dart'; // To access databaseProvider
+import '../statistics/statistics_provider.dart';
+
+const _sentinel = Object();
 
 class ManualEntryState {
   final ImportProfile? activeProfile;
@@ -12,6 +16,7 @@ class ManualEntryState {
   final bool isSaving;
   final String? error;
   final Entry? duplicateEntryFound;
+  final int formVersion;
 
   ManualEntryState({
     this.activeProfile,
@@ -19,21 +24,28 @@ class ManualEntryState {
     this.isSaving = false,
     this.error,
     this.duplicateEntryFound,
+    this.formVersion = 0,
   });
 
   ManualEntryState copyWith({
-    ImportProfile? activeProfile,
+    Object? activeProfile = _sentinel,
     Map<String, String>? formData,
     bool? isSaving,
     String? error,
-    Entry? duplicateEntryFound,
+    Object? duplicateEntryFound = _sentinel,
+    int? formVersion,
   }) {
     return ManualEntryState(
-      activeProfile: activeProfile ?? this.activeProfile,
+      activeProfile: identical(activeProfile, _sentinel)
+          ? this.activeProfile
+          : activeProfile as ImportProfile?,
       formData: formData ?? this.formData,
       isSaving: isSaving ?? this.isSaving,
       error: error,
-      duplicateEntryFound: duplicateEntryFound, // Nullable override
+      duplicateEntryFound: identical(duplicateEntryFound, _sentinel)
+          ? this.duplicateEntryFound
+          : duplicateEntryFound as Entry?,
+      formVersion: formVersion ?? this.formVersion,
     );
   }
 }
@@ -47,9 +59,19 @@ class ManualEntryNotifier extends Notifier<ManualEntryState> {
 
   Future<void> _loadDefaultProfile() async {
     final db = ref.read(databaseProvider);
-    final profiles = await db.profilesDao.getAllProfiles();
-    if (profiles.isNotEmpty) {
-      state = state.copyWith(activeProfile: profiles.first);
+    try {
+      final profiles = await db.profilesDao.getAllProfiles();
+      state = state.copyWith(
+        activeProfile: profiles.isNotEmpty ? profiles.first : null,
+      );
+    } catch (e) {
+      await db.auditDao.insertLog(
+        AuditLogCompanion.insert(
+          action: 'ERROR',
+          description: 'Failed to load default profile: $e',
+        ),
+      );
+      state = state.copyWith(activeProfile: null, error: e.toString());
     }
   }
 
@@ -60,12 +82,17 @@ class ManualEntryNotifier extends Notifier<ManualEntryState> {
   }
 
   Future<bool> saveEntry({bool ignoreDuplicate = false}) async {
+    if (state.isSaving) return false;
     if (state.activeProfile == null) {
-      state = state.copyWith(error: 'No active profile to map data.');
+      state = state.copyWith(error: 'noActiveProfile');
       return false;
     }
 
-    state = state.copyWith(isSaving: true, error: null);
+    state = state.copyWith(
+      isSaving: true,
+      error: null,
+      duplicateEntryFound: null,
+    );
     final db = ref.read(databaseProvider);
 
     try {
@@ -73,30 +100,33 @@ class ManualEntryNotifier extends Notifier<ManualEntryState> {
       if (!ignoreDuplicate && state.activeProfile!.dedupKeyField != null) {
         final dedupKey = state.activeProfile!.dedupKeyField!;
         final rawValue = state.formData[dedupKey] ?? '';
-        final normalizedValue = arabicNormalize(rawValue);
-        
+        final normalizedValue = DedupHelper.normalizeForDedup(rawValue);
+
         if (normalizedValue.isNotEmpty) {
-           final allEntries = await db.entriesDao.getEntriesByProfile(state.activeProfile!.id);
-           
-           Entry? actualDuplicate;
-           for (var candidate in allEntries) {
-             try {
-               final map = jsonDecode(candidate.data) as Map<String, dynamic>;
-               final val = map[dedupKey]?.toString().trim();
-               if (val != null && arabicNormalize(val) == normalizedValue) {
-                 actualDuplicate = candidate;
-                 break;
-               }
-             } catch (_) {}
-           }
-           
-           if (actualDuplicate != null) {
-             state = state.copyWith(
-               isSaving: false,
-               duplicateEntryFound: actualDuplicate,
-             );
-             return false;
-           }
+          final allEntries = await db.entriesDao.getEntriesByProfile(
+            state.activeProfile!.id,
+          );
+
+          Entry? actualDuplicate;
+          for (var candidate in allEntries) {
+            try {
+              final map = jsonDecode(candidate.data) as Map<String, dynamic>;
+              final val = map[dedupKey]?.toString().trim();
+              if (val != null &&
+                  DedupHelper.normalizeForDedup(val) == normalizedValue) {
+                actualDuplicate = candidate;
+                break;
+              }
+            } catch (_) {}
+          }
+
+          if (actualDuplicate != null) {
+            state = state.copyWith(
+              isSaving: false,
+              duplicateEntryFound: actualDuplicate,
+            );
+            return false;
+          }
         }
       }
 
@@ -107,21 +137,31 @@ class ManualEntryNotifier extends Notifier<ManualEntryState> {
 
       final dataJson = jsonEncode(state.formData);
 
-      final entryId = await db.entriesDao.insertEntry(EntriesCompanion.insert(
-        profileId: state.activeProfile!.id,
-        data: dataJson,
-        searchPayload: searchPayload,
-      ));
+      await db.transaction(() async {
+        final entryId = await db.entriesDao.insertEntry(
+          EntriesCompanion.insert(
+            profileId: state.activeProfile!.id,
+            data: dataJson,
+            searchPayload: searchPayload,
+          ),
+        );
 
-      await db.auditDao.insertLog(
-        AuditLogCompanion.insert(
-          action: 'INSERT',
-          description: 'Added manual entry $entryId',
-          entryId: drift.Value(entryId),
-        )
+        await db.auditDao.insertLog(
+          AuditLogCompanion.insert(
+            action: 'INSERT',
+            description: 'Added manual entry $entryId',
+            entryId: drift.Value(entryId),
+          ),
+        );
+      });
+
+      state = state.copyWith(
+        isSaving: false,
+        formData: {},
+        duplicateEntryFound: null,
+        formVersion: state.formVersion + 1,
       );
-
-      state = state.copyWith(isSaving: false, formData: {});
+      ref.invalidate(statisticsProvider);
       return true;
     } catch (e) {
       state = state.copyWith(isSaving: false, error: e.toString());
@@ -130,6 +170,7 @@ class ManualEntryNotifier extends Notifier<ManualEntryState> {
   }
 }
 
-final manualEntryProvider = NotifierProvider<ManualEntryNotifier, ManualEntryState>(() {
-  return ManualEntryNotifier();
-});
+final manualEntryProvider =
+    NotifierProvider<ManualEntryNotifier, ManualEntryState>(() {
+      return ManualEntryNotifier();
+    });

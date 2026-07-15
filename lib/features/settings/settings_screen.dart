@@ -3,12 +3,19 @@ import 'package:dexter/core/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../auth/auth_provider.dart';
+import '../entries/manual_entry_provider.dart';
+import '../home/history_provider.dart';
+import '../import/background_scanner_service.dart';
+import '../import/import_wizard_provider.dart';
 import '../../core/utils/secure_storage_service.dart';
 import '../search/search_provider.dart'; // for databaseProvider
+import '../statistics/statistics_provider.dart';
 import 'package:file_picker/file_picker.dart' as file_picker;
 import 'package:local_auth/local_auth.dart';
 import 'settings_provider.dart';
 import 'manage_files_screen.dart';
+import 'duplicate_scan_screen.dart';
+import 'duplicate_scanner_provider.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -126,26 +133,75 @@ class SettingsScreen extends ConsumerWidget {
                             settingsState.availableBiometrics.contains(
                               BiometricType.face,
                             )
-                            ? 'Face ID'
-                            : 'Fingerprint',
+                            ? AppLocalizations.of(context)!.faceId
+                            : AppLocalizations.of(context)!.fingerprint,
                         subtitle:
                             settingsState.availableBiometrics.contains(
                               BiometricType.face,
                             )
-                            ? 'Use Face ID to unlock'
-                            : 'Use Fingerprint to unlock',
+                            ? AppLocalizations.of(context)!.useFaceIdToUnlock
+                            : AppLocalizations.of(
+                                context,
+                              )!.useFingerprintToUnlock,
                         trailing: Switch(
                           value: settingsState.biometricsEnabled,
                           activeThumbColor: theme.colorScheme.primary,
                           onChanged: (bool value) {
                             ref
                                 .read(settingsProvider.notifier)
-                                .setBiometricsEnabled(value);
+                                .setBiometricsEnabled(
+                                  value,
+                                  localizedReason: AppLocalizations.of(
+                                    context,
+                                  )!.authenticateToEnableBiometrics,
+                                );
                           },
                         ),
                       ),
+                      _buildDivider(),
                     ],
-                    _buildDivider(),
+                    if (hasPassword) ...[
+                      _SettingsTile(
+                        icon: Icons.lock_clock_rounded,
+                        iconColor: Colors.deepOrange,
+                        title: AppLocalizations.of(context)!.autoLockSettings,
+                        trailing: DropdownButtonHideUnderline(
+                          child: DropdownButton<int?>(
+                            value: settingsState.autoLockMinutes,
+                            onChanged: (value) => ref
+                                .read(settingsProvider.notifier)
+                                .setAutoLockMinutes(value),
+                            items: [
+                              DropdownMenuItem(
+                                value: 0,
+                                child: Text(
+                                  AppLocalizations.of(context)!.immediately,
+                                ),
+                              ),
+                              DropdownMenuItem(
+                                value: 1,
+                                child: Text(
+                                  AppLocalizations.of(context)!.oneMinute,
+                                ),
+                              ),
+                              DropdownMenuItem(
+                                value: 5,
+                                child: Text(
+                                  AppLocalizations.of(context)!.fiveMinutes,
+                                ),
+                              ),
+                              DropdownMenuItem<int?>(
+                                value: null,
+                                child: Text(
+                                  AppLocalizations.of(context)!.never,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      _buildDivider(),
+                    ],
                     if (!hasPassword)
                       _SettingsTile(
                         icon: Icons.password,
@@ -285,11 +341,29 @@ class SettingsScreen extends ConsumerWidget {
                       icon: Icons.source_rounded,
                       iconColor: Colors.deepPurple,
                       title: AppLocalizations.of(context)!.manageIndexedFiles,
-                      subtitle: 'View and delete specific file records',
+                      subtitle: AppLocalizations.of(
+                        context,
+                      )!.viewAndDeleteSpecificFileRecords,
                       onTap: () => Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (_) => const ManageFilesScreen(),
+                        ),
+                      ),
+                      showArrow: true,
+                    ),
+                    _buildDivider(),
+                    _SettingsTile(
+                      icon: Icons.find_replace_rounded,
+                      iconColor: Colors.orange,
+                      title: AppLocalizations.of(context)!.scanForDuplicates,
+                      subtitle: AppLocalizations.of(
+                        context,
+                      )!.findAndRemoveDuplicates,
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const DuplicateScanScreen(),
                         ),
                       ),
                       showArrow: true,
@@ -319,46 +393,66 @@ class SettingsScreen extends ConsumerWidget {
 
   void _showCreatePasswordDialog(BuildContext context, WidgetRef ref) {
     final newController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+    bool obscureNew = true;
 
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          title: Text(AppLocalizations.of(context)!.setupNewPassword),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: newController,
-                obscureText: true,
-                decoration: InputDecoration(
-                  labelText: AppLocalizations.of(context)!.newPassword,
-                  prefixIcon: const Icon(Icons.key),
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              title: Text(AppLocalizations.of(context)!.setupNewPassword),
+              content: Form(
+                key: formKey,
+                child: TextFormField(
+                  controller: newController,
+                  obscureText: obscureNew,
+                  validator: (value) => value == null || value.length < 4
+                      ? AppLocalizations.of(context)!.passwordTooShort
+                      : null,
+                  decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context)!.newPassword,
+                    prefixIcon: const Icon(Icons.key),
+                    suffixIcon: IconButton(
+                      tooltip: obscureNew
+                          ? AppLocalizations.of(context)!.showPassword
+                          : AppLocalizations.of(context)!.hidePassword,
+                      icon: Icon(
+                        obscureNew
+                            ? Icons.visibility_rounded
+                            : Icons.visibility_off_rounded,
+                      ),
+                      onPressed: () {
+                        setDialogState(() => obscureNew = !obscureNew);
+                      },
+                    ),
+                  ),
                 ),
               ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(AppLocalizations.of(context)!.cancel),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                if (newController.text.isEmpty) return;
-                await ref
-                    .read(authProvider.notifier)
-                    .setPassword(newController.text);
-                if (context.mounted) {
-                  Navigator.pop(context);
-                }
-              },
-              child: Text(AppLocalizations.of(context)!.save),
-            ),
-          ],
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(AppLocalizations.of(context)!.cancel),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    if (!formKey.currentState!.validate()) return;
+                    final saved = await ref
+                        .read(authProvider.notifier)
+                        .setPassword(newController.text);
+                    if (saved && context.mounted) {
+                      Navigator.pop(context);
+                    }
+                  },
+                  child: Text(AppLocalizations.of(context)!.save),
+                ),
+              ],
+            );
+          },
         );
       },
     ).whenComplete(() {
@@ -369,7 +463,10 @@ class SettingsScreen extends ConsumerWidget {
   void _showChangePasswordDialog(BuildContext context, WidgetRef ref) {
     final currentController = TextEditingController();
     final newController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
     String? errorText;
+    bool obscureCurrent = true;
+    bool obscureNew = true;
 
     showDialog(
       context: context,
@@ -381,28 +478,67 @@ class SettingsScreen extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(20),
               ),
               title: Text(AppLocalizations.of(context)!.resetPassword),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextField(
-                    controller: currentController,
-                    obscureText: true,
-                    decoration: InputDecoration(
-                      labelText: AppLocalizations.of(context)!.currentPassword,
-                      errorText: errorText,
-                      prefixIcon: const Icon(Icons.password),
+              content: Form(
+                key: formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextFormField(
+                      controller: currentController,
+                      obscureText: obscureCurrent,
+                      validator: (value) => value == null || value.isEmpty
+                          ? AppLocalizations.of(context)!.fieldRequired
+                          : null,
+                      decoration: InputDecoration(
+                        labelText: AppLocalizations.of(
+                          context,
+                        )!.currentPassword,
+                        errorText: errorText,
+                        prefixIcon: const Icon(Icons.password),
+                        suffixIcon: IconButton(
+                          tooltip: obscureCurrent
+                              ? AppLocalizations.of(context)!.showPassword
+                              : AppLocalizations.of(context)!.hidePassword,
+                          icon: Icon(
+                            obscureCurrent
+                                ? Icons.visibility_rounded
+                                : Icons.visibility_off_rounded,
+                          ),
+                          onPressed: () {
+                            setDialogState(
+                              () => obscureCurrent = !obscureCurrent,
+                            );
+                          },
+                        ),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: newController,
-                    obscureText: true,
-                    decoration: InputDecoration(
-                      labelText: AppLocalizations.of(context)!.newPassword,
-                      prefixIcon: const Icon(Icons.key),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: newController,
+                      obscureText: obscureNew,
+                      validator: (value) => value == null || value.length < 4
+                          ? AppLocalizations.of(context)!.passwordTooShort
+                          : null,
+                      decoration: InputDecoration(
+                        labelText: AppLocalizations.of(context)!.newPassword,
+                        prefixIcon: const Icon(Icons.key),
+                        suffixIcon: IconButton(
+                          tooltip: obscureNew
+                              ? AppLocalizations.of(context)!.showPassword
+                              : AppLocalizations.of(context)!.hidePassword,
+                          icon: Icon(
+                            obscureNew
+                                ? Icons.visibility_rounded
+                                : Icons.visibility_off_rounded,
+                          ),
+                          onPressed: () {
+                            setDialogState(() => obscureNew = !obscureNew);
+                          },
+                        ),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               actions: [
                 TextButton(
@@ -411,14 +547,19 @@ class SettingsScreen extends ConsumerWidget {
                 ),
                 ElevatedButton(
                   onPressed: () async {
-                    if (currentController.text.isEmpty ||
-                        newController.text.isEmpty) {
+                    if (!formKey.currentState!.validate()) return;
+
+                    bool isValid;
+                    try {
+                      isValid = await SecureStorageService.verifyPassword(
+                        currentController.text,
+                      );
+                    } catch (error) {
+                      if (!context.mounted) return;
+                      setDialogState(() => errorText = error.toString());
                       return;
                     }
-
-                    final isValid = await SecureStorageService.verifyPassword(
-                      currentController.text,
-                    );
+                    if (!context.mounted) return;
                     if (!isValid) {
                       setDialogState(() {
                         errorText = AppLocalizations.of(
@@ -428,10 +569,10 @@ class SettingsScreen extends ConsumerWidget {
                       return;
                     }
 
-                    await ref
+                    final saved = await ref
                         .read(authProvider.notifier)
                         .setPassword(newController.text);
-                    if (context.mounted) {
+                    if (saved && context.mounted) {
                       Navigator.pop(context);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
@@ -463,7 +604,9 @@ class SettingsScreen extends ConsumerWidget {
 
   void _showRemovePasswordDialog(BuildContext context, WidgetRef ref) {
     final currentController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
     String? errorText;
+    bool obscureCurrent = true;
 
     showDialog(
       context: context,
@@ -475,21 +618,44 @@ class SettingsScreen extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(20),
               ),
               title: Text(AppLocalizations.of(context)!.removePassword),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(AppLocalizations.of(context)!.confirmRemovePassword),
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: currentController,
-                    obscureText: true,
-                    decoration: InputDecoration(
-                      labelText: AppLocalizations.of(context)!.currentPassword,
-                      errorText: errorText,
-                      prefixIcon: const Icon(Icons.password),
+              content: Form(
+                key: formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(AppLocalizations.of(context)!.confirmRemovePassword),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: currentController,
+                      obscureText: obscureCurrent,
+                      validator: (value) => value == null || value.isEmpty
+                          ? AppLocalizations.of(context)!.fieldRequired
+                          : null,
+                      decoration: InputDecoration(
+                        labelText: AppLocalizations.of(
+                          context,
+                        )!.currentPassword,
+                        errorText: errorText,
+                        prefixIcon: const Icon(Icons.password),
+                        suffixIcon: IconButton(
+                          tooltip: obscureCurrent
+                              ? AppLocalizations.of(context)!.showPassword
+                              : AppLocalizations.of(context)!.hidePassword,
+                          icon: Icon(
+                            obscureCurrent
+                                ? Icons.visibility_rounded
+                                : Icons.visibility_off_rounded,
+                          ),
+                          onPressed: () {
+                            setDialogState(
+                              () => obscureCurrent = !obscureCurrent,
+                            );
+                          },
+                        ),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               actions: [
                 TextButton(
@@ -499,11 +665,19 @@ class SettingsScreen extends ConsumerWidget {
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                   onPressed: () async {
-                    if (currentController.text.isEmpty) return;
+                    if (!formKey.currentState!.validate()) return;
 
-                    final isValid = await SecureStorageService.verifyPassword(
-                      currentController.text,
-                    );
+                    bool isValid;
+                    try {
+                      isValid = await SecureStorageService.verifyPassword(
+                        currentController.text,
+                      );
+                    } catch (error) {
+                      if (!context.mounted) return;
+                      setDialogState(() => errorText = error.toString());
+                      return;
+                    }
+                    if (!context.mounted) return;
                     if (!isValid) {
                       setDialogState(() {
                         errorText = AppLocalizations.of(
@@ -579,10 +753,32 @@ class SettingsScreen extends ConsumerWidget {
             ElevatedButton(
               style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
               onPressed: () async {
-                Navigator.pop(context);
                 final db = ref.read(databaseProvider);
-                await db.clearAllData();
-                await ref.read(authProvider.notifier).resetApp();
+                try {
+                  await db.clearAllData();
+                  await ref.read(authProvider.notifier).resetApp();
+                  ref
+                    ..invalidate(searchProvider)
+                    ..invalidate(settingsProvider)
+                    ..invalidate(manualEntryProvider)
+                    ..invalidate(historyProvider)
+                    ..invalidate(importWizardProvider)
+                    ..invalidate(backgroundScannerProvider)
+                    ..invalidate(duplicateScannerProvider)
+                    ..invalidate(statisticsProvider);
+                  if (context.mounted) Navigator.pop(context);
+                } catch (error) {
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        AppLocalizations.of(
+                          context,
+                        )!.errorOccurred(error.toString()),
+                      ),
+                    ),
+                  );
+                }
               },
               child: Text(
                 AppLocalizations.of(context)!.confirmClear,
@@ -720,7 +916,8 @@ class _SettingsTile extends StatelessWidget {
                   ],
                 ),
               ),
-              ?trailing,
+              // ignore: use_null_aware_elements
+              if (trailing != null) trailing!,
               if (showArrow)
                 Icon(
                   Icons.arrow_forward_ios_rounded,

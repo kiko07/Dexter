@@ -17,7 +17,8 @@ class DexterApp extends ConsumerStatefulWidget {
   ConsumerState<DexterApp> createState() => _DexterAppState();
 }
 
-class _DexterAppState extends ConsumerState<DexterApp> with WidgetsBindingObserver {
+class _DexterAppState extends ConsumerState<DexterApp>
+    with WidgetsBindingObserver {
   DateTime? _backgroundTime;
   final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
 
@@ -35,12 +36,18 @@ class _DexterAppState extends ConsumerState<DexterApp> with WidgetsBindingObserv
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.hidden || state == AppLifecycleState.paused) {
+    if (state == AppLifecycleState.hidden ||
+        state == AppLifecycleState.paused) {
       _backgroundTime = DateTime.now();
     } else if (state == AppLifecycleState.resumed) {
       if (_backgroundTime != null) {
         final backgroundDuration = DateTime.now().difference(_backgroundTime!);
-        if (backgroundDuration.inMinutes >= 1) {
+        final settingsState = ref.read(settingsProvider);
+        final autoLockMinutes = settingsState.hasValue
+            ? settingsState.value!.autoLockMinutes
+            : 1;
+        if (autoLockMinutes != null &&
+            backgroundDuration >= Duration(minutes: autoLockMinutes)) {
           final authState = ref.read(authProvider);
           if (authState.status == AuthStatus.authenticated) {
             ref.read(authProvider.notifier).lock();
@@ -54,7 +61,8 @@ class _DexterAppState extends ConsumerState<DexterApp> with WidgetsBindingObserv
   @override
   Widget build(BuildContext context) {
     ref.listen<AuthState>(authProvider, (previous, next) {
-      if (previous?.status == AuthStatus.authenticated && next.status == AuthStatus.unauthenticated) {
+      if (previous?.status == AuthStatus.authenticated &&
+          next.status == AuthStatus.unauthenticated) {
         _navigatorKey.currentState?.popUntil((route) => route.isFirst);
       }
     });
@@ -63,8 +71,27 @@ class _DexterAppState extends ConsumerState<DexterApp> with WidgetsBindingObserv
     final settingsAsync = ref.watch(settingsProvider);
 
     return settingsAsync.when(
-      loading: () => const MaterialApp(home: Scaffold(body: Center(child: CircularProgressIndicator()))),
-      error: (err, stack) => MaterialApp(home: Scaffold(body: Center(child: Text('Error loading settings: $err')))),
+      loading: () => const MaterialApp(
+        home: Scaffold(body: Center(child: CircularProgressIndicator())),
+      ),
+      error: (err, stack) => MaterialApp(
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        home: Builder(
+          builder: (context) => Scaffold(
+            body: Center(
+              child: Text(
+                AppLocalizations.of(context)!.settingsLoadError(err.toString()),
+              ),
+            ),
+          ),
+        ),
+      ),
       data: (settings) {
         return MaterialApp(
           navigatorKey: _navigatorKey,
@@ -107,6 +134,7 @@ class _DexterAppState extends ConsumerState<DexterApp> with WidgetsBindingObserv
       case AuthStatus.loading:
         return const Scaffold(body: Center(child: CircularProgressIndicator()));
       case AuthStatus.unauthenticated:
+      case AuthStatus.storageError:
         return const LockScreen();
       case AuthStatus.noPasswordSet:
       case AuthStatus.authenticated:
@@ -114,4 +142,3 @@ class _DexterAppState extends ConsumerState<DexterApp> with WidgetsBindingObserv
     }
   }
 }
-

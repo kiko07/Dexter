@@ -129,7 +129,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get files => 'Files';
 
   @override
-  String get noExcelFilesFound => 'No Excel files found';
+  String get noExcelFilesFound => 'No supported Excel or CSV files found';
 
   @override
   String get folder => 'Folder';
@@ -414,7 +414,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exportNow => 'Export Now';
 
   @override
-  String get importDataSubtitle => 'Add new data from Excel files';
+  String get importDataSubtitle => 'Add new data from Excel or CSV files';
 
   @override
   String get exportDataSubtitle =>
@@ -480,4 +480,414 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get remove => 'Remove';
+
+  @override
+  String get useFaceId => 'Use Face ID';
+
+  @override
+  String get useFingerprint => 'Use Fingerprint';
+
+  @override
+  String get faceId => 'Face ID';
+
+  @override
+  String get fingerprint => 'Fingerprint';
+
+  @override
+  String get useFaceIdToUnlock => 'Use Face ID to unlock';
+
+  @override
+  String get useFingerprintToUnlock => 'Use Fingerprint to unlock';
+
+  @override
+  String get viewAndDeleteSpecificFileRecords =>
+      'View and delete specific file records';
+
+  @override
+  String get selectSheets => 'Select Sheets to Import';
+
+  @override
+  String get scanForDuplicates => 'Scan for Duplicates';
+
+  @override
+  String get findAndRemoveDuplicates => 'Find and remove duplicate entries';
+
+  @override
+  String get noDuplicatesFound => 'No duplicates found!';
+
+  @override
+  String duplicatesFound(int count) {
+    return '$count duplicate group(s) found';
+  }
+
+  @override
+  String get keepFirst => 'Keep First';
+
+  @override
+  String totalRedundantEntries(int count) {
+    return 'Total redundant entries: $count';
+  }
+
+  @override
+  String copiesCount(int count) {
+    return '$count copies';
+  }
+
+  @override
+  String get keepBadge => 'KEEP';
+
+  @override
+  String get duplicateBadge => 'DUP';
+
+  @override
+  String get payload => 'Record data';
+
+  @override
+  String get confirmDeleteDuplicateCopy =>
+      'Are you sure you want to delete this duplicate copy? This action cannot be undone.';
+
+  @override
+  String get advancedFilters => 'Advanced Filters';
+
+  @override
+  String get allFiles => 'All Files';
+
+  @override
+  String selectedFiles(int count) {
+    return '$count file(s) selected';
+  }
+
+  @override
+  String get fileScope => 'File Scope';
+
+  @override
+  String get addFilter => 'Add Filter';
+
+  @override
+  String get field => 'Field';
+
+  @override
+  String get operator => 'Operator';
+
+  @override
+  String get contains => 'Contains';
+
+  @override
+  String get doesNotContain => 'Does not contain';
+
+  @override
+  String get equalTo => 'Equal to';
+
+  @override
+  String get notEqualTo => 'Not equal to';
+
+  @override
+  String get greaterThan => 'Greater than';
+
+  @override
+  String get lessThan => 'Less than';
+
+  @override
+  String get betweenLabel => 'Between';
+
+  @override
+  String get copied => 'Copied';
+
+  @override
+  String get copy => 'Copy';
+
+  @override
+  String get selectAll => 'Select All';
+
+  @override
+  String get clear => 'Clear';
+
+  @override
+  String get manualEntriesOnly => 'Manually-entered only';
+
+  @override
+  String get fieldRequired => 'This field is required';
+
+  @override
+  String get invalidFilterValue => 'Enter a valid value for this filter';
+
+  @override
+  String get discardChangesTitle => 'Discard changes?';
+
+  @override
+  String get discardChangesMessage =>
+      'You have unsaved data. Leave without saving it?';
+
+  @override
+  String get discard => 'Discard';
+
+  @override
+  String get secureStorageErrorTitle => 'Secure storage unavailable';
+
+  @override
+  String get secureStorageErrorMessage =>
+      'Dexter could not read its secure storage. Restart the app or check device security settings before continuing.';
+
+  @override
+  String get authenticateToUnlock => 'Authenticate to unlock Dexter';
+
+  @override
+  String get authenticateToEnableBiometrics =>
+      'Authenticate to enable biometrics';
+
+  @override
+  String get passwordTooShort => 'Password must be at least 4 characters';
+
+  @override
+  String get showPassword => 'Show password';
+
+  @override
+  String get hidePassword => 'Hide password';
+
+  @override
+  String lockedOutSeconds(int seconds) {
+    return 'Too many failed attempts. Try again in $seconds seconds.';
+  }
+
+  @override
+  String get exportReady => 'Export ready';
+
+  @override
+  String get matchContains => 'Contains';
+
+  @override
+  String get matchExact => 'Exact';
+
+  @override
+  String get matchStartsWith => 'Starts with';
+
+  @override
+  String get matchFuzzy => 'Fuzzy';
+
+  @override
+  String get anyField => 'Any field';
+
+  @override
+  String get recordId => 'Record ID';
+
+  @override
+  String get profileId => 'Profile ID';
+
+  @override
+  String get sourceFile => 'Source file';
+
+  @override
+  String get importBatch => 'Import batch';
+
+  @override
+  String get createdAt => 'Created at';
+
+  @override
+  String get updatedAt => 'Updated at';
+
+  @override
+  String get startsWith => 'Starts with';
+
+  @override
+  String get doesNotStartWith => 'Does not start with';
+
+  @override
+  String get endsWith => 'Ends with';
+
+  @override
+  String get doesNotEndWith => 'Does not end with';
+
+  @override
+  String get containsAllWords => 'Contains all words';
+
+  @override
+  String get containsAnyWord => 'Contains any word';
+
+  @override
+  String get containsNoWords => 'Contains none of the words';
+
+  @override
+  String get containsCaseSensitive => 'Contains (case-sensitive)';
+
+  @override
+  String get equalCaseSensitive => 'Equal to (case-sensitive)';
+
+  @override
+  String get notEqualCaseSensitive => 'Not equal to (case-sensitive)';
+
+  @override
+  String get inList => 'Is in list';
+
+  @override
+  String get notInList => 'Is not in list';
+
+  @override
+  String get greaterThanOrEqual => 'Greater than or equal to';
+
+  @override
+  String get lessThanOrEqual => 'Less than or equal to';
+
+  @override
+  String get notBetween => 'Not between';
+
+  @override
+  String get isNumeric => 'Is numeric';
+
+  @override
+  String get isNotNumeric => 'Is not numeric';
+
+  @override
+  String get dateBefore => 'Date before';
+
+  @override
+  String get dateAfter => 'Date after';
+
+  @override
+  String get dateIs => 'Date is';
+
+  @override
+  String get dateIsNot => 'Date is not';
+
+  @override
+  String get dateBetween => 'Date between';
+
+  @override
+  String get dateToday => 'Date is today';
+
+  @override
+  String get dateInLastDays => 'Date is within the last days';
+
+  @override
+  String get lengthEqual => 'Length equals';
+
+  @override
+  String get lengthGreaterThan => 'Length greater than';
+
+  @override
+  String get lengthLessThan => 'Length less than';
+
+  @override
+  String get lengthBetween => 'Length between';
+
+  @override
+  String get fieldExists => 'Field exists';
+
+  @override
+  String get fieldMissing => 'Field is missing';
+
+  @override
+  String get isEmpty => 'Is empty';
+
+  @override
+  String get isNotEmpty => 'Is not empty';
+
+  @override
+  String get valueLabel => 'Value';
+
+  @override
+  String get minValue => 'Minimum value';
+
+  @override
+  String get maxValue => 'Maximum value';
+
+  @override
+  String get dateLabel => 'Date';
+
+  @override
+  String get startDate => 'Start date';
+
+  @override
+  String get endDate => 'End date';
+
+  @override
+  String get characters => 'Characters';
+
+  @override
+  String get minCharacters => 'Minimum characters';
+
+  @override
+  String get maxCharacters => 'Maximum characters';
+
+  @override
+  String get days => 'Days';
+
+  @override
+  String get separateWordsWithSpaces => 'Separate words with spaces';
+
+  @override
+  String get listValueHint =>
+      'Separate items with commas, semicolons, or new lines';
+
+  @override
+  String get dateFormatHint => 'YYYY-MM-DD';
+
+  @override
+  String get pickDate => 'Pick date';
+
+  @override
+  String get statistics => 'Statistics';
+
+  @override
+  String get statisticsSubtitle =>
+      'Explore trends and the composition of indexed data';
+
+  @override
+  String get last30Days => 'Last 30 Days';
+
+  @override
+  String get allTime => 'All Time';
+
+  @override
+  String get manualRecords => 'Manual Records';
+
+  @override
+  String get indexedFiles => 'Indexed Files';
+
+  @override
+  String get profiles => 'Profiles';
+
+  @override
+  String get recordsOverTime => 'Records Over Time';
+
+  @override
+  String get breakdown => 'Breakdown';
+
+  @override
+  String get bySourceFile => 'By Source File';
+
+  @override
+  String get byProfile => 'By Profile';
+
+  @override
+  String get noStatisticsData => 'No data is available for this period';
+
+  @override
+  String get manualSource => 'Manual entries';
+
+  @override
+  String recordsCount(int count) {
+    return '$count records';
+  }
+
+  @override
+  String get refresh => 'Refresh';
+
+  @override
+  String get timeRange => 'Time Range';
+
+  @override
+  String get noIndexedSourceFilesFound => 'No indexed source files found';
+
+  @override
+  String get scanningDuplicateEntries => 'Scanning for duplicate entries...';
+
+  @override
+  String settingsLoadError(String error) {
+    return 'Could not load settings: $error';
+  }
+
+  @override
+  String importCount(int count) {
+    return '$count imports';
+  }
 }

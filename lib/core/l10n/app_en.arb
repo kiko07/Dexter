@@ -42,7 +42,7 @@
   "importData": "Import Data",
   "chooseFileOrFolder": "Choose File or Folder",
   "files": "Files",
-  "noExcelFilesFound": "No Excel files found",
+  "noExcelFilesFound": "No supported Excel or CSV files found",
   "folder": "Folder",
   "headerRowNumber": "Header Row Number:",
   "next": "Next",
@@ -161,7 +161,7 @@
   "chooseDates": "Choose Dates",
   "pleaseSelectTimeRangeFirst": "Please select a time range first.",
   "exportNow": "Export Now",
-  "importDataSubtitle": "Add new data from Excel files",
+  "importDataSubtitle": "Add new data from Excel or CSV files",
   "exportDataSubtitle": "Export all registered data to an Excel file",
   "recordCountAndDate": "Records: {count}\nDate: {date}",
   "@recordCountAndDate": {
@@ -209,5 +209,174 @@
   "removePasswordSubtitle": "Remove the app password completely.",
   "confirmRemovePassword": "Are you sure you want to remove the password?",
   "passwordRemovedSuccessfully": "Password removed successfully",
-  "remove": "Remove"
+  "remove": "Remove",
+  "useFaceId": "Use Face ID",
+  "useFingerprint": "Use Fingerprint",
+  "faceId": "Face ID",
+  "fingerprint": "Fingerprint",
+  "useFaceIdToUnlock": "Use Face ID to unlock",
+  "useFingerprintToUnlock": "Use Fingerprint to unlock",
+  "viewAndDeleteSpecificFileRecords": "View and delete specific file records",
+  "selectSheets": "Select Sheets to Import",
+  "scanForDuplicates": "Scan for Duplicates",
+  "findAndRemoveDuplicates": "Find and remove duplicate entries",
+  "noDuplicatesFound": "No duplicates found!",
+  "duplicatesFound": "{count} duplicate group(s) found",
+  "@duplicatesFound": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "keepFirst": "Keep First",
+  "totalRedundantEntries": "Total redundant entries: {count}",
+  "@totalRedundantEntries": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "copiesCount": "{count} copies",
+  "@copiesCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "keepBadge": "KEEP",
+  "duplicateBadge": "DUP",
+  "payload": "Record data",
+  "confirmDeleteDuplicateCopy": "Are you sure you want to delete this duplicate copy? This action cannot be undone.",
+  "advancedFilters": "Advanced Filters",
+  "allFiles": "All Files",
+  "selectedFiles": "{count} file(s) selected",
+  "@selectedFiles": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "fileScope": "File Scope",
+  "addFilter": "Add Filter",
+  "field": "Field",
+  "operator": "Operator",
+  "contains": "Contains",
+  "doesNotContain": "Does not contain",
+  "equalTo": "Equal to",
+  "notEqualTo": "Not equal to",
+  "greaterThan": "Greater than",
+  "lessThan": "Less than",
+  "betweenLabel": "Between",
+  "copied": "Copied",
+  "copy": "Copy",
+  "selectAll": "Select All",
+  "clear": "Clear",
+  "manualEntriesOnly": "Manually-entered only",
+  "fieldRequired": "This field is required",
+  "invalidFilterValue": "Enter a valid value for this filter",
+  "discardChangesTitle": "Discard changes?",
+  "discardChangesMessage": "You have unsaved data. Leave without saving it?",
+  "discard": "Discard",
+  "secureStorageErrorTitle": "Secure storage unavailable",
+  "secureStorageErrorMessage": "Dexter could not read its secure storage. Restart the app or check device security settings before continuing.",
+  "authenticateToUnlock": "Authenticate to unlock Dexter",
+  "authenticateToEnableBiometrics": "Authenticate to enable biometrics",
+  "passwordTooShort": "Password must be at least 4 characters",
+  "showPassword": "Show password",
+  "hidePassword": "Hide password",
+  "lockedOutSeconds": "Too many failed attempts. Try again in {seconds} seconds.",
+  "@lockedOutSeconds": {
+    "placeholders": {
+      "seconds": { "type": "int" }
+    }
+  },
+  "exportReady": "Export ready",
+  "matchContains": "Contains",
+  "matchExact": "Exact",
+  "matchStartsWith": "Starts with",
+  "matchFuzzy": "Fuzzy",
+  "anyField": "Any field",
+  "recordId": "Record ID",
+  "profileId": "Profile ID",
+  "sourceFile": "Source file",
+  "importBatch": "Import batch",
+  "createdAt": "Created at",
+  "updatedAt": "Updated at",
+  "startsWith": "Starts with",
+  "doesNotStartWith": "Does not start with",
+  "endsWith": "Ends with",
+  "doesNotEndWith": "Does not end with",
+  "containsAllWords": "Contains all words",
+  "containsAnyWord": "Contains any word",
+  "containsNoWords": "Contains none of the words",
+  "containsCaseSensitive": "Contains (case-sensitive)",
+  "equalCaseSensitive": "Equal to (case-sensitive)",
+  "notEqualCaseSensitive": "Not equal to (case-sensitive)",
+  "inList": "Is in list",
+  "notInList": "Is not in list",
+  "greaterThanOrEqual": "Greater than or equal to",
+  "lessThanOrEqual": "Less than or equal to",
+  "notBetween": "Not between",
+  "isNumeric": "Is numeric",
+  "isNotNumeric": "Is not numeric",
+  "dateBefore": "Date before",
+  "dateAfter": "Date after",
+  "dateIs": "Date is",
+  "dateIsNot": "Date is not",
+  "dateBetween": "Date between",
+  "dateToday": "Date is today",
+  "dateInLastDays": "Date is within the last days",
+  "lengthEqual": "Length equals",
+  "lengthGreaterThan": "Length greater than",
+  "lengthLessThan": "Length less than",
+  "lengthBetween": "Length between",
+  "fieldExists": "Field exists",
+  "fieldMissing": "Field is missing",
+  "isEmpty": "Is empty",
+  "isNotEmpty": "Is not empty",
+  "valueLabel": "Value",
+  "minValue": "Minimum value",
+  "maxValue": "Maximum value",
+  "dateLabel": "Date",
+  "startDate": "Start date",
+  "endDate": "End date",
+  "characters": "Characters",
+  "minCharacters": "Minimum characters",
+  "maxCharacters": "Maximum characters",
+  "days": "Days",
+  "separateWordsWithSpaces": "Separate words with spaces",
+  "listValueHint": "Separate items with commas, semicolons, or new lines",
+  "dateFormatHint": "YYYY-MM-DD",
+  "pickDate": "Pick date",
+  "statistics": "Statistics",
+  "statisticsSubtitle": "Explore trends and the composition of indexed data",
+  "last30Days": "Last 30 Days",
+  "allTime": "All Time",
+  "manualRecords": "Manual Records",
+  "indexedFiles": "Indexed Files",
+  "profiles": "Profiles",
+  "recordsOverTime": "Records Over Time",
+  "breakdown": "Breakdown",
+  "bySourceFile": "By Source File",
+  "byProfile": "By Profile",
+  "noStatisticsData": "No data is available for this period",
+  "manualSource": "Manual entries",
+  "recordsCount": "{count} records",
+  "@recordsCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "refresh": "Refresh",
+  "timeRange": "Time Range",
+  "noIndexedSourceFilesFound": "No indexed source files found",
+  "scanningDuplicateEntries": "Scanning for duplicate entries...",
+  "settingsLoadError": "Could not load settings: {error}",
+  "@settingsLoadError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "importCount": "{count} imports",
+  "@importCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  }
 }

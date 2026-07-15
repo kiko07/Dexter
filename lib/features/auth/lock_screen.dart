@@ -1,10 +1,13 @@
+import 'dart:async';
 import 'dart:ui';
+
 import 'package:dexter/core/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:local_auth/local_auth.dart';
-import 'auth_provider.dart';
+
 import '../settings/settings_provider.dart';
+import 'auth_provider.dart';
 
 class LockScreen extends ConsumerStatefulWidget {
   const LockScreen({super.key});
@@ -15,8 +18,12 @@ class LockScreen extends ConsumerStatefulWidget {
 
 class _LockScreenState extends ConsumerState<LockScreen>
     with SingleTickerProviderStateMixin {
+  final _formKey = GlobalKey<FormState>();
   final _passwordController = TextEditingController();
   bool _isSubmitting = false;
+  bool _obscurePassword = true;
+  bool _hasRequestedBiometrics = false;
+  Timer? _lockoutTicker;
   late AnimationController _animController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
@@ -42,27 +49,42 @@ class _LockScreenState extends ConsumerState<LockScreen>
           ),
         );
     _animController.forward();
+    _lockoutTicker = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted && ref.read(authProvider).isLockedOut) {
+        setState(() {});
+      }
+    });
   }
 
   @override
   void dispose() {
+    _lockoutTicker?.cancel();
     _passwordController.dispose();
     _animController.dispose();
     super.dispose();
   }
 
-  void _submit() async {
-    final password = _passwordController.text;
-    if (password.isNotEmpty && !_isSubmitting) {
-      setState(() => _isSubmitting = true);
-      final authState = ref.read(authProvider);
-      final notifier = ref.read(authProvider.notifier);
+  Future<void> _submit() async {
+    if (!_formKey.currentState!.validate()) return;
+    final authState = ref.read(authProvider);
+    if (_isSubmitting ||
+        authState.isLockedOut ||
+        authState.status == AuthStatus.storageError) {
+      return;
+    }
 
+    setState(() => _isSubmitting = true);
+    final notifier = ref.read(authProvider.notifier);
+    try {
       if (authState.status == AuthStatus.noPasswordSet) {
-        await notifier.setPassword(password);
+        await notifier.setPassword(_passwordController.text);
       } else {
-        await notifier.authenticate(password);
+        await notifier.authenticate(_passwordController.text);
+        if (ref.read(authProvider).error == 'incorrectPassword') {
+          _passwordController.clear();
+        }
       }
+    } finally {
       if (mounted) {
         setState(() => _isSubmitting = false);
       }
@@ -74,17 +96,64 @@ class _LockScreenState extends ConsumerState<LockScreen>
     final state = ref.watch(authProvider);
     final isSetup = state.status == AuthStatus.noPasswordSet;
     final theme = Theme.of(context);
-    final settingsAsync = ref.watch(settingsProvider);
-    final settings = settingsAsync.value;
+    final settings = ref.watch(settingsProvider).value;
+    final l10n = AppLocalizations.of(context)!;
+
+    if (!_hasRequestedBiometrics &&
+        state.status == AuthStatus.unauthenticated) {
+      _hasRequestedBiometrics = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted ||
+            ref.read(authProvider).status != AuthStatus.unauthenticated) {
+          return;
+        }
+        ref
+            .read(authProvider.notifier)
+            .tryBiometricLogin(localizedReason: l10n.authenticateToUnlock);
+      });
+    }
+
+    if (state.status == AuthStatus.storageError) {
+      return Scaffold(
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.error_outline_rounded,
+                  color: theme.colorScheme.error,
+                  size: 56,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  l10n.secureStorageErrorTitle,
+                  style: theme.textTheme.titleLarge,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  l10n.secureStorageErrorMessage,
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
 
     final biometricsEnabled = settings?.biometricsEnabled ?? false;
     final hasFaceId =
         settings?.availableBiometrics.contains(BiometricType.face) ?? false;
+    final lockoutRemaining = state.lockoutUntil?.difference(DateTime.now());
+    final isLockedOut =
+        lockoutRemaining != null && lockoutRemaining.inSeconds > 0;
 
     return Scaffold(
       body: Stack(
         children: [
-          // Background Gradient
           Positioned.fill(
             child: Container(
               decoration: BoxDecoration(
@@ -100,33 +169,6 @@ class _LockScreenState extends ConsumerState<LockScreen>
               ),
             ),
           ),
-
-          // Decorative shapes
-          Positioned(
-            top: -100,
-            right: -100,
-            child: Container(
-              width: 300,
-              height: 300,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: theme.colorScheme.primary.withValues(alpha: 0.05),
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: -50,
-            left: -50,
-            child: Container(
-              width: 200,
-              height: 200,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: theme.colorScheme.secondary.withValues(alpha: 0.05),
-              ),
-            ),
-          ),
-
           Center(
             child: SlideTransition(
               position: _slideAnimation,
@@ -154,117 +196,152 @@ class _LockScreenState extends ConsumerState<LockScreen>
                           ),
                         ],
                       ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          GestureDetector(
-                            onTap: (!isSetup && biometricsEnabled)
-                                ? () => ref
-                                      .read(authProvider.notifier)
-                                      .tryBiometricLogin()
-                                : null,
-                            child: Container(
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                color: theme.colorScheme.primary.withValues(
-                                  alpha: 0.1,
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            GestureDetector(
+                              onTap: (!isSetup && biometricsEnabled)
+                                  ? () => ref
+                                        .read(authProvider.notifier)
+                                        .tryBiometricLogin(
+                                          localizedReason:
+                                              l10n.authenticateToUnlock,
+                                        )
+                                  : null,
+                              child: Container(
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: theme.colorScheme.primary.withValues(
+                                    alpha: 0.1,
+                                  ),
+                                  shape: BoxShape.circle,
                                 ),
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                isSetup
-                                    ? Icons.lock_outline
-                                    : (biometricsEnabled
-                                          ? (hasFaceId
-                                                ? Icons.face_rounded
-                                                : Icons.fingerprint_rounded)
-                                          : Icons.lock),
-                                size: 48,
-                                color: theme.colorScheme.primary,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 24),
-                          Text(
-                            isSetup
-                                ? AppLocalizations.of(context)!.setupNewPassword
-                                : AppLocalizations.of(context)!.enterPassword,
-                            style: theme.textTheme.headlineSmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 32),
-                          TextField(
-                            controller: _passwordController,
-                            obscureText: true,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              letterSpacing: 4,
-                              fontSize: 18,
-                            ),
-                            decoration: InputDecoration(
-                              hintText: '••••••••',
-                              hintStyle: const TextStyle(letterSpacing: 4),
-                              errorText: state.error,
-                              prefixIcon: const Icon(Icons.key),
-                            ),
-                            onSubmitted: (_) => _submit(),
-                          ),
-                          const SizedBox(height: 24),
-                          SizedBox(
-                            width: double.infinity,
-                            height: 56,
-                            child: ElevatedButton(
-                              onPressed: _isSubmitting ? null : _submit,
-                              style: ElevatedButton.styleFrom(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
+                                child: Icon(
+                                  isSetup
+                                      ? Icons.lock_outline
+                                      : (biometricsEnabled
+                                            ? (hasFaceId
+                                                  ? Icons.face_rounded
+                                                  : Icons.fingerprint_rounded)
+                                            : Icons.lock),
+                                  size: 48,
+                                  color: theme.colorScheme.primary,
                                 ),
                               ),
-                              child: _isSubmitting
-                                  ? const SizedBox(
-                                      width: 24,
-                                      height: 24,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        color: Colors.white,
+                            ),
+                            const SizedBox(height: 24),
+                            Text(
+                              isSetup
+                                  ? l10n.setupNewPassword
+                                  : l10n.enterPassword,
+                              style: theme.textTheme.headlineSmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 32),
+                            TextFormField(
+                              controller: _passwordController,
+                              obscureText: _obscurePassword,
+                              textAlign: TextAlign.start,
+                              style: const TextStyle(fontSize: 18),
+                              validator: (value) =>
+                                  value == null || value.length < 4
+                                  ? l10n.passwordTooShort
+                                  : null,
+                              decoration: InputDecoration(
+                                hintText: '********',
+                                errorText: state.error == 'incorrectPassword'
+                                    ? l10n.currentPasswordIncorrect
+                                    : state.error,
+                                prefixIcon: const Icon(Icons.key),
+                                suffixIcon: IconButton(
+                                  tooltip: _obscurePassword
+                                      ? l10n.showPassword
+                                      : l10n.hidePassword,
+                                  icon: Icon(
+                                    _obscurePassword
+                                        ? Icons.visibility_rounded
+                                        : Icons.visibility_off_rounded,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      _obscurePassword = !_obscurePassword;
+                                    });
+                                  },
+                                ),
+                              ),
+                              onFieldSubmitted: (_) => _submit(),
+                            ),
+                            if (isLockedOut) ...[
+                              const SizedBox(height: 12),
+                              Text(
+                                l10n.lockedOutSeconds(
+                                  lockoutRemaining.inSeconds,
+                                ),
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: theme.colorScheme.error,
+                                ),
+                              ),
+                            ],
+                            const SizedBox(height: 24),
+                            SizedBox(
+                              width: double.infinity,
+                              height: 56,
+                              child: ElevatedButton(
+                                onPressed: _isSubmitting || isLockedOut
+                                    ? null
+                                    : _submit,
+                                style: ElevatedButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                ),
+                                child: _isSubmitting
+                                    ? const SizedBox(
+                                        width: 24,
+                                        height: 24,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: Colors.white,
+                                        ),
+                                      )
+                                    : Text(
+                                        isSetup
+                                            ? l10n.saveAndStart
+                                            : l10n.login,
+                                        style: const TextStyle(fontSize: 16),
                                       ),
-                                    )
-                                  : Text(
-                                      isSetup
-                                          ? AppLocalizations.of(
-                                              context,
-                                            )!.saveAndStart
-                                          : AppLocalizations.of(context)!.login,
-                                      style: const TextStyle(fontSize: 16),
-                                    ),
+                              ),
                             ),
-                          ),
-                          if (!isSetup && biometricsEnabled) ...[
-                            const SizedBox(height: 16),
-                            TextButton.icon(
-                              onPressed: () => ref
-                                  .read(authProvider.notifier)
-                                  .tryBiometricLogin(),
-                              icon: Icon(
-                                hasFaceId
-                                    ? Icons.face_rounded
-                                    : Icons.fingerprint_rounded,
-                              ),
-                              label: Text(
-                                hasFaceId ? 'Use Face ID' : 'Use Fingerprint',
-                              ),
-                              style: TextButton.styleFrom(
-                                foregroundColor: theme.colorScheme.primary,
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 12,
-                                  horizontal: 24,
+                            if (!isSetup && biometricsEnabled) ...[
+                              const SizedBox(height: 16),
+                              TextButton.icon(
+                                onPressed: isLockedOut
+                                    ? null
+                                    : () => ref
+                                          .read(authProvider.notifier)
+                                          .tryBiometricLogin(
+                                            localizedReason:
+                                                l10n.authenticateToUnlock,
+                                          ),
+                                icon: Icon(
+                                  hasFaceId
+                                      ? Icons.face_rounded
+                                      : Icons.fingerprint_rounded,
+                                ),
+                                label: Text(
+                                  hasFaceId
+                                      ? l10n.useFaceId
+                                      : l10n.useFingerprint,
                                 ),
                               ),
-                            ),
+                            ],
                           ],
-                        ],
+                        ),
                       ),
                     ),
                   ),

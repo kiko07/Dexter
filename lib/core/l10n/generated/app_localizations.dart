@@ -335,7 +335,7 @@ abstract class AppLocalizations {
   /// No description provided for @noExcelFilesFound.
   ///
   /// In ar, this message translates to:
-  /// **'لم يتم العثور على ملفات إكسيل'**
+  /// **'لم يتم العثور على ملفات إكسل أو CSV مدعومة'**
   String get noExcelFilesFound;
 
   /// No description provided for @folder.
@@ -671,7 +671,7 @@ abstract class AppLocalizations {
   /// No description provided for @english.
   ///
   /// In ar, this message translates to:
-  /// **'English'**
+  /// **'الإنجليزية'**
   String get english;
 
   /// No description provided for @designedBy.
@@ -869,7 +869,7 @@ abstract class AppLocalizations {
   /// No description provided for @importDataSubtitle.
   ///
   /// In ar, this message translates to:
-  /// **'إضافة بيانات جديدة من ملفات Excel'**
+  /// **'إضافة بيانات جديدة من ملفات إكسل أو CSV'**
   String get importDataSubtitle;
 
   /// No description provided for @exportDataSubtitle.
@@ -973,6 +973,780 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'إزالة'**
   String get remove;
+
+  /// No description provided for @useFaceId.
+  ///
+  /// In ar, this message translates to:
+  /// **'استخدام Face ID'**
+  String get useFaceId;
+
+  /// No description provided for @useFingerprint.
+  ///
+  /// In ar, this message translates to:
+  /// **'استخدام البصمة'**
+  String get useFingerprint;
+
+  /// No description provided for @faceId.
+  ///
+  /// In ar, this message translates to:
+  /// **'Face ID'**
+  String get faceId;
+
+  /// No description provided for @fingerprint.
+  ///
+  /// In ar, this message translates to:
+  /// **'البصمة'**
+  String get fingerprint;
+
+  /// No description provided for @useFaceIdToUnlock.
+  ///
+  /// In ar, this message translates to:
+  /// **'استخدام Face ID للفتح'**
+  String get useFaceIdToUnlock;
+
+  /// No description provided for @useFingerprintToUnlock.
+  ///
+  /// In ar, this message translates to:
+  /// **'استخدام البصمة للفتح'**
+  String get useFingerprintToUnlock;
+
+  /// No description provided for @viewAndDeleteSpecificFileRecords.
+  ///
+  /// In ar, this message translates to:
+  /// **'عرض وحذف سجلات ملفات محددة'**
+  String get viewAndDeleteSpecificFileRecords;
+
+  /// No description provided for @selectSheets.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر الأوراق للاستيراد'**
+  String get selectSheets;
+
+  /// No description provided for @scanForDuplicates.
+  ///
+  /// In ar, this message translates to:
+  /// **'فحص التكرارات'**
+  String get scanForDuplicates;
+
+  /// No description provided for @findAndRemoveDuplicates.
+  ///
+  /// In ar, this message translates to:
+  /// **'البحث وحذف السجلات المكررة'**
+  String get findAndRemoveDuplicates;
+
+  /// No description provided for @noDuplicatesFound.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد سجلات مكررة!'**
+  String get noDuplicatesFound;
+
+  /// No description provided for @duplicatesFound.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم العثور على {count} مجموعة تكرار'**
+  String duplicatesFound(int count);
+
+  /// No description provided for @keepFirst.
+  ///
+  /// In ar, this message translates to:
+  /// **'الاحتفاظ بالأول'**
+  String get keepFirst;
+
+  /// No description provided for @totalRedundantEntries.
+  ///
+  /// In ar, this message translates to:
+  /// **'إجمالي السجلات الزائدة: {count}'**
+  String totalRedundantEntries(int count);
+
+  /// No description provided for @copiesCount.
+  ///
+  /// In ar, this message translates to:
+  /// **'{count} نسخ'**
+  String copiesCount(int count);
+
+  /// No description provided for @keepBadge.
+  ///
+  /// In ar, this message translates to:
+  /// **'احتفاظ'**
+  String get keepBadge;
+
+  /// No description provided for @duplicateBadge.
+  ///
+  /// In ar, this message translates to:
+  /// **'مكرر'**
+  String get duplicateBadge;
+
+  /// No description provided for @payload.
+  ///
+  /// In ar, this message translates to:
+  /// **'بيانات السجل'**
+  String get payload;
+
+  /// No description provided for @confirmDeleteDuplicateCopy.
+  ///
+  /// In ar, this message translates to:
+  /// **'هل أنت متأكد أنك تريد حذف هذه النسخة المكررة؟ لا يمكن التراجع عن هذا الإجراء.'**
+  String get confirmDeleteDuplicateCopy;
+
+  /// No description provided for @advancedFilters.
+  ///
+  /// In ar, this message translates to:
+  /// **'فلاتر متقدمة'**
+  String get advancedFilters;
+
+  /// No description provided for @allFiles.
+  ///
+  /// In ar, this message translates to:
+  /// **'جميع الملفات'**
+  String get allFiles;
+
+  /// No description provided for @selectedFiles.
+  ///
+  /// In ar, this message translates to:
+  /// **'{count} ملف(ات) محددة'**
+  String selectedFiles(int count);
+
+  /// No description provided for @fileScope.
+  ///
+  /// In ar, this message translates to:
+  /// **'نطاق الملف'**
+  String get fileScope;
+
+  /// No description provided for @addFilter.
+  ///
+  /// In ar, this message translates to:
+  /// **'إضافة فلتر'**
+  String get addFilter;
+
+  /// No description provided for @field.
+  ///
+  /// In ar, this message translates to:
+  /// **'الحقل'**
+  String get field;
+
+  /// No description provided for @operator.
+  ///
+  /// In ar, this message translates to:
+  /// **'العملية'**
+  String get operator;
+
+  /// No description provided for @contains.
+  ///
+  /// In ar, this message translates to:
+  /// **'يحتوي على'**
+  String get contains;
+
+  /// No description provided for @doesNotContain.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا يحتوي على'**
+  String get doesNotContain;
+
+  /// No description provided for @equalTo.
+  ///
+  /// In ar, this message translates to:
+  /// **'يساوي'**
+  String get equalTo;
+
+  /// No description provided for @notEqualTo.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا يساوي'**
+  String get notEqualTo;
+
+  /// No description provided for @greaterThan.
+  ///
+  /// In ar, this message translates to:
+  /// **'أكبر من'**
+  String get greaterThan;
+
+  /// No description provided for @lessThan.
+  ///
+  /// In ar, this message translates to:
+  /// **'أصغر من'**
+  String get lessThan;
+
+  /// No description provided for @betweenLabel.
+  ///
+  /// In ar, this message translates to:
+  /// **'بين'**
+  String get betweenLabel;
+
+  /// No description provided for @copied.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم النسخ'**
+  String get copied;
+
+  /// No description provided for @copy.
+  ///
+  /// In ar, this message translates to:
+  /// **'نسخ'**
+  String get copy;
+
+  /// No description provided for @selectAll.
+  ///
+  /// In ar, this message translates to:
+  /// **'تحديد الكل'**
+  String get selectAll;
+
+  /// No description provided for @clear.
+  ///
+  /// In ar, this message translates to:
+  /// **'مسح'**
+  String get clear;
+
+  /// No description provided for @manualEntriesOnly.
+  ///
+  /// In ar, this message translates to:
+  /// **'الإدخالات اليدوية فقط'**
+  String get manualEntriesOnly;
+
+  /// No description provided for @fieldRequired.
+  ///
+  /// In ar, this message translates to:
+  /// **'هذا الحقل مطلوب'**
+  String get fieldRequired;
+
+  /// No description provided for @invalidFilterValue.
+  ///
+  /// In ar, this message translates to:
+  /// **'أدخل قيمة صالحة لهذا الفلتر'**
+  String get invalidFilterValue;
+
+  /// No description provided for @discardChangesTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'تجاهل التغييرات؟'**
+  String get discardChangesTitle;
+
+  /// No description provided for @discardChangesMessage.
+  ///
+  /// In ar, this message translates to:
+  /// **'لديك بيانات غير محفوظة. هل تريد المغادرة دون حفظها؟'**
+  String get discardChangesMessage;
+
+  /// No description provided for @discard.
+  ///
+  /// In ar, this message translates to:
+  /// **'تجاهل'**
+  String get discard;
+
+  /// No description provided for @secureStorageErrorTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'التخزين الآمن غير متاح'**
+  String get secureStorageErrorTitle;
+
+  /// No description provided for @secureStorageErrorMessage.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعذر على دكستر قراءة وحدة التخزين الآمنة. أعد تشغيل التطبيق أو تحقق من إعدادات أمان الجهاز قبل المتابعة.'**
+  String get secureStorageErrorMessage;
+
+  /// No description provided for @authenticateToUnlock.
+  ///
+  /// In ar, this message translates to:
+  /// **'استخدم المصادقة لفتح دكستر'**
+  String get authenticateToUnlock;
+
+  /// No description provided for @authenticateToEnableBiometrics.
+  ///
+  /// In ar, this message translates to:
+  /// **'استخدم المصادقة لتفعيل المصادقة الحيوية'**
+  String get authenticateToEnableBiometrics;
+
+  /// No description provided for @passwordTooShort.
+  ///
+  /// In ar, this message translates to:
+  /// **'يجب ألا تقل كلمة المرور عن 4 أحرف'**
+  String get passwordTooShort;
+
+  /// No description provided for @showPassword.
+  ///
+  /// In ar, this message translates to:
+  /// **'إظهار كلمة المرور'**
+  String get showPassword;
+
+  /// No description provided for @hidePassword.
+  ///
+  /// In ar, this message translates to:
+  /// **'إخفاء كلمة المرور'**
+  String get hidePassword;
+
+  /// No description provided for @lockedOutSeconds.
+  ///
+  /// In ar, this message translates to:
+  /// **'محاولات فاشلة كثيرة. حاول مرة أخرى بعد {seconds} ثانية.'**
+  String lockedOutSeconds(int seconds);
+
+  /// No description provided for @exportReady.
+  ///
+  /// In ar, this message translates to:
+  /// **'التصدير جاهز'**
+  String get exportReady;
+
+  /// No description provided for @matchContains.
+  ///
+  /// In ar, this message translates to:
+  /// **'يحتوي على'**
+  String get matchContains;
+
+  /// No description provided for @matchExact.
+  ///
+  /// In ar, this message translates to:
+  /// **'مطابقة تامة'**
+  String get matchExact;
+
+  /// No description provided for @matchStartsWith.
+  ///
+  /// In ar, this message translates to:
+  /// **'يبدأ بـ'**
+  String get matchStartsWith;
+
+  /// No description provided for @matchFuzzy.
+  ///
+  /// In ar, this message translates to:
+  /// **'مطابقة تقريبية'**
+  String get matchFuzzy;
+
+  /// No description provided for @anyField.
+  ///
+  /// In ar, this message translates to:
+  /// **'أي حقل'**
+  String get anyField;
+
+  /// No description provided for @recordId.
+  ///
+  /// In ar, this message translates to:
+  /// **'معرّف السجل'**
+  String get recordId;
+
+  /// No description provided for @profileId.
+  ///
+  /// In ar, this message translates to:
+  /// **'معرّف الملف التعريفي'**
+  String get profileId;
+
+  /// No description provided for @sourceFile.
+  ///
+  /// In ar, this message translates to:
+  /// **'الملف المصدر'**
+  String get sourceFile;
+
+  /// No description provided for @importBatch.
+  ///
+  /// In ar, this message translates to:
+  /// **'دفعة الاستيراد'**
+  String get importBatch;
+
+  /// No description provided for @createdAt.
+  ///
+  /// In ar, this message translates to:
+  /// **'تاريخ الإنشاء'**
+  String get createdAt;
+
+  /// No description provided for @updatedAt.
+  ///
+  /// In ar, this message translates to:
+  /// **'تاريخ التحديث'**
+  String get updatedAt;
+
+  /// No description provided for @startsWith.
+  ///
+  /// In ar, this message translates to:
+  /// **'يبدأ بـ'**
+  String get startsWith;
+
+  /// No description provided for @doesNotStartWith.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا يبدأ بـ'**
+  String get doesNotStartWith;
+
+  /// No description provided for @endsWith.
+  ///
+  /// In ar, this message translates to:
+  /// **'ينتهي بـ'**
+  String get endsWith;
+
+  /// No description provided for @doesNotEndWith.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا ينتهي بـ'**
+  String get doesNotEndWith;
+
+  /// No description provided for @containsAllWords.
+  ///
+  /// In ar, this message translates to:
+  /// **'يحتوي على كل الكلمات'**
+  String get containsAllWords;
+
+  /// No description provided for @containsAnyWord.
+  ///
+  /// In ar, this message translates to:
+  /// **'يحتوي على أي كلمة'**
+  String get containsAnyWord;
+
+  /// No description provided for @containsNoWords.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا يحتوي على أي من الكلمات'**
+  String get containsNoWords;
+
+  /// No description provided for @containsCaseSensitive.
+  ///
+  /// In ar, this message translates to:
+  /// **'يحتوي على (مع مراعاة حالة الأحرف)'**
+  String get containsCaseSensitive;
+
+  /// No description provided for @equalCaseSensitive.
+  ///
+  /// In ar, this message translates to:
+  /// **'يساوي (مع مراعاة حالة الأحرف)'**
+  String get equalCaseSensitive;
+
+  /// No description provided for @notEqualCaseSensitive.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا يساوي (مع مراعاة حالة الأحرف)'**
+  String get notEqualCaseSensitive;
+
+  /// No description provided for @inList.
+  ///
+  /// In ar, this message translates to:
+  /// **'موجود في القائمة'**
+  String get inList;
+
+  /// No description provided for @notInList.
+  ///
+  /// In ar, this message translates to:
+  /// **'غير موجود في القائمة'**
+  String get notInList;
+
+  /// No description provided for @greaterThanOrEqual.
+  ///
+  /// In ar, this message translates to:
+  /// **'أكبر من أو يساوي'**
+  String get greaterThanOrEqual;
+
+  /// No description provided for @lessThanOrEqual.
+  ///
+  /// In ar, this message translates to:
+  /// **'أصغر من أو يساوي'**
+  String get lessThanOrEqual;
+
+  /// No description provided for @notBetween.
+  ///
+  /// In ar, this message translates to:
+  /// **'ليس بين'**
+  String get notBetween;
+
+  /// No description provided for @isNumeric.
+  ///
+  /// In ar, this message translates to:
+  /// **'قيمة رقمية'**
+  String get isNumeric;
+
+  /// No description provided for @isNotNumeric.
+  ///
+  /// In ar, this message translates to:
+  /// **'قيمة غير رقمية'**
+  String get isNotNumeric;
+
+  /// No description provided for @dateBefore.
+  ///
+  /// In ar, this message translates to:
+  /// **'التاريخ قبل'**
+  String get dateBefore;
+
+  /// No description provided for @dateAfter.
+  ///
+  /// In ar, this message translates to:
+  /// **'التاريخ بعد'**
+  String get dateAfter;
+
+  /// No description provided for @dateIs.
+  ///
+  /// In ar, this message translates to:
+  /// **'التاريخ يوافق'**
+  String get dateIs;
+
+  /// No description provided for @dateIsNot.
+  ///
+  /// In ar, this message translates to:
+  /// **'التاريخ لا يوافق'**
+  String get dateIsNot;
+
+  /// No description provided for @dateBetween.
+  ///
+  /// In ar, this message translates to:
+  /// **'التاريخ بين'**
+  String get dateBetween;
+
+  /// No description provided for @dateToday.
+  ///
+  /// In ar, this message translates to:
+  /// **'التاريخ هو اليوم'**
+  String get dateToday;
+
+  /// No description provided for @dateInLastDays.
+  ///
+  /// In ar, this message translates to:
+  /// **'التاريخ ضمن الأيام الأخيرة'**
+  String get dateInLastDays;
+
+  /// No description provided for @lengthEqual.
+  ///
+  /// In ar, this message translates to:
+  /// **'الطول يساوي'**
+  String get lengthEqual;
+
+  /// No description provided for @lengthGreaterThan.
+  ///
+  /// In ar, this message translates to:
+  /// **'الطول أكبر من'**
+  String get lengthGreaterThan;
+
+  /// No description provided for @lengthLessThan.
+  ///
+  /// In ar, this message translates to:
+  /// **'الطول أصغر من'**
+  String get lengthLessThan;
+
+  /// No description provided for @lengthBetween.
+  ///
+  /// In ar, this message translates to:
+  /// **'الطول بين'**
+  String get lengthBetween;
+
+  /// No description provided for @fieldExists.
+  ///
+  /// In ar, this message translates to:
+  /// **'الحقل موجود'**
+  String get fieldExists;
+
+  /// No description provided for @fieldMissing.
+  ///
+  /// In ar, this message translates to:
+  /// **'الحقل غير موجود'**
+  String get fieldMissing;
+
+  /// No description provided for @isEmpty.
+  ///
+  /// In ar, this message translates to:
+  /// **'فارغ'**
+  String get isEmpty;
+
+  /// No description provided for @isNotEmpty.
+  ///
+  /// In ar, this message translates to:
+  /// **'غير فارغ'**
+  String get isNotEmpty;
+
+  /// No description provided for @valueLabel.
+  ///
+  /// In ar, this message translates to:
+  /// **'القيمة'**
+  String get valueLabel;
+
+  /// No description provided for @minValue.
+  ///
+  /// In ar, this message translates to:
+  /// **'القيمة الصغرى'**
+  String get minValue;
+
+  /// No description provided for @maxValue.
+  ///
+  /// In ar, this message translates to:
+  /// **'القيمة الكبرى'**
+  String get maxValue;
+
+  /// No description provided for @dateLabel.
+  ///
+  /// In ar, this message translates to:
+  /// **'التاريخ'**
+  String get dateLabel;
+
+  /// No description provided for @startDate.
+  ///
+  /// In ar, this message translates to:
+  /// **'تاريخ البداية'**
+  String get startDate;
+
+  /// No description provided for @endDate.
+  ///
+  /// In ar, this message translates to:
+  /// **'تاريخ النهاية'**
+  String get endDate;
+
+  /// No description provided for @characters.
+  ///
+  /// In ar, this message translates to:
+  /// **'عدد الأحرف'**
+  String get characters;
+
+  /// No description provided for @minCharacters.
+  ///
+  /// In ar, this message translates to:
+  /// **'الحد الأدنى للأحرف'**
+  String get minCharacters;
+
+  /// No description provided for @maxCharacters.
+  ///
+  /// In ar, this message translates to:
+  /// **'الحد الأقصى للأحرف'**
+  String get maxCharacters;
+
+  /// No description provided for @days.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأيام'**
+  String get days;
+
+  /// No description provided for @separateWordsWithSpaces.
+  ///
+  /// In ar, this message translates to:
+  /// **'افصل الكلمات بمسافات'**
+  String get separateWordsWithSpaces;
+
+  /// No description provided for @listValueHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'افصل العناصر بفواصل أو فاصلة منقوطة أو أسطر جديدة'**
+  String get listValueHint;
+
+  /// No description provided for @dateFormatHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'سنة-شهر-يوم'**
+  String get dateFormatHint;
+
+  /// No description provided for @pickDate.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر التاريخ'**
+  String get pickDate;
+
+  /// No description provided for @statistics.
+  ///
+  /// In ar, this message translates to:
+  /// **'الإحصائيات'**
+  String get statistics;
+
+  /// No description provided for @statisticsSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'استكشف اتجاهات البيانات المفهرسة وتوزيعها'**
+  String get statisticsSubtitle;
+
+  /// No description provided for @last30Days.
+  ///
+  /// In ar, this message translates to:
+  /// **'آخر 30 يوماً'**
+  String get last30Days;
+
+  /// No description provided for @allTime.
+  ///
+  /// In ar, this message translates to:
+  /// **'كل الوقت'**
+  String get allTime;
+
+  /// No description provided for @manualRecords.
+  ///
+  /// In ar, this message translates to:
+  /// **'السجلات اليدوية'**
+  String get manualRecords;
+
+  /// No description provided for @indexedFiles.
+  ///
+  /// In ar, this message translates to:
+  /// **'الملفات المفهرسة'**
+  String get indexedFiles;
+
+  /// No description provided for @profiles.
+  ///
+  /// In ar, this message translates to:
+  /// **'الملفات التعريفية'**
+  String get profiles;
+
+  /// No description provided for @recordsOverTime.
+  ///
+  /// In ar, this message translates to:
+  /// **'السجلات عبر الزمن'**
+  String get recordsOverTime;
+
+  /// No description provided for @breakdown.
+  ///
+  /// In ar, this message translates to:
+  /// **'التوزيع'**
+  String get breakdown;
+
+  /// No description provided for @bySourceFile.
+  ///
+  /// In ar, this message translates to:
+  /// **'حسب الملف المصدر'**
+  String get bySourceFile;
+
+  /// No description provided for @byProfile.
+  ///
+  /// In ar, this message translates to:
+  /// **'حسب الملف التعريفي'**
+  String get byProfile;
+
+  /// No description provided for @noStatisticsData.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد بيانات متاحة لهذه الفترة'**
+  String get noStatisticsData;
+
+  /// No description provided for @manualSource.
+  ///
+  /// In ar, this message translates to:
+  /// **'إدخالات يدوية'**
+  String get manualSource;
+
+  /// No description provided for @recordsCount.
+  ///
+  /// In ar, this message translates to:
+  /// **'{count} سجل'**
+  String recordsCount(int count);
+
+  /// No description provided for @refresh.
+  ///
+  /// In ar, this message translates to:
+  /// **'تحديث'**
+  String get refresh;
+
+  /// No description provided for @timeRange.
+  ///
+  /// In ar, this message translates to:
+  /// **'النطاق الزمني'**
+  String get timeRange;
+
+  /// No description provided for @noIndexedSourceFilesFound.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد ملفات مصدر مفهرسة'**
+  String get noIndexedSourceFilesFound;
+
+  /// No description provided for @scanningDuplicateEntries.
+  ///
+  /// In ar, this message translates to:
+  /// **'جارٍ فحص السجلات المكررة...'**
+  String get scanningDuplicateEntries;
+
+  /// No description provided for @settingsLoadError.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعذر تحميل الإعدادات: {error}'**
+  String settingsLoadError(String error);
+
+  /// No description provided for @importCount.
+  ///
+  /// In ar, this message translates to:
+  /// **'{count} عملية استيراد'**
+  String importCount(int count);
 }
 
 class _AppLocalizationsDelegate

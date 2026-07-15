@@ -8,7 +8,9 @@ part 'audit_dao.g.dart';
 class AuditDao extends DatabaseAccessor<AppDatabase> with _$AuditDaoMixin {
   AuditDao(super.db);
 
-  Future<List<AuditLogData>> getAllLogs() => (select(auditLog)..orderBy([(t) => OrderingTerm.desc(t.performedAt)])).get();
+  Future<List<AuditLogData>> getAllLogs() => (select(
+    auditLog,
+  )..orderBy([(t) => OrderingTerm.desc(t.performedAt)])).get();
 
   Future<int> insertLog(AuditLogCompanion log) => into(auditLog).insert(log);
 

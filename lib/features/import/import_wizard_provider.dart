@@ -5,9 +5,11 @@ import '../../core/utils/hash_service.dart';
 import '../../core/database/app_database.dart';
 import '../search/search_provider.dart'; // For databaseProvider
 import '../home/history_provider.dart';
+import '../statistics/statistics_provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:drift/drift.dart' as drift;
 import '../../core/utils/arabic_normalizer.dart';
+import '../../core/utils/dedup_helper.dart';
 
 enum ImportWizardStep {
   referenceRow,
@@ -28,6 +30,9 @@ class ImportWizardState {
   final bool isProcessing;
   final String? error;
 
+  final List<String> availableSheets;
+  final List<String> selectedSheets;
+
   // Progress state
   final int totalRows;
   final int processedRows;
@@ -44,6 +49,8 @@ class ImportWizardState {
     this.importAllFields = true,
     this.isProcessing = false,
     this.error,
+    this.availableSheets = const [],
+    this.selectedSheets = const [],
     this.totalRows = 0,
     this.processedRows = 0,
     this.skippedRows = 0,
@@ -61,6 +68,8 @@ class ImportWizardState {
     bool? importAllFields,
     bool? isProcessing,
     String? error,
+    List<String>? availableSheets,
+    List<String>? selectedSheets,
     int? totalRows,
     int? processedRows,
     int? skippedRows,
@@ -78,6 +87,8 @@ class ImportWizardState {
       importAllFields: importAllFields ?? this.importAllFields,
       isProcessing: isProcessing ?? this.isProcessing,
       error: error,
+      availableSheets: availableSheets ?? this.availableSheets,
+      selectedSheets: selectedSheets ?? this.selectedSheets,
       totalRows: totalRows ?? this.totalRows,
       processedRows: processedRows ?? this.processedRows,
       skippedRows: skippedRows ?? this.skippedRows,
@@ -92,11 +103,23 @@ class ImportWizardNotifier extends Notifier<ImportWizardState> {
     return ImportWizardState();
   }
 
-  void setFilePaths(List<String> paths) {
+  Future<void> setFilePaths(List<String> paths) async {
     state = state.copyWith(
       filePaths: paths,
       currentStep: ImportWizardStep.referenceRow,
+      availableSheets: const [],
+      selectedSheets: const [],
+      error: null,
     );
+    if (paths.isNotEmpty) {
+      try {
+        final sheets = await ExcelService.getSheetNames(paths.first);
+        state = state.copyWith(availableSheets: sheets, selectedSheets: sheets);
+      } catch (e) {
+        state = state.copyWith(error: e.toString());
+        rethrow;
+      }
+    }
   }
 
   void setReferenceRow(int index) {
@@ -108,30 +131,41 @@ class ImportWizardNotifier extends Notifier<ImportWizardState> {
 
     state = state.copyWith(isProcessing: true, error: null);
     try {
+      final sheets = await ExcelService.getSheetNames(state.filePaths.first);
       final headers = await ExcelService.readHeaders(
         state.filePaths.first,
         state.referenceRowIndex,
+        sheetName: state.selectedSheets.isNotEmpty
+            ? state.selectedSheets.first
+            : (sheets.isNotEmpty ? sheets.first : null),
       );
 
-      // Auto-map all columns if importAllFields is true
-      Map<String, String> columnMap = {};
-      for (int i = 0; i < headers.length; i++) {
-        // Use integer string keys for unlimited column support
-        String colKey = i.toString();
-        if (headers[i].isNotEmpty) {
-          columnMap[colKey] = headers[i];
-        }
-      }
+      final columnMap = ExcelService.buildColumnMap(headers);
+      final selectedSheets = state.selectedSheets
+          .where(sheets.contains)
+          .toList();
 
       state = state.copyWith(
         availableHeaders: headers,
         selectedColumns: columnMap,
+        availableSheets: sheets,
+        selectedSheets: selectedSheets,
         isProcessing: false,
         currentStep: ImportWizardStep.columnSelector,
       );
     } catch (e) {
       state = state.copyWith(isProcessing: false, error: e.toString());
     }
+  }
+
+  void toggleSheet(String sheetName) {
+    final current = List<String>.from(state.selectedSheets);
+    if (current.contains(sheetName)) {
+      current.remove(sheetName);
+    } else {
+      current.add(sheetName);
+    }
+    state = state.copyWith(selectedSheets: current);
   }
 
   void setImportAllFields(bool value) {
@@ -171,6 +205,10 @@ class ImportWizardNotifier extends Notifier<ImportWizardState> {
 
   Future<void> startImport() async {
     if (state.filePaths.isEmpty) return;
+    if (state.selectedSheets.isEmpty) {
+      state = state.copyWith(error: 'No sheets selected.');
+      return;
+    }
 
     state = state.copyWith(
       currentStep: ImportWizardStep.progress,
@@ -196,8 +234,16 @@ class ImportWizardNotifier extends Notifier<ImportWizardState> {
             .toList();
 
         if (matchingProfiles.isNotEmpty) {
-          profileId = matchingProfiles.first.id;
-          actualDedupKey ??= matchingProfiles.first.dedupKeyField;
+          final existingProfile = matchingProfiles.first;
+          profileId = existingProfile.id;
+          actualDedupKey ??= existingProfile.dedupKeyField;
+
+          final updatedProfile = existingProfile.copyWith(
+            columnMap: jsonEncode(state.selectedColumns),
+            referenceRowIndex: state.referenceRowIndex,
+            dedupKeyField: drift.Value(actualDedupKey),
+          );
+          await db.profilesDao.updateProfile(updatedProfile);
         } else {
           profileId = await db.profilesDao.insertProfile(
             ImportProfilesCompanion.insert(
@@ -209,38 +255,12 @@ class ImportWizardNotifier extends Notifier<ImportWizardState> {
           );
         }
 
-        // Fetch existing keys to deduplicate efficiently without loading full entries or decoding JSON
-        final Set<String> existingKeys = {};
-
-        if (actualDedupKey != null) {
-          // Use SQLite json_extract to get just the dedup values directly
-          final rows = await db
-              .customSelect(
-                "SELECT json_extract(data, '\$.\"$actualDedupKey\"') as val FROM entries WHERE json_extract(data, '\$.\"$actualDedupKey\"') IS NOT NULL",
-              )
-              .get();
-
-          for (final row in rows) {
-            final val = row.read<String?>('val')?.trim();
-            if (val != null && val.isNotEmpty) {
-              existingKeys.add(arabicNormalize(val));
-            }
-          }
-        } else {
-          // Fallback: fetch only the search_payload column
-          final rows = await db
-              .customSelect(
-                "SELECT search_payload as val FROM entries WHERE search_payload IS NOT NULL",
-              )
-              .get();
-
-          for (final row in rows) {
-            final val = row.read<String?>('val')?.trim();
-            if (val != null && val.isNotEmpty) {
-              existingKeys.add(val); // search_payload is already normalized
-            }
-          }
-        }
+        // Fetch existing keys to deduplicate efficiently scoped to the profile
+        final existingKeys = await DedupHelper.buildDedupSet(
+          db,
+          profileId,
+          actualDedupKey,
+        );
 
         // Create Batch
         final fileHash = await HashService.hashFile(filePath);
@@ -253,30 +273,52 @@ class ImportWizardNotifier extends Notifier<ImportWizardState> {
           ),
         );
 
-        // Parse Data
-        final parsedData = await ExcelService.parseData(
+        // Parse Data from all sheets and merge them into parsedData list
+        final List<Map<String, dynamic>> parsedData = [];
+        final allSheetsData = await ExcelService.parseAllSheets(
           filePath: filePath,
           columnMap: state.selectedColumns,
           referenceRowIndex: state.referenceRowIndex,
         );
+
+        for (final entry in allSheetsData.entries) {
+          final sheetName = entry.key;
+          // Filter if sheet is selected by user (only applies to first selected file where UI is configured)
+          // For other files, we import all sheets.
+          final shouldApplySheetSelection = filePath == state.filePaths.first;
+          if (shouldApplySheetSelection &&
+              !state.selectedSheets.contains(sheetName)) {
+            continue;
+          }
+          for (final row in entry.value) {
+            final rowWithSheet = Map<String, dynamic>.from(row);
+            rowWithSheet['_sheetName'] = sheetName;
+            parsedData.add(rowWithSheet);
+          }
+        }
 
         // Convert to Drift entries & Deduplicate
         final entriesList = <EntriesCompanion>[];
         int skippedInBatch = 0;
 
         for (final map in parsedData) {
-          final payload = map.values
+          // Keep source metadata in stored data, but exclude it from search and
+          // dedup payloads.
+          final cleanMap = Map<String, dynamic>.from(map);
+
+          final payloadMap = DedupHelper.stripMetadataForDedup(cleanMap);
+          final payload = payloadMap.values
               .map((v) => arabicNormalize(v?.toString() ?? ''))
               .join(' ');
 
           String dedupVal = '';
           if (actualDedupKey != null) {
-            final val = map[actualDedupKey]?.toString().trim();
-            if (val != null && val.isNotEmpty) {
-              dedupVal = arabicNormalize(val);
+            final val = cleanMap[actualDedupKey]?.toString();
+            if (val != null && val.trim().isNotEmpty) {
+              dedupVal = DedupHelper.normalizeForDedup(val);
             }
           } else {
-            dedupVal = payload;
+            dedupVal = DedupHelper.normalizePayloadForDedup(cleanMap);
           }
 
           if (dedupVal.isNotEmpty) {
@@ -292,7 +334,7 @@ class ImportWizardNotifier extends Notifier<ImportWizardState> {
             EntriesCompanion.insert(
               profileId: profileId,
               importBatchId: drift.Value(batchId),
-              data: jsonEncode(map),
+              data: jsonEncode(cleanMap), // Contains _sheetName if present
               searchPayload: payload,
               sourceFile: drift.Value(p.basename(filePath)),
             ),
@@ -332,6 +374,7 @@ class ImportWizardNotifier extends Notifier<ImportWizardState> {
 
       // Refresh history data
       ref.invalidate(historyProvider);
+      ref.invalidate(statisticsProvider);
     } catch (e) {
       state = state.copyWith(isProcessing: false, error: e.toString());
     }

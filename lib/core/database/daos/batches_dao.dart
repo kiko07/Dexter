@@ -10,11 +10,15 @@ class BatchesDao extends DatabaseAccessor<AppDatabase> with _$BatchesDaoMixin {
 
   Future<List<ImportBatch>> getAllBatches() => select(importBatches).get();
 
-  Future<ImportBatch> getBatch(int id) => (select(importBatches)..where((t) => t.id.equals(id))).getSingle();
+  Future<ImportBatch> getBatch(int id) =>
+      (select(importBatches)..where((t) => t.id.equals(id))).getSingle();
 
-  Future<int> insertBatch(ImportBatchesCompanion batch) => into(importBatches).insert(batch);
+  Future<int> insertBatch(ImportBatchesCompanion batch) =>
+      into(importBatches).insert(batch);
 
-  Future<bool> updateBatch(ImportBatch batch) => update(importBatches).replace(batch);
+  Future<bool> updateBatch(ImportBatch batch) =>
+      update(importBatches).replace(batch);
 
-  Future<int> deleteBatch(int id) => (delete(importBatches)..where((t) => t.id.equals(id))).go();
+  Future<int> deleteBatch(int id) =>
+      (delete(importBatches)..where((t) => t.id.equals(id))).go();
 }

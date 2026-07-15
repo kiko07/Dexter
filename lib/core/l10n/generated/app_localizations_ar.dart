@@ -129,7 +129,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get files => 'ملفات';
 
   @override
-  String get noExcelFilesFound => 'لم يتم العثور على ملفات إكسيل';
+  String get noExcelFilesFound => 'لم يتم العثور على ملفات إكسل أو CSV مدعومة';
 
   @override
   String get folder => 'مجلد';
@@ -301,7 +301,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get currentPasswordIncorrect => 'كلمة المرور الحالية غير صحيحة';
 
   @override
-  String get english => 'English';
+  String get english => 'الإنجليزية';
 
   @override
   String get designedBy => 'تم التصميم بواسطة';
@@ -414,7 +414,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get exportNow => 'تصدير الآن';
 
   @override
-  String get importDataSubtitle => 'إضافة بيانات جديدة من ملفات Excel';
+  String get importDataSubtitle => 'إضافة بيانات جديدة من ملفات إكسل أو CSV';
 
   @override
   String get exportDataSubtitle => 'تصدير كافة البيانات المسجلة إلى ملف Excel';
@@ -479,4 +479,412 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get remove => 'إزالة';
+
+  @override
+  String get useFaceId => 'استخدام Face ID';
+
+  @override
+  String get useFingerprint => 'استخدام البصمة';
+
+  @override
+  String get faceId => 'Face ID';
+
+  @override
+  String get fingerprint => 'البصمة';
+
+  @override
+  String get useFaceIdToUnlock => 'استخدام Face ID للفتح';
+
+  @override
+  String get useFingerprintToUnlock => 'استخدام البصمة للفتح';
+
+  @override
+  String get viewAndDeleteSpecificFileRecords => 'عرض وحذف سجلات ملفات محددة';
+
+  @override
+  String get selectSheets => 'اختر الأوراق للاستيراد';
+
+  @override
+  String get scanForDuplicates => 'فحص التكرارات';
+
+  @override
+  String get findAndRemoveDuplicates => 'البحث وحذف السجلات المكررة';
+
+  @override
+  String get noDuplicatesFound => 'لا توجد سجلات مكررة!';
+
+  @override
+  String duplicatesFound(int count) {
+    return 'تم العثور على $count مجموعة تكرار';
+  }
+
+  @override
+  String get keepFirst => 'الاحتفاظ بالأول';
+
+  @override
+  String totalRedundantEntries(int count) {
+    return 'إجمالي السجلات الزائدة: $count';
+  }
+
+  @override
+  String copiesCount(int count) {
+    return '$count نسخ';
+  }
+
+  @override
+  String get keepBadge => 'احتفاظ';
+
+  @override
+  String get duplicateBadge => 'مكرر';
+
+  @override
+  String get payload => 'بيانات السجل';
+
+  @override
+  String get confirmDeleteDuplicateCopy =>
+      'هل أنت متأكد أنك تريد حذف هذه النسخة المكررة؟ لا يمكن التراجع عن هذا الإجراء.';
+
+  @override
+  String get advancedFilters => 'فلاتر متقدمة';
+
+  @override
+  String get allFiles => 'جميع الملفات';
+
+  @override
+  String selectedFiles(int count) {
+    return '$count ملف(ات) محددة';
+  }
+
+  @override
+  String get fileScope => 'نطاق الملف';
+
+  @override
+  String get addFilter => 'إضافة فلتر';
+
+  @override
+  String get field => 'الحقل';
+
+  @override
+  String get operator => 'العملية';
+
+  @override
+  String get contains => 'يحتوي على';
+
+  @override
+  String get doesNotContain => 'لا يحتوي على';
+
+  @override
+  String get equalTo => 'يساوي';
+
+  @override
+  String get notEqualTo => 'لا يساوي';
+
+  @override
+  String get greaterThan => 'أكبر من';
+
+  @override
+  String get lessThan => 'أصغر من';
+
+  @override
+  String get betweenLabel => 'بين';
+
+  @override
+  String get copied => 'تم النسخ';
+
+  @override
+  String get copy => 'نسخ';
+
+  @override
+  String get selectAll => 'تحديد الكل';
+
+  @override
+  String get clear => 'مسح';
+
+  @override
+  String get manualEntriesOnly => 'الإدخالات اليدوية فقط';
+
+  @override
+  String get fieldRequired => 'هذا الحقل مطلوب';
+
+  @override
+  String get invalidFilterValue => 'أدخل قيمة صالحة لهذا الفلتر';
+
+  @override
+  String get discardChangesTitle => 'تجاهل التغييرات؟';
+
+  @override
+  String get discardChangesMessage =>
+      'لديك بيانات غير محفوظة. هل تريد المغادرة دون حفظها؟';
+
+  @override
+  String get discard => 'تجاهل';
+
+  @override
+  String get secureStorageErrorTitle => 'التخزين الآمن غير متاح';
+
+  @override
+  String get secureStorageErrorMessage =>
+      'تعذر على دكستر قراءة وحدة التخزين الآمنة. أعد تشغيل التطبيق أو تحقق من إعدادات أمان الجهاز قبل المتابعة.';
+
+  @override
+  String get authenticateToUnlock => 'استخدم المصادقة لفتح دكستر';
+
+  @override
+  String get authenticateToEnableBiometrics =>
+      'استخدم المصادقة لتفعيل المصادقة الحيوية';
+
+  @override
+  String get passwordTooShort => 'يجب ألا تقل كلمة المرور عن 4 أحرف';
+
+  @override
+  String get showPassword => 'إظهار كلمة المرور';
+
+  @override
+  String get hidePassword => 'إخفاء كلمة المرور';
+
+  @override
+  String lockedOutSeconds(int seconds) {
+    return 'محاولات فاشلة كثيرة. حاول مرة أخرى بعد $seconds ثانية.';
+  }
+
+  @override
+  String get exportReady => 'التصدير جاهز';
+
+  @override
+  String get matchContains => 'يحتوي على';
+
+  @override
+  String get matchExact => 'مطابقة تامة';
+
+  @override
+  String get matchStartsWith => 'يبدأ بـ';
+
+  @override
+  String get matchFuzzy => 'مطابقة تقريبية';
+
+  @override
+  String get anyField => 'أي حقل';
+
+  @override
+  String get recordId => 'معرّف السجل';
+
+  @override
+  String get profileId => 'معرّف الملف التعريفي';
+
+  @override
+  String get sourceFile => 'الملف المصدر';
+
+  @override
+  String get importBatch => 'دفعة الاستيراد';
+
+  @override
+  String get createdAt => 'تاريخ الإنشاء';
+
+  @override
+  String get updatedAt => 'تاريخ التحديث';
+
+  @override
+  String get startsWith => 'يبدأ بـ';
+
+  @override
+  String get doesNotStartWith => 'لا يبدأ بـ';
+
+  @override
+  String get endsWith => 'ينتهي بـ';
+
+  @override
+  String get doesNotEndWith => 'لا ينتهي بـ';
+
+  @override
+  String get containsAllWords => 'يحتوي على كل الكلمات';
+
+  @override
+  String get containsAnyWord => 'يحتوي على أي كلمة';
+
+  @override
+  String get containsNoWords => 'لا يحتوي على أي من الكلمات';
+
+  @override
+  String get containsCaseSensitive => 'يحتوي على (مع مراعاة حالة الأحرف)';
+
+  @override
+  String get equalCaseSensitive => 'يساوي (مع مراعاة حالة الأحرف)';
+
+  @override
+  String get notEqualCaseSensitive => 'لا يساوي (مع مراعاة حالة الأحرف)';
+
+  @override
+  String get inList => 'موجود في القائمة';
+
+  @override
+  String get notInList => 'غير موجود في القائمة';
+
+  @override
+  String get greaterThanOrEqual => 'أكبر من أو يساوي';
+
+  @override
+  String get lessThanOrEqual => 'أصغر من أو يساوي';
+
+  @override
+  String get notBetween => 'ليس بين';
+
+  @override
+  String get isNumeric => 'قيمة رقمية';
+
+  @override
+  String get isNotNumeric => 'قيمة غير رقمية';
+
+  @override
+  String get dateBefore => 'التاريخ قبل';
+
+  @override
+  String get dateAfter => 'التاريخ بعد';
+
+  @override
+  String get dateIs => 'التاريخ يوافق';
+
+  @override
+  String get dateIsNot => 'التاريخ لا يوافق';
+
+  @override
+  String get dateBetween => 'التاريخ بين';
+
+  @override
+  String get dateToday => 'التاريخ هو اليوم';
+
+  @override
+  String get dateInLastDays => 'التاريخ ضمن الأيام الأخيرة';
+
+  @override
+  String get lengthEqual => 'الطول يساوي';
+
+  @override
+  String get lengthGreaterThan => 'الطول أكبر من';
+
+  @override
+  String get lengthLessThan => 'الطول أصغر من';
+
+  @override
+  String get lengthBetween => 'الطول بين';
+
+  @override
+  String get fieldExists => 'الحقل موجود';
+
+  @override
+  String get fieldMissing => 'الحقل غير موجود';
+
+  @override
+  String get isEmpty => 'فارغ';
+
+  @override
+  String get isNotEmpty => 'غير فارغ';
+
+  @override
+  String get valueLabel => 'القيمة';
+
+  @override
+  String get minValue => 'القيمة الصغرى';
+
+  @override
+  String get maxValue => 'القيمة الكبرى';
+
+  @override
+  String get dateLabel => 'التاريخ';
+
+  @override
+  String get startDate => 'تاريخ البداية';
+
+  @override
+  String get endDate => 'تاريخ النهاية';
+
+  @override
+  String get characters => 'عدد الأحرف';
+
+  @override
+  String get minCharacters => 'الحد الأدنى للأحرف';
+
+  @override
+  String get maxCharacters => 'الحد الأقصى للأحرف';
+
+  @override
+  String get days => 'الأيام';
+
+  @override
+  String get separateWordsWithSpaces => 'افصل الكلمات بمسافات';
+
+  @override
+  String get listValueHint =>
+      'افصل العناصر بفواصل أو فاصلة منقوطة أو أسطر جديدة';
+
+  @override
+  String get dateFormatHint => 'سنة-شهر-يوم';
+
+  @override
+  String get pickDate => 'اختر التاريخ';
+
+  @override
+  String get statistics => 'الإحصائيات';
+
+  @override
+  String get statisticsSubtitle => 'استكشف اتجاهات البيانات المفهرسة وتوزيعها';
+
+  @override
+  String get last30Days => 'آخر 30 يوماً';
+
+  @override
+  String get allTime => 'كل الوقت';
+
+  @override
+  String get manualRecords => 'السجلات اليدوية';
+
+  @override
+  String get indexedFiles => 'الملفات المفهرسة';
+
+  @override
+  String get profiles => 'الملفات التعريفية';
+
+  @override
+  String get recordsOverTime => 'السجلات عبر الزمن';
+
+  @override
+  String get breakdown => 'التوزيع';
+
+  @override
+  String get bySourceFile => 'حسب الملف المصدر';
+
+  @override
+  String get byProfile => 'حسب الملف التعريفي';
+
+  @override
+  String get noStatisticsData => 'لا توجد بيانات متاحة لهذه الفترة';
+
+  @override
+  String get manualSource => 'إدخالات يدوية';
+
+  @override
+  String recordsCount(int count) {
+    return '$count سجل';
+  }
+
+  @override
+  String get refresh => 'تحديث';
+
+  @override
+  String get timeRange => 'النطاق الزمني';
+
+  @override
+  String get noIndexedSourceFilesFound => 'لا توجد ملفات مصدر مفهرسة';
+
+  @override
+  String get scanningDuplicateEntries => 'جارٍ فحص السجلات المكررة...';
+
+  @override
+  String settingsLoadError(String error) {
+    return 'تعذر تحميل الإعدادات: $error';
+  }
+
+  @override
+  String importCount(int count) {
+    return '$count عملية استيراد';
+  }
 }
