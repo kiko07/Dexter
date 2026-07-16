@@ -1,4 +1,5 @@
 import 'dart:io' show File, Platform;
+import 'dart:math' as math;
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -82,85 +83,83 @@ class _DataScreenState extends ConsumerState<DataScreen> {
         children: [
           SafeArea(
             bottom: false,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24.0,
-                    vertical: 16.0,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final actions = <Widget>[
+                  _DataActionCard(
+                    icon: Icons.upload_file_rounded,
+                    title: AppLocalizations.of(context)!.importData,
+                    subtitle: AppLocalizations.of(context)!.importDataSubtitle,
+                    color: theme.colorScheme.primary,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const ImportWizardScreen(),
+                        ),
+                      );
+                    },
                   ),
-                  child: Text(
-                    AppLocalizations.of(context)!.data,
-                    style: theme.textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
+                  _DataActionCard(
+                    icon: Icons.download_rounded,
+                    title: AppLocalizations.of(context)!.exportData,
+                    subtitle: AppLocalizations.of(context)!.exportDataSubtitle,
+                    color: Colors.blueGrey,
+                    onTap: _isExporting ? () {} : () => _exportData(context),
+                  ),
+                  if (!Platform.isAndroid && !Platform.isIOS)
+                    _DataActionCard(
+                      icon: Icons.sync_rounded,
+                      title: AppLocalizations.of(context)!.updateData,
+                      subtitle: AppLocalizations.of(
+                        context,
+                      )!.updateDataSubtitle,
+                      color: Colors.deepPurple,
+                      onTap: () {
+                        ref
+                            .read(backgroundScannerProvider.notifier)
+                            .scanNow(isManual: true);
+                      },
+                    ),
+                  _DataActionCard(
+                    icon: Icons.history_rounded,
+                    title: AppLocalizations.of(context)!.importHistory,
+                    subtitle: AppLocalizations.of(context)!.showAllData,
+                    color: Colors.teal,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const HistoryScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                ];
+                final contentWidth = math.min(constraints.maxWidth, 1040.0);
+                final columns = contentWidth >= 760 ? 2 : 1;
+                const spacing = 16.0;
+                final cardWidth = columns == 2
+                    ? (contentWidth - spacing) / 2
+                    : contentWidth;
+
+                return SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
+                  child: Center(
+                    child: SizedBox(
+                      width: contentWidth,
+                      child: Wrap(
+                        spacing: spacing,
+                        runSpacing: spacing,
+                        children: [
+                          for (final action in actions)
+                            SizedBox(width: cardWidth, child: action),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                Expanded(
-                  child: ListView(
-                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                    children: [
-                      _DataActionCard(
-                        icon: Icons.upload_file_rounded,
-                        title: AppLocalizations.of(context)!.importData,
-                        subtitle: AppLocalizations.of(
-                          context,
-                        )!.importDataSubtitle,
-                        color: theme.colorScheme.primary,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const ImportWizardScreen(),
-                            ),
-                          );
-                        },
-                      ),
-                      _DataActionCard(
-                        icon: Icons.download_rounded,
-                        title: AppLocalizations.of(context)!.exportData,
-                        subtitle: AppLocalizations.of(
-                          context,
-                        )!.exportDataSubtitle,
-                        color: Colors.blueGrey,
-                        onTap: _isExporting
-                            ? () {}
-                            : () => _exportData(context),
-                      ),
-                      if (!Platform.isAndroid && !Platform.isIOS)
-                        _DataActionCard(
-                          icon: Icons.sync_rounded,
-                          title: AppLocalizations.of(context)!.updateData,
-                          subtitle: AppLocalizations.of(
-                            context,
-                          )!.updateDataSubtitle,
-                          color: Colors.deepPurple,
-                          onTap: () {
-                            ref
-                                .read(backgroundScannerProvider.notifier)
-                                .scanNow(isManual: true);
-                          },
-                        ),
-                      _DataActionCard(
-                        icon: Icons.history_rounded,
-                        title: AppLocalizations.of(context)!.importHistory,
-                        subtitle: AppLocalizations.of(context)!.showAllData,
-                        color: Colors.teal,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const HistoryScreen(),
-                            ),
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 24),
-                    ],
-                  ),
-                ),
-              ],
+                );
+              },
             ),
           ),
           if (isScanning || _isExporting)
@@ -375,37 +374,29 @@ class _DataActionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: color.withValues(alpha: 0.1),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
-        border: Border.all(color: color.withValues(alpha: 0.1)),
+        color: Theme.of(context).colorScheme.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(18),
           child: Padding(
-            padding: const EdgeInsets.all(24.0),
+            padding: const EdgeInsets.all(20),
             child: Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
                     color: color.withValues(alpha: 0.1),
-                    shape: BoxShape.circle,
+                    borderRadius: BorderRadius.circular(14),
                   ),
-                  child: Icon(icon, size: 32, color: color),
+                  child: Icon(icon, size: 28, color: color),
                 ),
-                const SizedBox(width: 20),
+                const SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -413,7 +404,7 @@ class _DataActionCard extends StatelessWidget {
                       Text(
                         title,
                         style: const TextStyle(
-                          fontSize: 20,
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
                       ),

@@ -1,10 +1,8 @@
 import 'package:dexter/core/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../settings/settings_screen.dart';
 import 'search_provider.dart';
 import 'result_card.dart';
-import '../../core/widgets/about_dialog_helper.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
   const SearchScreen({super.key});
@@ -45,13 +43,16 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           children: [
             Icon(
               Icons.search_rounded,
-              size: 80,
-              color: theme.colorScheme.primary.withValues(alpha: 0.2),
+              size: 48,
+              color: theme.colorScheme.primary,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 14),
             Text(
               AppLocalizations.of(context)!.pleaseEnterDataToSearch,
-              style: theme.textTheme.titleMedium?.copyWith(color: Colors.grey),
+              textAlign: TextAlign.center,
+              style: theme.textTheme.titleMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
             ),
           ],
         ),
@@ -64,14 +65,17 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
-              Icons.sentiment_dissatisfied_rounded,
-              size: 80,
-              color: theme.colorScheme.error.withValues(alpha: 0.5),
+              Icons.search_off_rounded,
+              size: 48,
+              color: theme.colorScheme.onSurfaceVariant,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 14),
             Text(
               AppLocalizations.of(context)!.noResults,
-              style: theme.textTheme.titleMedium?.copyWith(color: Colors.grey),
+              textAlign: TextAlign.center,
+              style: theme.textTheme.titleMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
             ),
           ],
         ),
@@ -104,116 +108,28 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: SafeArea(
         child: Column(
           children: [
-            // App Bar Row
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16.0,
-                vertical: 8.0,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    AppLocalizations.of(context)!.searchTitle,
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 4),
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.surface,
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.05),
-                              blurRadius: 10,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: IconButton(
-                          icon: const Icon(Icons.info_outline),
-                          color: theme.colorScheme.primary,
-                          onPressed: () => showAppAboutDialog(context),
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 4),
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.surface,
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.05),
-                              blurRadius: 10,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: IconButton(
-                          icon: const Icon(Icons.settings),
-                          color: theme.colorScheme.primary,
-                          onPressed: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const SettingsScreen(),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-
             // Search Bar
             Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16.0,
-                vertical: 8.0,
-              ),
-              child: Container(
-                decoration: BoxDecoration(
-                  boxShadow: [
-                    BoxShadow(
-                      color: theme.colorScheme.primary.withValues(alpha: 0.08),
-                      blurRadius: 20,
-                      offset: const Offset(0, 8),
-                    ),
-                  ],
-                ),
-                child: TextField(
-                  decoration: InputDecoration(
-                    hintText: AppLocalizations.of(context)!.searchForRecord,
-                    prefixIcon: Icon(
-                      Icons.search,
-                      color: theme.colorScheme.primary,
-                    ),
-                    filled: true,
-                    fillColor: theme.colorScheme.surface,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30),
-                      borderSide: BorderSide.none,
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      vertical: 18,
-                      horizontal: 24,
-                    ),
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+              child: TextField(
+                textInputAction: TextInputAction.search,
+                decoration: InputDecoration(
+                  hintText: AppLocalizations.of(context)!.searchForRecord,
+                  prefixIcon: Icon(
+                    Icons.search_rounded,
+                    color: theme.colorScheme.primary,
                   ),
-                  onChanged: (val) => notifier.setQuery(val),
                 ),
+                onChanged: notifier.setQuery,
               ),
             ),
 
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
@@ -237,64 +153,37 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             ),
             const SizedBox(height: 4),
 
-            // Advanced Filters & File Scope Row
+            // Advanced search: scope is chosen before individual filters.
             Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16.0,
-                vertical: 4.0,
-              ),
-              child: Row(
-                children: [
-                  // File Scope Button
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      style: OutlinedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                      ),
-                      onPressed: () =>
-                          _showFileScopeBottomSheet(context, state, notifier),
-                      icon: const Icon(Icons.file_copy_rounded, size: 18),
-                      label: Text(
-                        state.selectedSourceFiles.isEmpty
-                            ? AppLocalizations.of(context)!.allFiles
-                            : AppLocalizations.of(context)!.selectedFiles(
-                                state.selectedSourceFiles.length,
-                              ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+              child: OutlinedButton.icon(
+                style: OutlinedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
                   ),
-                  const SizedBox(width: 12),
-                  // Advanced Filters Button
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      style: OutlinedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                      ),
-                      onPressed: () => _showAdvancedFiltersBottomSheet(
-                        context,
-                        ref,
-                        state,
-                        notifier,
-                      ),
-                      icon: Badge(
-                        isLabelVisible: state.advancedFilters.isNotEmpty,
-                        label: Text(state.advancedFilters.length.toString()),
-                        child: const Icon(Icons.filter_alt_rounded, size: 18),
-                      ),
-                      label: Text(
-                        AppLocalizations.of(context)!.advancedFilters,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
                   ),
-                ],
+                ),
+                onPressed: () =>
+                    _showAdvancedFiltersBottomSheet(context, ref, notifier),
+                icon: Badge(
+                  isLabelVisible: state.advancedFilters.isNotEmpty,
+                  label: Text(state.advancedFilters.length.toString()),
+                  child: const Icon(Icons.filter_alt_rounded, size: 18),
+                ),
+                label: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(AppLocalizations.of(context)!.advancedFilters),
+                    Text(
+                      _fileScopeSummary(l10n, state),
+                      style: theme.textTheme.labelSmall,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
               ),
             ),
 
@@ -302,7 +191,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             if (state.advancedFilters.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 16.0,
+                  horizontal: 20,
                   vertical: 4.0,
                 ),
                 child: Wrap(
@@ -335,7 +224,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             // Display Toggle and Sorting Options
             const SizedBox(height: 12),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -532,15 +421,15 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
             // Results Count
             Padding(
-              padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
+              padding: const EdgeInsets.fromLTRB(24, 16, 24, 6),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     '${AppLocalizations.of(context)!.totalRecords}: ${state.results.length} / ${state.totalCount}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Colors.grey,
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ],
@@ -576,112 +465,20 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     return _systemFieldLabel(l10n, fieldName) ?? fieldName;
   }
 
-  void _showFileScopeBottomSheet(
-    BuildContext context,
-    SearchState state,
-    SearchNotifier notifier,
-  ) {
-    final theme = Theme.of(context);
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (context) {
-        return Consumer(
-          builder: (context, ref, _) {
-            final s = ref.watch(searchProvider);
-            return SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          AppLocalizations.of(context)!.fileScope,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
-                        ),
-                        Row(
-                          children: [
-                            TextButton(
-                              onPressed: () => notifier.selectAllFiles(),
-                              child: Text(
-                                AppLocalizations.of(context)!.selectAll,
-                              ),
-                            ),
-                            TextButton(
-                              onPressed: () => notifier.clearFileSelection(),
-                              child: Text(AppLocalizations.of(context)!.clear),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    CheckboxListTile(
-                      title: Text(
-                        AppLocalizations.of(context)!.manualEntriesOnly,
-                      ),
-                      value: s.manualOnly,
-                      onChanged: (value) =>
-                          notifier.setManualOnly(value ?? false),
-                      activeColor: theme.colorScheme.primary,
-                    ),
-                    if (s.availableSourceFiles.isEmpty)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 24.0),
-                        child: Center(
-                          child: Text(
-                            AppLocalizations.of(
-                              context,
-                            )!.noIndexedSourceFilesFound,
-                          ),
-                        ),
-                      )
-                    else
-                      Container(
-                        constraints: BoxConstraints(
-                          maxHeight: MediaQuery.of(context).size.height * 0.4,
-                        ),
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: s.availableSourceFiles.length,
-                          itemBuilder: (context, idx) {
-                            final fileName = s.availableSourceFiles[idx];
-                            final isSelected = s.selectedSourceFiles.contains(
-                              fileName,
-                            );
-                            return CheckboxListTile(
-                              title: Text(fileName),
-                              value: isSelected,
-                              onChanged: (_) =>
-                                  notifier.toggleSourceFile(fileName),
-                              activeColor: theme.colorScheme.primary,
-                            );
-                          },
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-      },
-    );
+  String _fileScopeSummary(AppLocalizations l10n, SearchState state) {
+    return switch (state.fileScope) {
+      SearchFileScope.allExcelFiles => l10n.allExcelFiles,
+      SearchFileScope.selectedExcelFiles =>
+        state.selectedSourceFiles.isEmpty
+            ? l10n.chooseExcelFiles
+            : l10n.selectedFiles(state.selectedSourceFiles.length),
+      SearchFileScope.manualEntriesOnly => l10n.manualEntriesOnly,
+    };
   }
 
   void _showAdvancedFiltersBottomSheet(
     BuildContext context,
     WidgetRef ref,
-    SearchState state,
     SearchNotifier notifier,
   ) {
     final db = ref.read(databaseProvider);
@@ -704,12 +501,16 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             }
 
             final fields = snapshot.data!;
-            return _AdvancedFilterSheetBody(
-              fields: fields,
-              onAddFilter: (filter) {
-                notifier.addFilter(filter);
-                Navigator.pop(context);
-              },
+            return Consumer(
+              builder: (context, ref, _) => _AdvancedFilterSheetBody(
+                fields: fields,
+                searchState: ref.watch(searchProvider),
+                searchNotifier: notifier,
+                onAddFilter: (filter) {
+                  notifier.addFilter(filter);
+                  Navigator.pop(context);
+                },
+              ),
             );
           },
         );
@@ -720,10 +521,14 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
 class _AdvancedFilterSheetBody extends StatefulWidget {
   final List<String> fields;
+  final SearchState searchState;
+  final SearchNotifier searchNotifier;
   final ValueChanged<AdvancedFilter> onAddFilter;
 
   const _AdvancedFilterSheetBody({
     required this.fields,
+    required this.searchState,
+    required this.searchNotifier,
     required this.onAddFilter,
   });
 
@@ -873,11 +678,52 @@ class _AdvancedFilterSheetBodyState extends State<_AdvancedFilterSheetBody> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              AppLocalizations.of(context)!.addFilter,
+              l10n.advancedFilters,
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
+            Text(
+              l10n.chooseSearchScope,
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              l10n.chooseSearchScopeHint,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            const SizedBox(height: 8),
+            RadioGroup<SearchFileScope>(
+              groupValue: widget.searchState.fileScope,
+              onChanged: (scope) {
+                if (scope != null) {
+                  widget.searchNotifier.setFileScope(scope);
+                }
+              },
+              child: Column(
+                children: [
+                  _buildScopeOption(
+                    value: SearchFileScope.allExcelFiles,
+                    title: l10n.allExcelFiles,
+                    subtitle: l10n.allExcelFilesHint,
+                  ),
+                  _buildScopeOption(
+                    value: SearchFileScope.selectedExcelFiles,
+                    title: l10n.chooseExcelFiles,
+                    subtitle: l10n.chooseExcelFilesHint,
+                  ),
+                  if (widget.searchState.fileScope ==
+                      SearchFileScope.selectedExcelFiles)
+                    _buildSelectedFiles(),
+                  _buildScopeOption(
+                    value: SearchFileScope.manualEntriesOnly,
+                    title: l10n.manualEntriesOnly,
+                    subtitle: l10n.manualEntriesOnlyHint,
+                  ),
+                ],
+              ),
+            ),
+            const Divider(height: 32),
             // Field Dropdown
             DropdownButtonFormField<String>(
               initialValue: _selectedField,
@@ -907,6 +753,8 @@ class _AdvancedFilterSheetBodyState extends State<_AdvancedFilterSheetBody> {
                 }
               },
             ),
+            const SizedBox(height: 8),
+            _buildOperatorExplanation(l10n, operator),
             const SizedBox(height: 16),
             // Operator Dropdown
             DropdownButtonFormField<String>(
@@ -987,6 +835,136 @@ class _AdvancedFilterSheetBodyState extends State<_AdvancedFilterSheetBody> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildScopeOption({
+    required SearchFileScope value,
+    required String title,
+    required String subtitle,
+  }) {
+    return RadioListTile<SearchFileScope>(
+      value: value,
+      contentPadding: EdgeInsets.zero,
+      dense: true,
+      controlAffinity: ListTileControlAffinity.leading,
+      title: Text(title),
+      subtitle: Text(subtitle),
+    );
+  }
+
+  Widget _buildSelectedFiles() {
+    final l10n = AppLocalizations.of(context)!;
+    final sourceFiles = widget.searchState.availableSourceFiles;
+
+    if (sourceFiles.isEmpty) {
+      return Padding(
+        padding: const EdgeInsetsDirectional.only(start: 16, bottom: 8),
+        child: Text(
+          l10n.noIndexedSourceFilesFound,
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+      );
+    }
+
+    return Container(
+      margin: const EdgeInsetsDirectional.only(start: 16, bottom: 8),
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      decoration: BoxDecoration(
+        border: BorderDirectional(
+          start: BorderSide(color: Theme.of(context).colorScheme.outline),
+        ),
+      ),
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.27,
+      ),
+      child: ListView(
+        shrinkWrap: true,
+        children: [
+          Padding(
+            padding: const EdgeInsetsDirectional.only(start: 12, end: 8),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    l10n.selectedFiles(
+                      widget.searchState.selectedSourceFiles.length,
+                    ),
+                    style: Theme.of(context).textTheme.labelLarge,
+                  ),
+                ),
+                TextButton(
+                  onPressed: widget.searchNotifier.selectAllFiles,
+                  child: Text(l10n.selectAll),
+                ),
+                TextButton(
+                  onPressed: widget.searchNotifier.clearFileSelection,
+                  child: Text(l10n.clear),
+                ),
+              ],
+            ),
+          ),
+          if (widget.searchState.selectedSourceFiles.isEmpty)
+            Padding(
+              padding: const EdgeInsetsDirectional.only(
+                start: 12,
+                end: 8,
+                bottom: 4,
+              ),
+              child: Text(
+                l10n.selectAtLeastOneExcelFile,
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
+              ),
+            ),
+          ...sourceFiles.map(
+            (fileName) => CheckboxListTile(
+              dense: true,
+              contentPadding: const EdgeInsetsDirectional.only(start: 12),
+              title: Text(fileName),
+              value: widget.searchState.selectedSourceFiles.contains(fileName),
+              onChanged: (_) =>
+                  widget.searchNotifier.toggleSourceFile(fileName),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOperatorExplanation(
+    AppLocalizations l10n,
+    _FilterOperatorOption operator,
+  ) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            Icons.info_outline_rounded,
+            size: 18,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l10n.filterExplanation,
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 2),
+                Text(_operatorExplanation(l10n, operator.value)),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -1224,6 +1202,36 @@ String? _operatorHelperText(AppLocalizations l10n, String value) {
     'dateNotOn' ||
     'dateBetween' => l10n.dateFormatHint,
     _ => null,
+  };
+}
+
+String _operatorExplanation(AppLocalizations l10n, String value) {
+  return switch (value) {
+    'inList' || 'notInList' => l10n.listValueHint,
+    'isNumeric' ||
+    'isNotNumeric' ||
+    'gt' ||
+    'lt' ||
+    'gte' ||
+    'lte' ||
+    'between' ||
+    'notBetween' => l10n.numberFilterHint,
+    'dateBefore' ||
+    'dateAfter' ||
+    'dateOn' ||
+    'dateNotOn' ||
+    'dateBetween' ||
+    'dateToday' ||
+    'dateInLastDays' => l10n.dateFilterHint,
+    'lengthEq' ||
+    'lengthGt' ||
+    'lengthLt' ||
+    'lengthBetween' => l10n.lengthFilterHint,
+    'isPresent' ||
+    'isMissing' ||
+    'isEmpty' ||
+    'isNotEmpty' => l10n.fieldStatusFilterHint,
+    _ => l10n.textFilterHint,
   };
 }
 

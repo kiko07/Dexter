@@ -145,12 +145,15 @@ class EntriesDao extends DatabaseAccessor<AppDatabase> with _$EntriesDaoMixin {
 
     if (criteria.manualOnly) {
       where.add('e.source_file IS NULL');
-    } else if (criteria.sourceFiles != null &&
-        criteria.sourceFiles!.isNotEmpty) {
-      where.add(
-        'e.source_file IN (${List.filled(criteria.sourceFiles!.length, '?').join(',')})',
-      );
-      variables.addAll(criteria.sourceFiles!.map(Variable.withString));
+    } else if (criteria.sourceFiles != null) {
+      if (criteria.sourceFiles!.isEmpty) {
+        where.add('1 = 0');
+      } else {
+        where.add(
+          'e.source_file IN (${List.filled(criteria.sourceFiles!.length, '?').join(',')})',
+        );
+        variables.addAll(criteria.sourceFiles!.map(Variable.withString));
+      }
     }
 
     if (query.isNotEmpty) {

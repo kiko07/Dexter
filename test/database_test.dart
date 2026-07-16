@@ -38,6 +38,49 @@ void main() {
     expect(results.first.searchPayload, 'ali');
   });
 
+  test('source file scopes only return the requested Excel files', () async {
+    final profileId = await db.profilesDao.insertProfile(
+      ImportProfilesCompanion.insert(name: 'Files', columnMap: '{}'),
+    );
+    for (final sourceFile in ['first.xlsx', 'second.xlsx']) {
+      await db.entriesDao.insertEntry(
+        EntriesCompanion.insert(
+          profileId: profileId,
+          data: '{"name":"$sourceFile"}',
+          searchPayload: sourceFile,
+          sourceFile: drift.Value(sourceFile),
+        ),
+      );
+    }
+    await db.entriesDao.insertEntry(
+      EntriesCompanion.insert(
+        profileId: profileId,
+        data: '{"name":"manual"}',
+        searchPayload: 'manual',
+      ),
+    );
+
+    final selectedFile = await db.entriesDao.searchEntries(
+      query: '',
+      matchMode: 'contains',
+      sourceFiles: const ['second.xlsx'],
+    );
+    final allImportedFiles = await db.entriesDao.searchEntries(
+      query: '',
+      matchMode: 'contains',
+      sourceFiles: const ['first.xlsx', 'second.xlsx'],
+    );
+    final noSelectedFiles = await db.entriesDao.searchEntries(
+      query: '',
+      matchMode: 'contains',
+      sourceFiles: const [],
+    );
+
+    expect(selectedFile.map((entry) => entry.sourceFile), ['second.xlsx']);
+    expect(allImportedFiles, hasLength(2));
+    expect(noSelectedFiles, isEmpty);
+  });
+
   test(
     'exact search matches whole JSON field while contains matches substrings',
     () async {

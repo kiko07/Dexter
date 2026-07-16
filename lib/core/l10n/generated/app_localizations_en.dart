@@ -561,6 +561,34 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fileScope => 'File Scope';
 
   @override
+  String get chooseSearchScope => '1. Choose Excel file scope';
+
+  @override
+  String get chooseSearchScopeHint =>
+      'Choose every imported Excel file, or select only the files you need before adding a filter.';
+
+  @override
+  String get allExcelFiles => 'All imported Excel files';
+
+  @override
+  String get allExcelFilesHint => 'Search every imported Excel file.';
+
+  @override
+  String get chooseExcelFiles => 'Choose specific Excel files';
+
+  @override
+  String get chooseExcelFilesHint =>
+      'Search one or more Excel files that you select below.';
+
+  @override
+  String get selectAtLeastOneExcelFile =>
+      'Select at least one Excel file to use this scope.';
+
+  @override
+  String get manualEntriesOnlyHint =>
+      'Search only records entered manually, not imported Excel files.';
+
+  @override
   String get addFilter => 'Add Filter';
 
   @override
@@ -698,28 +726,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get doesNotEndWith => 'Does not end with';
 
   @override
-  String get containsAllWords => 'Contains all words';
+  String get containsAllWords => 'Has every word entered';
 
   @override
-  String get containsAnyWord => 'Contains any word';
+  String get containsAnyWord => 'Has at least one word entered';
 
   @override
-  String get containsNoWords => 'Contains none of the words';
+  String get containsNoWords => 'Has none of the words entered';
 
   @override
-  String get containsCaseSensitive => 'Contains (case-sensitive)';
+  String get containsCaseSensitive => 'Contains exactly (case-sensitive)';
 
   @override
-  String get equalCaseSensitive => 'Equal to (case-sensitive)';
+  String get equalCaseSensitive => 'Matches exactly (case-sensitive)';
 
   @override
-  String get notEqualCaseSensitive => 'Not equal to (case-sensitive)';
+  String get notEqualCaseSensitive => 'Does not match exactly (case-sensitive)';
 
   @override
-  String get inList => 'Is in list';
+  String get inList => 'Matches an item in a list';
 
   @override
-  String get notInList => 'Is not in list';
+  String get notInList => 'Does not match any item in a list';
 
   @override
   String get greaterThanOrEqual => 'Greater than or equal to';
@@ -755,31 +783,31 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dateToday => 'Date is today';
 
   @override
-  String get dateInLastDays => 'Date is within the last days';
+  String get dateInLastDays => 'Date is within the last N days';
 
   @override
-  String get lengthEqual => 'Length equals';
+  String get lengthEqual => 'Has exactly this many characters';
 
   @override
-  String get lengthGreaterThan => 'Length greater than';
+  String get lengthGreaterThan => 'Has more than this many characters';
 
   @override
-  String get lengthLessThan => 'Length less than';
+  String get lengthLessThan => 'Has fewer than this many characters';
 
   @override
-  String get lengthBetween => 'Length between';
+  String get lengthBetween => 'Has a character count in this range';
 
   @override
-  String get fieldExists => 'Field exists';
+  String get fieldExists => 'Field exists (even if blank)';
 
   @override
   String get fieldMissing => 'Field is missing';
 
   @override
-  String get isEmpty => 'Is empty';
+  String get isEmpty => 'Is blank';
 
   @override
-  String get isNotEmpty => 'Is not empty';
+  String get isNotEmpty => 'Has a value';
 
   @override
   String get valueLabel => 'Value';
@@ -823,6 +851,29 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pickDate => 'Pick date';
+
+  @override
+  String get filterExplanation => 'How this filter works';
+
+  @override
+  String get textFilterHint =>
+      'Text matching ignores uppercase and lowercase unless the filter says case-sensitive.';
+
+  @override
+  String get numberFilterHint =>
+      'Use numbers only. Text values are ignored for numeric comparisons.';
+
+  @override
+  String get dateFilterHint =>
+      'Use the calendar to choose a date. Dates are compared by calendar day.';
+
+  @override
+  String get lengthFilterHint =>
+      'Counts the characters in the field value, including spaces.';
+
+  @override
+  String get fieldStatusFilterHint =>
+      '“Exists” checks whether the field is present; “blank” checks whether its value has no text.';
 
   @override
   String get statistics => 'Statistics';

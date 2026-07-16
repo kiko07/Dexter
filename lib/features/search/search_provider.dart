@@ -20,6 +20,8 @@ class AdvancedFilter extends EntrySearchFilter {
   });
 }
 
+enum SearchFileScope { allExcelFiles, selectedExcelFiles, manualEntriesOnly }
+
 class SearchState {
   final String query;
   final String matchMode;
@@ -33,7 +35,7 @@ class SearchState {
   final List<AdvancedFilter> advancedFilters;
   final List<String> availableSourceFiles;
   final Set<String> selectedSourceFiles;
-  final bool manualOnly;
+  final SearchFileScope fileScope;
 
   const SearchState({
     this.query = '',
@@ -48,7 +50,7 @@ class SearchState {
     this.advancedFilters = const [],
     this.availableSourceFiles = const [],
     this.selectedSourceFiles = const {},
-    this.manualOnly = false,
+    this.fileScope = SearchFileScope.allExcelFiles,
   });
 
   bool get hasSearchCriteria =>
@@ -56,7 +58,7 @@ class SearchState {
       showAll ||
       advancedFilters.isNotEmpty ||
       selectedSourceFiles.isNotEmpty ||
-      manualOnly;
+      fileScope == SearchFileScope.manualEntriesOnly;
 
   SearchState copyWith({
     String? query,
@@ -71,7 +73,7 @@ class SearchState {
     List<AdvancedFilter>? advancedFilters,
     List<String>? availableSourceFiles,
     Set<String>? selectedSourceFiles,
-    bool? manualOnly,
+    SearchFileScope? fileScope,
   }) {
     return SearchState(
       query: query ?? this.query,
@@ -86,7 +88,7 @@ class SearchState {
       advancedFilters: advancedFilters ?? this.advancedFilters,
       availableSourceFiles: availableSourceFiles ?? this.availableSourceFiles,
       selectedSourceFiles: selectedSourceFiles ?? this.selectedSourceFiles,
-      manualOnly: manualOnly ?? this.manualOnly,
+      fileScope: fileScope ?? this.fileScope,
     );
   }
 }
@@ -110,6 +112,9 @@ class SearchNotifier extends Notifier<SearchState> {
     try {
       final files = await db.entriesDao.getDistinctSourceFiles();
       state = state.copyWith(availableSourceFiles: files);
+      if (state.hasSearchCriteria) {
+        _performSearch();
+      }
     } catch (_) {}
   }
 
@@ -192,6 +197,19 @@ class SearchNotifier extends Notifier<SearchState> {
     _performSearch();
   }
 
+  void setFileScope(SearchFileScope fileScope) {
+    state = state.copyWith(
+      fileScope: fileScope,
+      selectedSourceFiles: fileScope == SearchFileScope.manualEntriesOnly
+          ? const {}
+          : state.selectedSourceFiles,
+      offset: 0,
+      hasMore: true,
+      results: [],
+    );
+    _performSearch();
+  }
+
   void toggleSourceFile(String fileName) {
     final current = Set<String>.from(state.selectedSourceFiles);
     if (current.contains(fileName)) {
@@ -201,7 +219,7 @@ class SearchNotifier extends Notifier<SearchState> {
     }
     state = state.copyWith(
       selectedSourceFiles: current,
-      manualOnly: false,
+      fileScope: SearchFileScope.selectedExcelFiles,
       offset: 0,
       hasMore: true,
       results: [],
@@ -211,8 +229,7 @@ class SearchNotifier extends Notifier<SearchState> {
 
   void selectAllFiles() {
     state = state.copyWith(
-      selectedSourceFiles: state.availableSourceFiles.toSet(),
-      manualOnly: false,
+      fileScope: SearchFileScope.allExcelFiles,
       offset: 0,
       hasMore: true,
       results: [],
@@ -223,17 +240,7 @@ class SearchNotifier extends Notifier<SearchState> {
   void clearFileSelection() {
     state = state.copyWith(
       selectedSourceFiles: const {},
-      offset: 0,
-      hasMore: true,
-      results: [],
-    );
-    _performSearch();
-  }
-
-  void setManualOnly(bool value) {
-    state = state.copyWith(
-      manualOnly: value,
-      selectedSourceFiles: value ? const {} : state.selectedSourceFiles,
+      fileScope: SearchFileScope.selectedExcelFiles,
       offset: 0,
       hasMore: true,
       results: [],
@@ -267,16 +274,19 @@ class SearchNotifier extends Notifier<SearchState> {
     final searchOffset = state.offset;
     final filters = List<AdvancedFilter>.from(state.advancedFilters);
     final selectedFiles = Set<String>.from(state.selectedSourceFiles);
-    final manualOnly = state.manualOnly;
+    final fileScope = state.fileScope;
     final matchMode = state.matchMode;
     final sortBy = state.sortBy;
 
     state = state.copyWith(isSearching: true);
 
     final db = ref.read(databaseProvider);
-    final sourceFilesFilter = selectedFiles.isEmpty
-        ? null
-        : selectedFiles.toList();
+    final sourceFilesFilter = switch (fileScope) {
+      SearchFileScope.allExcelFiles => state.availableSourceFiles,
+      SearchFileScope.selectedExcelFiles => selectedFiles.toList(),
+      SearchFileScope.manualEntriesOnly => null,
+    };
+    final manualOnly = fileScope == SearchFileScope.manualEntriesOnly;
 
     try {
       int newTotalCount;

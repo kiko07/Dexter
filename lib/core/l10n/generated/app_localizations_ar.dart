@@ -559,6 +559,34 @@ class AppLocalizationsAr extends AppLocalizations {
   String get fileScope => 'نطاق الملف';
 
   @override
+  String get chooseSearchScope => '١. اختر نطاق ملفات Excel';
+
+  @override
+  String get chooseSearchScopeHint =>
+      'اختر كل ملفات Excel المستوردة أو حدد الملفات التي تحتاجها قبل إضافة الفلتر.';
+
+  @override
+  String get allExcelFiles => 'كل ملفات Excel المستوردة';
+
+  @override
+  String get allExcelFilesHint => 'ابحث في كل ملفات Excel المستوردة.';
+
+  @override
+  String get chooseExcelFiles => 'اختر ملفات Excel محددة';
+
+  @override
+  String get chooseExcelFilesHint =>
+      'ابحث في ملف Excel واحد أو أكثر مما تحدده أدناه.';
+
+  @override
+  String get selectAtLeastOneExcelFile =>
+      'حدد ملف Excel واحداً على الأقل لاستخدام هذا النطاق.';
+
+  @override
+  String get manualEntriesOnlyHint =>
+      'ابحث في السجلات المدخلة يدوياً فقط، وليس في ملفات Excel المستوردة.';
+
+  @override
   String get addFilter => 'إضافة فلتر';
 
   @override
@@ -696,28 +724,29 @@ class AppLocalizationsAr extends AppLocalizations {
   String get doesNotEndWith => 'لا ينتهي بـ';
 
   @override
-  String get containsAllWords => 'يحتوي على كل الكلمات';
+  String get containsAllWords => 'يحتوي على كل الكلمات المدخلة';
 
   @override
-  String get containsAnyWord => 'يحتوي على أي كلمة';
+  String get containsAnyWord => 'يحتوي على كلمة واحدة على الأقل';
 
   @override
-  String get containsNoWords => 'لا يحتوي على أي من الكلمات';
+  String get containsNoWords => 'لا يحتوي على أي من الكلمات المدخلة';
 
   @override
-  String get containsCaseSensitive => 'يحتوي على (مع مراعاة حالة الأحرف)';
+  String get containsCaseSensitive =>
+      'يحتوي تماماً على (مع مراعاة حالة الأحرف)';
 
   @override
-  String get equalCaseSensitive => 'يساوي (مع مراعاة حالة الأحرف)';
+  String get equalCaseSensitive => 'يطابق تماماً (مع مراعاة حالة الأحرف)';
 
   @override
-  String get notEqualCaseSensitive => 'لا يساوي (مع مراعاة حالة الأحرف)';
+  String get notEqualCaseSensitive => 'لا يطابق تماماً (مع مراعاة حالة الأحرف)';
 
   @override
-  String get inList => 'موجود في القائمة';
+  String get inList => 'يطابق عنصراً من قائمة';
 
   @override
-  String get notInList => 'غير موجود في القائمة';
+  String get notInList => 'لا يطابق أي عنصر من القائمة';
 
   @override
   String get greaterThanOrEqual => 'أكبر من أو يساوي';
@@ -753,22 +782,22 @@ class AppLocalizationsAr extends AppLocalizations {
   String get dateToday => 'التاريخ هو اليوم';
 
   @override
-  String get dateInLastDays => 'التاريخ ضمن الأيام الأخيرة';
+  String get dateInLastDays => 'التاريخ ضمن آخر عدد N من الأيام';
 
   @override
-  String get lengthEqual => 'الطول يساوي';
+  String get lengthEqual => 'عدد الأحرف يساوي هذا العدد';
 
   @override
-  String get lengthGreaterThan => 'الطول أكبر من';
+  String get lengthGreaterThan => 'عدد الأحرف أكبر من هذا العدد';
 
   @override
-  String get lengthLessThan => 'الطول أصغر من';
+  String get lengthLessThan => 'عدد الأحرف أقل من هذا العدد';
 
   @override
-  String get lengthBetween => 'الطول بين';
+  String get lengthBetween => 'عدد الأحرف ضمن هذا النطاق';
 
   @override
-  String get fieldExists => 'الحقل موجود';
+  String get fieldExists => 'الحقل موجود (حتى إن كان فارغاً)';
 
   @override
   String get fieldMissing => 'الحقل غير موجود';
@@ -777,7 +806,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get isEmpty => 'فارغ';
 
   @override
-  String get isNotEmpty => 'غير فارغ';
+  String get isNotEmpty => 'له قيمة';
 
   @override
   String get valueLabel => 'القيمة';
@@ -821,6 +850,29 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get pickDate => 'اختر التاريخ';
+
+  @override
+  String get filterExplanation => 'كيف يعمل هذا الفلتر';
+
+  @override
+  String get textFilterHint =>
+      'تتجاهل مطابقة النصوص حالة الأحرف الكبيرة والصغيرة ما لم يذكر الفلتر غير ذلك.';
+
+  @override
+  String get numberFilterHint =>
+      'استخدم الأرقام فقط. تُتجاهل القيم النصية في المقارنات العددية.';
+
+  @override
+  String get dateFilterHint =>
+      'استخدم التقويم لاختيار تاريخ. تُقارن التواريخ بحسب يوم التقويم.';
+
+  @override
+  String get lengthFilterHint =>
+      'يُحتسب عدد أحرف قيمة الحقل، بما في ذلك المسافات.';
+
+  @override
+  String get fieldStatusFilterHint =>
+      '«موجود» يتحقق من وجود الحقل، بينما «فارغ» يتحقق من عدم وجود نص في قيمته.';
 
   @override
   String get statistics => 'الإحصائيات';

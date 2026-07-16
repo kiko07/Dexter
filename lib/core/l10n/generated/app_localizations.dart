@@ -1112,6 +1112,54 @@ abstract class AppLocalizations {
   /// **'نطاق الملف'**
   String get fileScope;
 
+  /// No description provided for @chooseSearchScope.
+  ///
+  /// In ar, this message translates to:
+  /// **'١. اختر نطاق ملفات Excel'**
+  String get chooseSearchScope;
+
+  /// No description provided for @chooseSearchScopeHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر كل ملفات Excel المستوردة أو حدد الملفات التي تحتاجها قبل إضافة الفلتر.'**
+  String get chooseSearchScopeHint;
+
+  /// No description provided for @allExcelFiles.
+  ///
+  /// In ar, this message translates to:
+  /// **'كل ملفات Excel المستوردة'**
+  String get allExcelFiles;
+
+  /// No description provided for @allExcelFilesHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'ابحث في كل ملفات Excel المستوردة.'**
+  String get allExcelFilesHint;
+
+  /// No description provided for @chooseExcelFiles.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر ملفات Excel محددة'**
+  String get chooseExcelFiles;
+
+  /// No description provided for @chooseExcelFilesHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'ابحث في ملف Excel واحد أو أكثر مما تحدده أدناه.'**
+  String get chooseExcelFilesHint;
+
+  /// No description provided for @selectAtLeastOneExcelFile.
+  ///
+  /// In ar, this message translates to:
+  /// **'حدد ملف Excel واحداً على الأقل لاستخدام هذا النطاق.'**
+  String get selectAtLeastOneExcelFile;
+
+  /// No description provided for @manualEntriesOnlyHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'ابحث في السجلات المدخلة يدوياً فقط، وليس في ملفات Excel المستوردة.'**
+  String get manualEntriesOnlyHint;
+
   /// No description provided for @addFilter.
   ///
   /// In ar, this message translates to:
@@ -1379,49 +1427,49 @@ abstract class AppLocalizations {
   /// No description provided for @containsAllWords.
   ///
   /// In ar, this message translates to:
-  /// **'يحتوي على كل الكلمات'**
+  /// **'يحتوي على كل الكلمات المدخلة'**
   String get containsAllWords;
 
   /// No description provided for @containsAnyWord.
   ///
   /// In ar, this message translates to:
-  /// **'يحتوي على أي كلمة'**
+  /// **'يحتوي على كلمة واحدة على الأقل'**
   String get containsAnyWord;
 
   /// No description provided for @containsNoWords.
   ///
   /// In ar, this message translates to:
-  /// **'لا يحتوي على أي من الكلمات'**
+  /// **'لا يحتوي على أي من الكلمات المدخلة'**
   String get containsNoWords;
 
   /// No description provided for @containsCaseSensitive.
   ///
   /// In ar, this message translates to:
-  /// **'يحتوي على (مع مراعاة حالة الأحرف)'**
+  /// **'يحتوي تماماً على (مع مراعاة حالة الأحرف)'**
   String get containsCaseSensitive;
 
   /// No description provided for @equalCaseSensitive.
   ///
   /// In ar, this message translates to:
-  /// **'يساوي (مع مراعاة حالة الأحرف)'**
+  /// **'يطابق تماماً (مع مراعاة حالة الأحرف)'**
   String get equalCaseSensitive;
 
   /// No description provided for @notEqualCaseSensitive.
   ///
   /// In ar, this message translates to:
-  /// **'لا يساوي (مع مراعاة حالة الأحرف)'**
+  /// **'لا يطابق تماماً (مع مراعاة حالة الأحرف)'**
   String get notEqualCaseSensitive;
 
   /// No description provided for @inList.
   ///
   /// In ar, this message translates to:
-  /// **'موجود في القائمة'**
+  /// **'يطابق عنصراً من قائمة'**
   String get inList;
 
   /// No description provided for @notInList.
   ///
   /// In ar, this message translates to:
-  /// **'غير موجود في القائمة'**
+  /// **'لا يطابق أي عنصر من القائمة'**
   String get notInList;
 
   /// No description provided for @greaterThanOrEqual.
@@ -1493,37 +1541,37 @@ abstract class AppLocalizations {
   /// No description provided for @dateInLastDays.
   ///
   /// In ar, this message translates to:
-  /// **'التاريخ ضمن الأيام الأخيرة'**
+  /// **'التاريخ ضمن آخر عدد N من الأيام'**
   String get dateInLastDays;
 
   /// No description provided for @lengthEqual.
   ///
   /// In ar, this message translates to:
-  /// **'الطول يساوي'**
+  /// **'عدد الأحرف يساوي هذا العدد'**
   String get lengthEqual;
 
   /// No description provided for @lengthGreaterThan.
   ///
   /// In ar, this message translates to:
-  /// **'الطول أكبر من'**
+  /// **'عدد الأحرف أكبر من هذا العدد'**
   String get lengthGreaterThan;
 
   /// No description provided for @lengthLessThan.
   ///
   /// In ar, this message translates to:
-  /// **'الطول أصغر من'**
+  /// **'عدد الأحرف أقل من هذا العدد'**
   String get lengthLessThan;
 
   /// No description provided for @lengthBetween.
   ///
   /// In ar, this message translates to:
-  /// **'الطول بين'**
+  /// **'عدد الأحرف ضمن هذا النطاق'**
   String get lengthBetween;
 
   /// No description provided for @fieldExists.
   ///
   /// In ar, this message translates to:
-  /// **'الحقل موجود'**
+  /// **'الحقل موجود (حتى إن كان فارغاً)'**
   String get fieldExists;
 
   /// No description provided for @fieldMissing.
@@ -1541,7 +1589,7 @@ abstract class AppLocalizations {
   /// No description provided for @isNotEmpty.
   ///
   /// In ar, this message translates to:
-  /// **'غير فارغ'**
+  /// **'له قيمة'**
   String get isNotEmpty;
 
   /// No description provided for @valueLabel.
@@ -1627,6 +1675,42 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'اختر التاريخ'**
   String get pickDate;
+
+  /// No description provided for @filterExplanation.
+  ///
+  /// In ar, this message translates to:
+  /// **'كيف يعمل هذا الفلتر'**
+  String get filterExplanation;
+
+  /// No description provided for @textFilterHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'تتجاهل مطابقة النصوص حالة الأحرف الكبيرة والصغيرة ما لم يذكر الفلتر غير ذلك.'**
+  String get textFilterHint;
+
+  /// No description provided for @numberFilterHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'استخدم الأرقام فقط. تُتجاهل القيم النصية في المقارنات العددية.'**
+  String get numberFilterHint;
+
+  /// No description provided for @dateFilterHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'استخدم التقويم لاختيار تاريخ. تُقارن التواريخ بحسب يوم التقويم.'**
+  String get dateFilterHint;
+
+  /// No description provided for @lengthFilterHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'يُحتسب عدد أحرف قيمة الحقل، بما في ذلك المسافات.'**
+  String get lengthFilterHint;
+
+  /// No description provided for @fieldStatusFilterHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'«موجود» يتحقق من وجود الحقل، بينما «فارغ» يتحقق من عدم وجود نص في قيمته.'**
+  String get fieldStatusFilterHint;
 
   /// No description provided for @statistics.
   ///
